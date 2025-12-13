@@ -4,14 +4,7 @@
  */
 
 import { getDatabase } from './databaseInit';
-import {
-  Trip,
-  Expense,
-  CreateTripModel,
-  CreateExpenseModel,
-  UpdateTripModel,
-  UpdateExpenseModel,
-} from '../../types/database';
+import { Trip, CreateTripModel, UpdateTripModel } from '../../types/database';
 
 /**
  * Database Service Class
@@ -237,7 +230,258 @@ class DatabaseService {
       updated_at: row.updated_at,
     };
   }
+
+
+
+
+  /*
+   * Expense Operations
+   */
+
+  async createExpense(model: CreateExpenseModel): Promise<Expense> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `INSERT INTO Expense (trip_id, image_path, merchant, amount, tax_amount, tax_type, tax_rate, date, category, processed, ai_service_used, manual_entry)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+
+        [
+          model.trip_id,
+          model.image_path || null,
+          model.merchant || null,
+          model.amount,
+          model.tax_amount || null,
+          model.tax_type || null,
+          model.tax_rate || null,
+          model.date,
+          model.category,
+          model.processed || null,
+          model.ai_service_used || null,
+          model.manual_entry,
+        ],
+      );
+
+      const expenseId = result[0].insertId;
+
+      if (!expenseId) {
+        throw new Error('Failed to create expense - no ID returned');
+      }
+
+      // Fetch and return the created expense
+      const createdExpense = await this.getExpenseById(tripId);
+      if (!createdExpense) {
+        throw new Error('Failed to retrieve created expense');
+      }
+
+      return createdExpense;
+    }
+    catch (error) {
+      console.error('Error creating expense:', error);
+      throw new Error(
+        `Failed to create expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /*
+  * Get a trip by ID
+  */
+  async getExpenseById(id: number): Promise<Expense | null> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql('SELECT * FROM expense WHERE expense_id = ?', [id]);
+
+      if (result[0].rows.length === 0) {
+        return null;
+      }
+
+      return this.mapExpenseFromDatabaseRow(result[0].rows.item(0));
+    } catch (error) {
+      console.error('Error getting expense by ID:', error);
+      throw new Error(
+        `Failed to get expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  async getAllExpenses(trip_id? : number): Promise<Expense[]> {
+
+    try {
+      const db = getDatabase();
+
+      let query = 'SELECT * FROM expense';
+      const params: string[] = [];
+
+      if (trip_id) {
+        query += ' WHERE trip_id = ?';
+        params.push(trip_id.toString());
+      }
+
+      //query += ` ORDER BY date DESC`;
+
+      const result = await db.executeSql(query, params);
+
+      const expenses: Expense[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        expenses.push(this.mapExpenseFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return expenses;
+    }
+    catch (error) {
+      console.error('Error getting all expenses:', error);
+      throw new Error(
+        `Failed to get expenses: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  async updateExpense(model: UpdateExpenseModel): Promise<Expense> {
+    try {
+      const db = getDatabase();
+
+      // Check if expense exists
+      const existingExpense = await this.getExpenseById(model.id);
+      if (!existingExpense) {
+        throw new Error(`Expense with ID ${model.id} not found`);
+      }
+
+      // Build dynamic update query
+      const updates: string[] = [];
+      const params: (string | number)[] = [];
+
+      if (model.trip_id !== undefined) {
+        updates.push('trip_id = ?');
+        params.push(model.trip_id);
+      }
+
+      if (model.image_path !== undefined) {
+        updates.push('image_path = ?');
+        params.push(model.image_path);
+      }
+
+      if (model.merchant !== undefined) {
+        updates.push('merchant = ?');
+        params.push(model.merchant);
+      }
+
+      if (model.amount !== undefined) {
+        updates.push('amount = ?');
+        params.push(model.amount);
+      }
+
+      if (model.tax_amount !== undefined) {
+        updates.push('tax_amount = ?');
+        params.push(model.tax_amount);
+      }
+
+      if (model.tax_type !== undefined) {
+        updates.push('tax_type = ?');
+        params.push(model.tax_type);
+      }
+
+      if (model.tax_rate !== undefined) {
+        updates.push('tax_rate = ?');
+        params.push(model.tax_rate);
+      }
+
+      if (model.date !== undefined) {
+        updates.push('date = ?');
+        params.push(model.date);
+      }
+
+      if (model.category !== undefined) {
+        updates.push('category = ?');
+        params.push(model.category);
+      }
+
+      if (model.processed !== undefined) {
+        updates.push('processed = ?');
+        params.push(model.processed);
+      }
+
+      if (model.ai_service_used !== undefined) {
+        updates.push('ai_service_used = ?');
+        params.push(model.ai_service_used);
+      }
+
+      if (model.manual_entry !== undefined) {
+        updates.push('manual_entry = ?');
+        params.push(model.manual_entry);
+      }
+
+      if (updates.length === 0) {
+        return existingExpense;
+      }
+
+      params.push(model.id);
+
+      await db.executeSql(`UPDATE expense SET ${updates.join(', ')} WHERE expense_id = ?`, params);
+
+      // Fetch and return the updated expense
+      const updatedExpense = await this.getExpenseById(model.id);
+      if (!updatedExpense) {
+        throw new Error('Failed to retrieve updated expense');
+      }
+
+      return updatedExpense;
+    }
+    catch (error) {
+      console.error('Error updating expense:', error);
+      throw new Error(
+        `Failed to update expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  async deleteExpense(id: number): Promise<void> {
+    try {
+      const db = getDatabase();
+
+      // Check if expense exists
+      const existingExpense = await this.getExpenseById(id);
+      if (!existingExpense) {
+        throw new Error(`Expense with ID ${id} not found`);
+      }
+
+      await db.executeSql('DELETE FROM expense WHERE expense_id = ?', [id]);
+    }
+      catch (error) {
+      console.error('Error deleting expense:', error);
+      throw new Error(
+        `Failed to delete expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /*
+   Helper method to map database row to Trip object
+   */
+   private mapExpenseFromDatabaseRow(row: any): Expense {
+     return {
+       id: row.expense_id,
+       trip_id: row.trip_id,
+       image_path: row.image_path,
+       merchant: row.merchant,
+       amount: row.amount,
+       tax_amount: row.tax_amount,
+       tax_type: row.tax_type,
+       tax_rate: row.tax_rate,
+       date: row.date,
+       category: row.category,
+       processed: row.processed,
+       ai_service_used: row.ai_service_used,
+       manual_entry: row.manual_entry,
+       created_at: row.created_at,
+       updated_at: row.updated_at,
+     };
+   }
+
+
 }
+
 
 // Export singleton instance
 export default new DatabaseService();

@@ -1,16 +1,16 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * Expense Tracker App
+ * Main application entry point
  *
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
-import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { initializeDatabase } from './src/services/database/databaseInit';
 import { testDatabaseInitialization } from './src/services/database/testDatabase';
+import { AppNavigator } from './src/navigation/AppNavigator';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -71,18 +71,8 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <AppNavigator />
     </SafeAreaProvider>
-  );
-}
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen templateFileName="App.tsx" safeAreaInsets={safeAreaInsets} />
-    </View>
   );
 }
 
