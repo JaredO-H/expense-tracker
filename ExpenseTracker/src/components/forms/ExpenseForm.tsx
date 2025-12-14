@@ -16,6 +16,7 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { format, isValid, parse } from 'date-fns';
 import { Expense, CreateExpenseModel } from '../../types/database';
+import {isValidDateFormat} from '../../components/common/DateChecker';
 
 
 
@@ -35,10 +36,12 @@ interface ExpenseFormData {
     tax_type?: TaxType;
     tax_rate?: number;
     date: string;
+    time?: string;
     category: ExpenseCategory;
-    processed?: boolean;
     ai_service_used?: string;
-    manual_entry: boolean;
+    capture_method: string;
+    notes?: string;
+    verification_status: string;
     }
 
 export const ExpenseForm : React.FC<ExpenseFormProps> = ({
@@ -63,10 +66,12 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
       tax_type: expense?.tax_type || undefined,
       tax_rate: expense?.tax_rate || undefined,
       date: expense?.date || format(new Date(), 'yyyy-MM-dd'),
+      time: expense?.time || undefined,
       category: expense?.category || undefined,
-      processed: expense?.processed || undefined,
       ai_service_used: expense?.ai_service_used || undefined,
-      manual_entry: expense?.manual_entry || true
+      capture_method: expense?.capture_method || 'manual',
+      notes: expense?.notes || undefined,
+      verification_status: expense?.verification_status || 'pending',
       }
   });
 
@@ -80,8 +85,17 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
 
     }
 
+    // Convert trip_id to number or undefined if empty
+    const tripId = data.trip_id ? Number(data.trip_id) : undefined;
+
+    // Validate trip_id is a valid number if provided
+    if (data.trip_id && (isNaN(tripId!) || tripId! <= 0)) {
+      Alert.alert('Validation Error', 'Trip ID must be a valid positive number');
+      return;
+    }
+
     onSubmit({
-      trip_id: data.trip_id,
+      trip_id: tripId,
       image_path: data.image_path,
       merchant: data.merchant,
       amount: data.amount,
@@ -89,10 +103,12 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
       tax_type: data.tax_type,
       tax_rate: data.tax_rate,
       date: data.date,
-      category: data.category,
-      processed: data.processed,
+      time: data.time,
+      category: 8, // Always use category_id 8 (Uncategorized) for now
+      verification_status: data.verification_status,
       ai_service_used: data.ai_service_used,
-      manual_entry: data.manual_entry,
+      capture_method: data.capture_method,
+      notes: data.notes,
     });
   };
 
@@ -271,6 +287,28 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
             />
             {errors.start_date && <Text style={styles.errorText}>{errors.start_date.message}</Text>}
           </View>
+          {/* Time */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>
+              Time <Text style={styles.required}>*</Text>
+            </Text>
+            <Controller
+              control={control}
+              name="time"
+              render={({ field: { onChange, value } }) => (
+                <View>
+                  <TextInput
+                    style={[styles.input, errors.start_date && styles.inputError]}
+                    placeholder="hh:mm:ss"
+                    value={value}
+                    onChangeText={onChange}
+                    editable={!isLoading}
+                  />
+                  <Text style={styles.hint}>Format: HH:MM:SS</Text>
+                </View>
+              )}
+            />
+          </View>
           {/* Category */}
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>
@@ -294,6 +332,27 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
                 <TextInput
                   style={[styles.input, errors.name && styles.inputError]}
                   placeholder="e.g., Transport"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  editable={!isLoading}
+                />
+              )}
+            />
+            {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+          </View>
+          {/* Notes */}
+          <View style={styles.fieldContainer}>
+            <Text style={styles.label}>
+              Notes <Text style={styles.required}>*</Text>
+            </Text>
+            <Controller
+              control={control}
+              name="notes"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[styles.input, errors.name && styles.inputError]}
+                  placeholder=" "
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}

@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet, Alert } from 'react-native';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { CreateExpenseModel} from '../../types/database';

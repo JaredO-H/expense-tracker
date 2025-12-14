@@ -73,7 +73,6 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   };
 
   const renderExpenseCard = ({ item: expense }: { item: Expense }) => {
-    const status = getExpenseStatus(expense);
     // Mock expense count - will be replaced with actual data later
     const expenseCount = 0;
 

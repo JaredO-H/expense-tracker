@@ -162,6 +162,13 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
             </Text>
           </View>
 
+          {expense.time && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Time</Text>
+              <Text style={styles.infoValue}>{expense.time}</Text>
+            </View>
+          )}
+
           {expense.category && (
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Category</Text>
@@ -169,10 +176,17 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
             </View>
           )}
 
-          {expense.processed && (
+          {expense.notes && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Processed</Text>
+              <Text style={styles.infoLabel}>Notes</Text>
               <Text style={styles.infoValue}>{expense.processed}</Text>
+            </View>
+          )}
+
+          {expense.capture_method && (
+            <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Capture Method</Text>
+              <Text style={styles.infoValue}>{expense.manual_entry}</Text>
             </View>
           )}
 
@@ -183,12 +197,10 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
             </View>
           )}
 
-          {expense.manual_entry && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Manual Entry?</Text>
-              <Text style={styles.infoValue}>{expense.manual_entry}</Text>
-            </View>
-          )}
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Verification Status</Text>
+            <Text style={styles.infoValue}>{expense.verification_status}</Text>
+          </View>
 
         </View>
 

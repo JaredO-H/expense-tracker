@@ -2,14 +2,6 @@
  * Database type definitions for ExpenseTracker
  */
 
-export enum ExpenseCategory {
-  FOOD = 'food',
-  TRANSPORTATION = 'transportation',
-  ACCOMMODATION = 'accommodation',
-  ENTERTAINMENT = 'entertainment',
-  OFFICE_SUPPLIES = 'office_supplies',
-  OTHER = 'other',
-}
 
 export enum TaxType {
   GST = 'GST',
@@ -17,6 +9,7 @@ export enum TaxType {
   PST = 'PST',
   VAT = 'VAT',
   SALES_TAX = 'sales_tax',
+  OTHER = 'other',
   NONE = 'none',
 }
 
@@ -27,6 +20,8 @@ export interface Trip {
   end_date: string; // ISO 8601 date string
   destination?: string;
   purpose?: string;
+  status?: string,
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -35,16 +30,21 @@ export interface Expense {
   id: number;
   trip_id?: number; // Nullable for unassigned expenses
   image_path?: string;
+  thumbnail_path?: string;
   merchant?: string;
   amount: number; // Stored as cents to avoid floating point issues
+  currency?: string;
   tax_amount?: number; // Stored as cents
   tax_type?: TaxType;
   tax_rate?: number; // Percentage (e.g., 13.0 for 13%)
   date: string; // ISO 8601 date string
+  time?: string; // ISO 8601 time string
   category: ExpenseCategory;
   processed: boolean; // Whether AI processing is complete
   ai_service_used?: string; // Which AI service processed this (openai, anthropic, gemini, mlkit)
-  manual_entry: boolean; // True if entered manually, false if from receipt scan
+  capture_method: string; // 'ai_service', 'offline_ocr', 'manual'
+  verification_status: string; // 'pending', 'verified', 'edited'
+  notes?: string;
   created_at: string;
   updated_at: string;
 }
@@ -63,14 +63,15 @@ export interface CreateExpenseModel {
   image_path?: string;
   merchant?: string;
   amount: number;
+  currency?: string;
   tax_amount?: number;
   tax_type?: TaxType;
   tax_rate?: number;
   date: string;
-  category: ExpenseCategory;
-  processed?: boolean;
+  category: number;
+  notes?: string;
   ai_service_used?: string;
-  manual_entry: boolean;
+  capture_method?: string; // 'ai_service', 'offline_ocr', 'manual';
 }
 
 // Update types (all fields optional except id)
@@ -89,14 +90,15 @@ export interface UpdateExpenseModel {
   image_path?: string;
   merchant?: string;
   amount?: number;
+  currency?: string;
   tax_amount?: number;
   tax_type?: TaxType;
   tax_rate?: number;
   date?: string;
-  category?: ExpenseCategory;
-  processed?: boolean;
+  category?: number;
+  notes?: string;
   ai_service_used?: string;
-  manual_entry?: boolean;
+  capture_method?: string;
 }
 
 // Database configuration interface

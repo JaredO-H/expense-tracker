@@ -243,22 +243,23 @@ class DatabaseService {
       const db = getDatabase();
 
       const result = await db.executeSql(
-        `INSERT INTO Expense (trip_id, image_path, merchant, amount, tax_amount, tax_type, tax_rate, date, category, processed, ai_service_used, manual_entry)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO Expense (trip_id, receipt_path, merchant_name, total_amount, tax_amount, tax_type, tax_rate, expense_date, expense_time, category_id, ai_service_used, data_capture_method, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 
         [
           model.trip_id,
-          model.image_path || null,
+          model.image_path || '',
           model.merchant || null,
           model.amount,
           model.tax_amount || null,
           model.tax_type || null,
           model.tax_rate || null,
           model.date,
+          model.time || null,
           model.category,
-          model.processed || null,
           model.ai_service_used || null,
-          model.manual_entry,
+          model.capture_method,
+          model.notes || null
         ],
       );
 
@@ -269,7 +270,7 @@ class DatabaseService {
       }
 
       // Fetch and return the created expense
-      const createdExpense = await this.getExpenseById(tripId);
+      const createdExpense = await this.getExpenseById(model.trip_id);
       if (!createdExpense) {
         throw new Error('Failed to retrieve created expense');
       }
@@ -358,17 +359,17 @@ class DatabaseService {
       }
 
       if (model.image_path !== undefined) {
-        updates.push('image_path = ?');
+        updates.push('receipt_path = ?');
         params.push(model.image_path);
       }
 
       if (model.merchant !== undefined) {
-        updates.push('merchant = ?');
+        updates.push('merchant_name = ?');
         params.push(model.merchant);
       }
 
       if (model.amount !== undefined) {
-        updates.push('amount = ?');
+        updates.push('total_amount = ?');
         params.push(model.amount);
       }
 
@@ -388,18 +389,18 @@ class DatabaseService {
       }
 
       if (model.date !== undefined) {
-        updates.push('date = ?');
+        updates.push('expense_date = ?');
         params.push(model.date);
       }
 
-      if (model.category !== undefined) {
-        updates.push('category = ?');
-        params.push(model.category);
+      if (model.time !== undefined) {
+        updates.push('expense_time = ?');
+        params.push(model.time);
       }
 
-      if (model.processed !== undefined) {
-        updates.push('processed = ?');
-        params.push(model.processed);
+      if (model.category !== undefined) {
+        updates.push('category_id = ?');
+        params.push(model.category);
       }
 
       if (model.ai_service_used !== undefined) {
@@ -407,9 +408,14 @@ class DatabaseService {
         params.push(model.ai_service_used);
       }
 
-      if (model.manual_entry !== undefined) {
-        updates.push('manual_entry = ?');
-        params.push(model.manual_entry);
+      if (model.capture_method !== undefined) {
+        updates.push('data_capture_method = ?');
+        params.push(model.capture_method);
+      }
+
+      if (model.notes !== undefined) {
+        updates.push('notes = ?');
+        params.push(model.notes);
       }
 
       if (updates.length === 0) {
@@ -463,17 +469,19 @@ class DatabaseService {
      return {
        id: row.expense_id,
        trip_id: row.trip_id,
-       image_path: row.image_path,
-       merchant: row.merchant,
-       amount: row.amount,
+       image_path: row.receipt_path,
+       merchant: row.merchant_name,
+       amount: row.total_amount,
        tax_amount: row.tax_amount,
        tax_type: row.tax_type,
        tax_rate: row.tax_rate,
-       date: row.date,
-       category: row.category,
-       processed: row.processed,
+       date: row.expense_date,
+       time: row.expense_time,
+       category: row.category_id,
        ai_service_used: row.ai_service_used,
-       manual_entry: row.manual_entry,
+       capture_method: row.capture_method,
+       notes: row.notes,
+       verification_status: row.verification_status,
        created_at: row.created_at,
        updated_at: row.updated_at,
      };

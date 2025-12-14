@@ -96,7 +96,6 @@ export const CREATE_EXPENSE_TABLE = `
      expense_time TEXT,
      category_id INTEGER NOT NULL DEFAULT 8, -- Uncategorised
      payment_method TEXT, -- cash, credit_card, debit_card, corporate_card
-     description TEXT,
      notes TEXT,
      data_capture_method TEXT NOT NULL CHECK(data_capture_method IN ('ai_service', 'offline_ocr', 'manual')),
      ai_service_used TEXT,
