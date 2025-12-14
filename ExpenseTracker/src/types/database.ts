@@ -13,6 +13,16 @@ export enum TaxType {
   NONE = 'none',
 }
 
+export interface ExpenseCategory {
+  id: number;
+  name: string;
+  type: 'standard' | 'custom';
+  icon_name?: string;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+}
+
 export interface Trip {
   id: number;
   name: string;
@@ -39,7 +49,7 @@ export interface Expense {
   tax_rate?: number; // Percentage (e.g., 13.0 for 13%)
   date: string; // ISO 8601 date string
   time?: string; // ISO 8601 time string
-  category: ExpenseCategory;
+  category: number; // category_id foreign key
   processed: boolean; // Whether AI processing is complete
   ai_service_used?: string; // Which AI service processed this (openai, anthropic, gemini, mlkit)
   capture_method: string; // 'ai_service', 'offline_ocr', 'manual'
@@ -68,6 +78,7 @@ export interface CreateExpenseModel {
   tax_type?: TaxType;
   tax_rate?: number;
   date: string;
+  time?: string;
   category: number;
   notes?: string;
   ai_service_used?: string;
@@ -95,6 +106,7 @@ export interface UpdateExpenseModel {
   tax_type?: TaxType;
   tax_rate?: number;
   date?: string;
+  time?: string;
   category?: number;
   notes?: string;
   ai_service_used?: string;

@@ -4,7 +4,7 @@
  */
 
 import { getDatabase } from './databaseInit';
-import { Trip, CreateTripModel, UpdateTripModel } from '../../types/database';
+import { Trip, CreateTripModel, UpdateTripModel, Expense, CreateExpenseModel, UpdateExpenseModel, ExpenseCategory } from '../../types/database';
 
 /**
  * Database Service Class
@@ -487,6 +487,50 @@ class DatabaseService {
      };
    }
 
+  /**
+   * Category Operations
+   */
+
+  /**
+   * Get all active expense categories
+   */
+  async getAllCategories(): Promise<ExpenseCategory[]> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        'SELECT * FROM expense_category WHERE is_active = 1 ORDER BY sort_order ASC',
+        []
+      );
+
+      const categories: ExpenseCategory[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        categories.push(this.mapCategoryFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return categories;
+    } catch (error) {
+      console.error('Error getting all categories:', error);
+      throw new Error(
+        `Failed to get categories: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Helper method to map database row to ExpenseCategory object
+   */
+  private mapCategoryFromDatabaseRow(row: any): ExpenseCategory {
+    return {
+      id: row.category_id,
+      name: row.category_name,
+      type: row.category_type,
+      icon_name: row.icon_name,
+      sort_order: row.sort_order,
+      is_active: row.is_active === 1,
+      created_at: row.created_at,
+    };
+  }
 
 }
 

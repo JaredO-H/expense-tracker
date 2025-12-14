@@ -10,7 +10,7 @@ import { ActivityIndicator, StatusBar, StyleSheet, Text, useColorScheme, View } 
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { initializeDatabase } from './src/services/database/databaseInit';
 import { testDatabaseInitialization } from './src/services/database/testDatabase';
-import { AppNavigator } from './src/navigation/AppNavigator';
+import { RootNavigator } from './src/navigation/RootNavigator';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -71,7 +71,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppNavigator />
+      <RootNavigator />
     </SafeAreaProvider>
   );
 }

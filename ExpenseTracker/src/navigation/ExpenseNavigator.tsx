@@ -8,11 +8,13 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { ExpenseDetailScreen } from '../screens/expenses/ExpenseDetailScreen';
 import { CreateExpenseScreen } from '../screens/expenses/CreateExpenseScreen';
+import { CameraScreen } from '../screens/CameraScreen';
 
 export type ExpenseStackParamList = {
   ExpensesList: undefined;
   ExpenseDetail: { expenseId: number };
   CreateExpense: undefined;
+  Camera: undefined;
 };
 
 const Stack = createNativeStackNavigator<ExpenseStackParamList>();
@@ -49,6 +51,15 @@ export const ExpenseNavigator: React.FC = () => {
         options={{
           title: 'Create Expense',
           presentation: 'modal',
+        }}
+      />
+      <Stack.Screen
+        name="Camera"
+        component={CameraScreen}
+        options={{
+          title: 'Capture Receipt',
+          presentation: 'fullScreenModal',
+          headerShown: false,
         }}
       />
     </Stack.Navigator>

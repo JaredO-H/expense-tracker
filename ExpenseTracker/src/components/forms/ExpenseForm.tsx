@@ -3,7 +3,7 @@
  * Reusable form for creating and editing expenses
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -12,11 +12,15 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
-import { format, isValid, parse } from 'date-fns';
-import { Expense, CreateExpenseModel } from '../../types/database';
+import { format } from 'date-fns';
+import { Picker } from '@react-native-picker/picker';
+import { Expense, CreateExpenseModel, TaxType } from '../../types/database';
 import {isValidDateFormat} from '../../components/common/DateChecker';
+import { useTripStore } from '../../stores/tripStore';
+import { useCategoryStore } from '../../stores/categoryStore';
 
 
 
@@ -37,7 +41,7 @@ interface ExpenseFormData {
     tax_rate?: number;
     date: string;
     time?: string;
-    category: ExpenseCategory;
+    category: number;
     ai_service_used?: string;
     capture_method: string;
     notes?: string;
@@ -50,12 +54,44 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
   onCancel,
   isLoading = false,
 }) => {
+  // Fetch trips for dropdown
+  const { trips, fetchTrips } = useTripStore();
+  const [tripsLoading, setTripsLoading] = useState(true);
+
+  // Fetch categories for dropdown
+  const { categories, fetchCategories } = useCategoryStore();
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
+
+  useEffect(() => {
+    const loadTrips = async () => {
+      try {
+        await fetchTrips();
+      } catch (error) {
+        console.error('Failed to load trips:', error);
+      } finally {
+        setTripsLoading(false);
+      }
+    };
+    loadTrips();
+  }, [fetchTrips]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        await fetchCategories();
+      } catch (error) {
+        console.error('Failed to load categories:', error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+    loadCategories();
+  }, [fetchCategories]);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
-    watch,
-    setValue,
   } = useForm<ExpenseFormData>({
     defaultValues: {
       trip_id: expense?.trip_id || undefined,
@@ -67,7 +103,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
       tax_rate: expense?.tax_rate || undefined,
       date: expense?.date || format(new Date(), 'yyyy-MM-dd'),
       time: expense?.time || undefined,
-      category: expense?.category || undefined,
+      category: expense?.category || 8,
       ai_service_used: expense?.ai_service_used || undefined,
       capture_method: expense?.capture_method || 'manual',
       notes: expense?.notes || undefined,
@@ -82,20 +118,10 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
     if (data.date > today.toISOString()) {
       Alert.alert('Validation Error', 'Date cannot be in the future');
       return;
-
-    }
-
-    // Convert trip_id to number or undefined if empty
-    const tripId = data.trip_id ? Number(data.trip_id) : undefined;
-
-    // Validate trip_id is a valid number if provided
-    if (data.trip_id && (isNaN(tripId!) || tripId! <= 0)) {
-      Alert.alert('Validation Error', 'Trip ID must be a valid positive number');
-      return;
     }
 
     onSubmit({
-      trip_id: tripId,
+      trip_id: data.trip_id || undefined,
       image_path: data.image_path,
       merchant: data.merchant,
       amount: data.amount,
@@ -104,8 +130,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
       tax_rate: data.tax_rate,
       date: data.date,
       time: data.time,
-      category: 8, // Always use category_id 8 (Uncategorized) for now
-      verification_status: data.verification_status,
+      category: data.category,
       ai_service_used: data.ai_service_used,
       capture_method: data.capture_method,
       notes: data.notes,
@@ -115,23 +140,35 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
   return (
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.formContent}>
-          {/* Trip ID */}
+          {/* Trip Selection */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Trip</Text>
-            <Controller
-              control={control}
-              name="trip_id"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="1"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  editable={!isLoading}
-                />
-              )}
-            />
+            <Text style={styles.label}>Trip (Optional)</Text>
+            {tripsLoading ? (
+              <ActivityIndicator size="small" color="#3b82f6" />
+            ) : (
+              <Controller
+                control={control}
+                name="trip_id"
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={onChange}
+                      enabled={!isLoading}
+                      style={styles.picker}>
+                      <Picker.Item label="No trip (unassigned)" value={undefined} />
+                      {trips.map(trip => (
+                        <Picker.Item
+                          key={trip.id}
+                          label={trip.name}
+                          value={trip.id}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
+              />
+            )}
           </View>
           {/* Merchant Name */}
           <View style={styles.fieldContainer}>
@@ -154,7 +191,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, errors.name && styles.inputError]}
+                  style={[styles.input, errors.merchant && styles.inputError]}
                   placeholder="e.g., Uber"
                   value={value}
                   onChangeText={onChange}
@@ -163,7 +200,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
                 />
               )}
             />
-            {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+            {errors.merchant && <Text style={styles.errorText}>{errors.merchant.message}</Text>}
           </View>
           {/* Amount */}
           <View style={styles.fieldContainer}>
@@ -182,10 +219,11 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
                 <TextInput
                   style={styles.input}
                   placeholder="5.00"
-                  value={value}
-                  onChangeText={onChange}
+                  value={value?.toString() || ''}
+                  onChangeText={(text) => onChange(parseFloat(text) || 0)}
                   onBlur={onBlur}
                   editable={!isLoading}
+                  keyboardType="decimal-pad"
                 />
               )}
             />
@@ -206,10 +244,11 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
                 <TextInput
                   style={styles.input}
                   placeholder="5.00"
-                  value={value}
-                  onChangeText={onChange}
+                  value={value?.toString() || ''}
+                  onChangeText={(text) => onChange(text ? parseFloat(text) : undefined)}
                   onBlur={onBlur}
                   editable={!isLoading}
+                  keyboardType="decimal-pad"
                 />
               )}
             />
@@ -220,15 +259,22 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
             <Controller
               control={control}
               name="tax_type"
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={styles.input}
-                  placeholder="e.g. VAT"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  editable={!isLoading}
-                />
+              render={({ field: { onChange, value } }) => (
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={onChange}
+                    enabled={!isLoading}
+                    style={styles.picker}>
+                    <Picker.Item label="None" value={undefined} />
+                    <Picker.Item label="GST" value={TaxType.GST} />
+                    <Picker.Item label="HST" value={TaxType.HST} />
+                    <Picker.Item label="PST" value={TaxType.PST} />
+                    <Picker.Item label="VAT" value={TaxType.VAT} />
+                    <Picker.Item label="Sales Tax" value={TaxType.SALES_TAX} />
+                    <Picker.Item label="Other" value={TaxType.OTHER} />
+                  </Picker>
+                </View>
               )}
             />
           </View>
@@ -241,17 +287,18 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
               rules={{
                 min: {
                   value: 0.01,
-                  message: 'Tax Amount must be greater than 0.00',
+                  message: 'Tax Rate must be greater than 0.00',
                   }
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   style={styles.input}
                   placeholder="5.00"
-                  value={value}
-                  onChangeText={onChange}
+                  value={value?.toString() || ''}
+                  onChangeText={(text) => onChange(text ? parseFloat(text) : undefined)}
                   onBlur={onBlur}
                   editable={!isLoading}
+                  keyboardType="decimal-pad"
                 />
               )}
             />
@@ -275,7 +322,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
               render={({ field: { onChange, value } }) => (
                 <View>
                   <TextInput
-                    style={[styles.input, errors.start_date && styles.inputError]}
+                    style={[styles.input, errors.date && styles.inputError]}
                     placeholder="YYYY-MM-DD"
                     value={value}
                     onChangeText={onChange}
@@ -285,7 +332,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
                 </View>
               )}
             />
-            {errors.start_date && <Text style={styles.errorText}>{errors.start_date.message}</Text>}
+            {errors.date && <Text style={styles.errorText}>{errors.date.message}</Text>}
           </View>
           {/* Time */}
           <View style={styles.fieldContainer}>
@@ -298,7 +345,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
               render={({ field: { onChange, value } }) => (
                 <View>
                   <TextInput
-                    style={[styles.input, errors.start_date && styles.inputError]}
+                    style={[styles.input, errors.time && styles.inputError]}
                     placeholder="hh:mm:ss"
                     value={value}
                     onChangeText={onChange}
@@ -314,53 +361,56 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
             <Text style={styles.label}>
               Category <Text style={styles.required}>*</Text>
             </Text>
-            <Controller
-              control={control}
-              name="category"
-              rules={{
-                required: 'Category is required',
-                minLength: {
-                  value: 1,
-                  message: 'Category name must be at least 1 characters',
-                },
-                maxLength: {
-                  value: 100,
-                  message: 'Category name cannot exceed 100 characters',
-                },
-              }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={[styles.input, errors.name && styles.inputError]}
-                  placeholder="e.g., Transport"
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  editable={!isLoading}
-                />
-              )}
-            />
-            {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+            {categoriesLoading ? (
+              <ActivityIndicator size="small" color="#3b82f6" />
+            ) : (
+              <Controller
+                control={control}
+                name="category"
+                rules={{
+                  required: 'Category is required',
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.pickerContainer}>
+                    <Picker
+                      selectedValue={value}
+                      onValueChange={onChange}
+                      enabled={!isLoading}
+                      style={styles.picker}>
+                      {categories.map(category => (
+                        <Picker.Item
+                          key={category.id}
+                          label={category.name}
+                          value={category.id}
+                        />
+                      ))}
+                    </Picker>
+                  </View>
+                )}
+              />
+            )}
+            {errors.category && <Text style={styles.errorText}>{errors.category.message}</Text>}
           </View>
           {/* Notes */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>
-              Notes <Text style={styles.required}>*</Text>
-            </Text>
+            <Text style={styles.label}>Notes</Text>
             <Controller
               control={control}
               name="notes"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, errors.name && styles.inputError]}
-                  placeholder=" "
+                  style={[styles.input, errors.notes && styles.inputError]}
+                  placeholder="Optional notes about this expense"
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
                   editable={!isLoading}
+                  multiline
+                  numberOfLines={3}
                 />
               )}
             />
-            {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+            {errors.notes && <Text style={styles.errorText}>{errors.notes.message}</Text>}
           </View>
 
           {/* Buttons */}
@@ -415,6 +465,15 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: '#e53e3e',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+    backgroundColor: '#fff',
+  },
+  picker: {
+    fontSize: 16,
   },
   textArea: {
     minHeight: 80,

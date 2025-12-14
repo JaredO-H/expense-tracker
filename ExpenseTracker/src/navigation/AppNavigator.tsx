@@ -8,9 +8,11 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ExpenseNavigator } from './ExpenseNavigator';
 import { TripNavigator } from './TripNavigator';
+import { HomeScreen } from '../screens/HomeScreen';
 
 
 export type AppTabParamList = {
+  HomeTab: undefined;
   TripsTab: undefined;
   ExpensesTab: undefined;
 };
@@ -35,6 +37,14 @@ export const AppNavigator: React.FC = () => {
             fontWeight: '600',
           },
         }}>
+        <Tab.Screen
+          name="HomeTab"
+          component={HomeScreen}
+          options={{
+            title: 'Home',
+            tabBarLabel: 'Home',
+          }}
+        />
         <Tab.Screen
           name="TripsTab"
           component={TripNavigator}
