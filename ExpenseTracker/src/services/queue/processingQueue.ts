@@ -44,9 +44,8 @@ class ProcessingQueue {
 
   private listeners: Array<() => void> = [];
 
-  /**
-   * Initialize queue from storage
-   */
+
+  //Initialize queue from storage
   async initialize(): Promise<void> {
     try {
       const stored = await AsyncStorage.getItem(QUEUE_STORAGE_KEY);
@@ -72,9 +71,8 @@ class ProcessingQueue {
     }
   }
 
-  /**
-   * Add item to queue
-   */
+
+  //Add item to queue
   async addItem(
     imageUri: string,
     serviceId: AIServiceId,
@@ -103,50 +101,43 @@ class ProcessingQueue {
     return item.id;
   }
 
-  /**
-   * Get queue item by ID
-   */
+
+  //Get queue item by ID
   getItem(id: string): QueueItem | undefined {
     return this.state.items.find(item => item.id === id);
   }
 
-  /**
-   * Get all queue items
-   */
+
+  //Get all queue items
   getAllItems(): QueueItem[] {
     return [...this.state.items];
   }
 
-  /**
-   * Get pending items count
-   */
+  //Get pending items count
   getPendingCount(): number {
     return this.state.items.filter(
       item => item.status === 'pending' || item.status === 'processing'
     ).length;
   }
 
-  /**
-   * Remove item from queue
-   */
+
+  //Remove item from queue
   async removeItem(id: string): Promise<void> {
     this.state.items = this.state.items.filter(item => item.id !== id);
     await this.saveQueue();
     this.notifyListeners();
   }
 
-  /**
-   * Clear completed items
-   */
+
+  //Clear completed items
   async clearCompleted(): Promise<void> {
     this.state.items = this.state.items.filter(item => item.status !== 'completed');
     await this.saveQueue();
     this.notifyListeners();
   }
 
-  /**
-   * Retry failed item
-   */
+
+  //Retry failed item
   async retryItem(id: string): Promise<void> {
     const item = this.state.items.find(i => i.id === id);
     if (item && item.status === 'failed') {
@@ -162,9 +153,7 @@ class ProcessingQueue {
     }
   }
 
-  /**
-   * Start processing queue
-   */
+  //Start processing queue
   private async startProcessing(): Promise<void> {
     if (this.state.isProcessing) {
       return;
@@ -181,9 +170,7 @@ class ProcessingQueue {
     this.notifyListeners();
   }
 
-  /**
-   * Check if there are items to process
-   */
+  //Check if there are items to process
   private hasItemsToProcess(): boolean {
     return this.state.items.some(
       item =>
@@ -192,9 +179,7 @@ class ProcessingQueue {
     );
   }
 
-  /**
-   * Process next batch of items
-   */
+  //Process next batch of items
   private async processNextBatch(): Promise<void> {
     // Get pending items sorted by priority
     const pending = this.state.items
@@ -214,9 +199,7 @@ class ProcessingQueue {
     await Promise.all(batch.map(item => this.processItem(item)));
   }
 
-  /**
-   * Process single queue item
-   */
+  //Process single queue item
   private async processItem(item: QueueItem): Promise<void> {
     try {
       // Update status to processing
@@ -257,9 +240,7 @@ class ProcessingQueue {
     }
   }
 
-  /**
-   * Save queue to storage
-   */
+  //Save queue to storage
   private async saveQueue(): Promise<void> {
     try {
       await AsyncStorage.setItem(
@@ -273,9 +254,8 @@ class ProcessingQueue {
     }
   }
 
-  /**
-   * Subscribe to queue changes
-   */
+
+  //Subscribe to queue changes
   subscribe(listener: () => void): () => void {
     this.listeners.push(listener);
 
@@ -285,9 +265,8 @@ class ProcessingQueue {
     };
   }
 
-  /**
-   * Notify all listeners of state change
-   */
+
+  //Notify all listeners of state change
   private notifyListeners(): void {
     this.listeners.forEach(listener => listener());
   }

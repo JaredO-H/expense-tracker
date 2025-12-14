@@ -14,19 +14,16 @@ const IMAGE_QUALITY = 80;
 const MAX_FILE_SIZE_MB = 10;
 const ALLOWED_FORMATS = ['jpg', 'jpeg', 'png'];
 
-/*
- * Image validation result
- */
+
+//Image validation result
 interface ValidationResult {
   valid: boolean;
   error?: string;
 }
 
-
 class FileService {
-  /*
-   * Initialize receipts directory
-   */
+
+  //Initialize receipts directory
   async initializeReceiptsDirectory(): Promise<void> {
     try {
       const dirExists = await RNFS.exists(RECEIPTS_DIR);
@@ -40,18 +37,16 @@ class FileService {
     }
   }
 
-  /*
-   * Generate unique filename for receipt image
-   */
+
+  //Generate unique filename for receipt image
   private generateUniqueFilename(extension: string = 'jpg'): string {
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
     return `receipt_${timestamp}_${randomId}.${extension}`;
   }
 
-  /**
-   * Validate image file
-   */
+
+  //Validate image file
   async validateImage(imagePath: string): Promise<ValidationResult> {
     try {
       // Check if file exists
@@ -86,9 +81,8 @@ class FileService {
     }
   }
 
-  /**
-   * Compress and save receipt image
-   */
+
+  //Compress and save receipt image
   async saveReceiptImage(sourceImagePath: string): Promise<string> {
     try {
       // Ensure receipts directory exists
@@ -128,9 +122,8 @@ class FileService {
     }
   }
 
-  /**
-   * Get receipt image path and verify it exists
-   */
+
+  //Get receipt image path and verify it exists
   async getReceiptImage(imagePath: string): Promise<string | null> {
     try {
       const exists = await RNFS.exists(imagePath);
@@ -145,9 +138,8 @@ class FileService {
     }
   }
 
-  /**
-   * Delete receipt image with cleanup verification
-   */
+
+  //Delete receipt image with cleanup verification
   async deleteReceiptImage(imagePath: string): Promise<boolean> {
     try {
       // Check if file exists
@@ -176,9 +168,8 @@ class FileService {
     }
   }
 
-  /**
-   * Create thumbnail version of receipt image
-   */
+
+  //Create thumbnail version of receipt image
   async createThumbnail(imagePath: string): Promise<string> {
     try {
       const thumbnailImage = await ImageResizer.createResizedImage(
@@ -204,9 +195,8 @@ class FileService {
     }
   }
 
-  /**
-   * Get total size of all receipt images
-   */
+
+  //Get total size of all receipt images
   async getReceiptsStorageSize(): Promise<number> {
     try {
       const dirExists = await RNFS.exists(RECEIPTS_DIR);
@@ -228,9 +218,7 @@ class FileService {
     }
   }
 
-  /**
-   * Clean up orphaned images (images not referenced in database)
-   */
+  //Clean up orphaned images (images not referenced in database)
   async cleanupOrphanedImages(validImagePaths: string[]): Promise<number> {
     try {
       const dirExists = await RNFS.exists(RECEIPTS_DIR);

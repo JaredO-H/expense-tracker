@@ -27,9 +27,9 @@ interface SettingsState {
 
 const SETTINGS_STORAGE_KEY = '@ExpenseTracker:Settings';
 
-/**
- * Settings Store using Zustand
- */
+
+ //Settings Store using Zustand
+
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   // Initial state
   selectedAIService: DEFAULT_AI_SERVICE,
@@ -68,9 +68,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 
-  /**
-   * Set service status
-   */
+  //Set service status
   setServiceStatus: (serviceId: AIServiceId, status: AIServiceStatus) => {
     set(state => ({
       serviceStatuses: {
@@ -80,9 +78,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }));
   },
 
-  /**
-   * Initialize settings from storage
-   */
+
+  //Initialize settings from storage
   initializeSettings: async () => {
     try {
       set({ isLoading: true, error: null });
@@ -111,9 +108,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 
-  /**
-   * Check if a service has API key configured
-   */
+
+  // Check if a service has API key configured
   checkServiceConfiguration: async (serviceId: AIServiceId) => {
     try {
       const hasAPIKey = await CredentialService.hasAPIKey(serviceId);
@@ -137,9 +133,8 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 
-  /**
-   * Clear error message
-   */
+
+  //Clear error message
   clearError: () => {
     set({ error: null });
   },

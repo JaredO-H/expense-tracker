@@ -31,9 +31,9 @@ export const getCameraPermissionStatus = (): PermissionStatus => {
   return permission as PermissionStatus;
 };
 
-/**
- * Handle permission denied scenario with guidance to open settings
- */
+
+ //Handle permission denied scenario with guidance to open settings
+
 export const handlePermissionDenied = (): void => {
   Alert.alert(
     'Camera Permission Required',

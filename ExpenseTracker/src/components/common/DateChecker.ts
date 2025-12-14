@@ -1,8 +1,7 @@
 import { format, isValid, parse } from 'date-fns';
 
-/**
- * Validates if a date string is in YYYY-MM-DD format and represents a valid date
- */
+ //Validates if a date string is in YYYY-MM-DD format and represents a valid date
+
 export const isValidDateFormat = (dateString: string): boolean => {
   // Check if format matches YYYY-MM-DD
   const dateRegex = /^\d{4}-\d{2}-\d{2}$/;

@@ -7,15 +7,12 @@ import * as Keychain from 'react-native-keychain';
 
 export type AIServiceId = 'openai' | 'anthropic' | 'gemini';
 
-/**
- * Secure credential storage using device keychain
- */
+//Secure credential storage using device keychain
 export class CredentialService {
   private static readonly KEYCHAIN_SERVICE_PREFIX = 'com.expensetracker.ai.';
 
-  /**
-   * Store API key securely in device keychain
-   */
+
+  //Store API key securely in device keychain
   static async storeAPIKey(serviceId: AIServiceId, apiKey: string): Promise<void> {
     try {
       const keychainService = this.getKeychainServiceName(serviceId);
@@ -34,9 +31,8 @@ export class CredentialService {
     }
   }
 
-  /**
-   * Retrieve API key from device keychain
-   */
+
+  //Retrieve API key from device keychain
   static async getAPIKey(serviceId: AIServiceId): Promise<string | null> {
     try {
       const keychainService = this.getKeychainServiceName(serviceId);
@@ -56,9 +52,7 @@ export class CredentialService {
     }
   }
 
-  /**
-   * Delete API key from device keychain
-   */
+  //Delete API key from device keychain
   static async deleteAPIKey(serviceId: AIServiceId): Promise<boolean> {
     try {
       const keychainService = this.getKeychainServiceName(serviceId);
@@ -74,17 +68,14 @@ export class CredentialService {
     }
   }
 
-  /**
-   * Check if API key exists for a service
-   */
+  //Check if API key exists for a service
   static async hasAPIKey(serviceId: AIServiceId): Promise<boolean> {
     const apiKey = await this.getAPIKey(serviceId);
     return apiKey !== null && apiKey.length > 0;
   }
 
-  /**
-   * Mask API key for display (show only last 4 characters)
-   */
+
+  //Mask API key for display (show only last 4 characters)
   static maskAPIKey(apiKey: string): string {
     if (!apiKey || apiKey.length < 8) {
       return '••••••••';
@@ -97,9 +88,8 @@ export class CredentialService {
     return `${maskedPart}${visiblePart}`;
   }
 
-  /**
-   * Delete all stored API keys (for logout/reset)
-   */
+
+  //Delete all stored API keys (for logout/reset)
   static async deleteAllAPIKeys(): Promise<void> {
     const services: AIServiceId[] = ['openai', 'anthropic', 'gemini'];
 
@@ -108,9 +98,8 @@ export class CredentialService {
     );
   }
 
-  /**
-   * Check if keychain is available on device
-   */
+
+  //Check if keychain is available on device
   static async isKeychainAvailable(): Promise<boolean> {
     try {
       // Try to get supported biometry type as a test
@@ -122,9 +111,8 @@ export class CredentialService {
     }
   }
 
-  /**
-   * Get keychain service name for an AI service
-   */
+
+  //Get keychain service name for an AI service
   private static getKeychainServiceName(serviceId: AIServiceId): string {
     return `${this.KEYCHAIN_SERVICE_PREFIX}${serviceId}`;
   }
