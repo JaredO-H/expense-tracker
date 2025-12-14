@@ -71,7 +71,7 @@ class FileService {
 
       // Check file size
       const stat = await RNFS.stat(imagePath);
-      const fileSizeMB = parseInt(stat.size) / (1024 * 1024);
+      const fileSizeMB = stat.size / (1024 * 1024);
       if (fileSizeMB > MAX_FILE_SIZE_MB) {
         return {
           valid: false,
@@ -218,7 +218,7 @@ class FileService {
       let totalSize = 0;
 
       for (const file of files) {
-        totalSize += parseInt(file.size);
+        totalSize += file.size;
       }
 
       return totalSize;

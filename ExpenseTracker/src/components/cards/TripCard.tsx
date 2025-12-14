@@ -7,6 +7,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Trip } from '../../types/database';
 import { format, differenceInDays } from 'date-fns';
+import { colors, spacing, borderRadius, textStyles, shadows } from '../../styles';
 
 interface TripCardProps {
   trip: Trip | null;
@@ -122,96 +123,87 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginVertical: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    backgroundColor: colors.background,
+    borderRadius: borderRadius.lg,
+    padding: spacing.base,
+    marginVertical: spacing.sm,
+    ...shadows.medium,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   headerLeft: {
     flex: 1,
   },
   label: {
-    fontSize: 12,
-    color: '#6b7280',
+    ...textStyles.labelSmall,
     textTransform: 'uppercase',
-    fontWeight: '600',
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   tripName: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#111827',
+    ...textStyles.h4,
+    color: colors.textPrimary,
   },
   badge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
+    paddingHorizontal: spacing.sm + 2,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.lg,
   },
   badgeActive: {
-    backgroundColor: '#dcfce7',
+    backgroundColor: colors.successLight,
   },
   badgeUpcoming: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: colors.infoLight,
   },
   badgePast: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.backgroundTertiary,
   },
   badgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#059669',
+    ...textStyles.badge,
+    color: colors.success,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   icon: {
     fontSize: 16,
-    marginRight: 6,
+    marginRight: spacing.xs + 2,
   },
   destination: {
-    fontSize: 14,
-    color: '#374151',
+    ...textStyles.body,
+    color: colors.textSecondary,
   },
   dateRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 12,
-    paddingVertical: 12,
+    marginBottom: spacing.md,
+    paddingVertical: spacing.md,
     borderTopWidth: 1,
     borderBottomWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.border,
   },
   dateItem: {
     flex: 1,
   },
   dateLabel: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginBottom: 4,
+    ...textStyles.labelSmall,
+    marginBottom: spacing.xs,
   },
   dateValue: {
-    fontSize: 14,
+    ...textStyles.body,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.textPrimary,
   },
   dateSeparator: {
     fontSize: 16,
-    color: '#9ca3af',
-    marginHorizontal: 8,
+    color: colors.textDisabled,
+    marginHorizontal: spacing.sm,
   },
   footer: {
     flexDirection: 'row',
@@ -219,23 +211,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   daysInfo: {
-    fontSize: 13,
-    color: '#6b7280',
+    ...textStyles.bodySmall,
     fontWeight: '500',
   },
   emptyState: {
     alignItems: 'center',
-    paddingVertical: 24,
+    paddingVertical: spacing.xl,
   },
   emptyTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: 4,
+    ...textStyles.h6,
+    color: colors.textSecondary,
+    marginBottom: spacing.xs,
   },
   emptySubtitle: {
-    fontSize: 14,
-    color: '#6b7280',
+    ...textStyles.body,
+    color: colors.textTertiary,
     textAlign: 'center',
   },
 });

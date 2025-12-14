@@ -17,6 +17,7 @@ import {
 import { useTripStore } from '../../stores/tripStore';
 import { Trip } from '../../types/database';
 import { format, isPast, isFuture } from 'date-fns';
+import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, fontWeights } from '../../styles';
 
 interface TripsScreenProps {
   navigation: any;
@@ -162,7 +163,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
           placeholder="Search trips by name, destination, or purpose..."
           value={searchQuery}
           onChangeText={setSearchQuery}
-          placeholderTextColor="#9ca3af"
+          placeholderTextColor={colors.textDisabled}
         />
       </View>
 
@@ -174,7 +175,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
         contentContainerStyle={styles.listContent}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#3b82f6']} />
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
         }
       />
 
@@ -188,146 +189,117 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
+    ...commonStyles.containerGray,
   },
   searchContainer: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e5e7eb',
+    backgroundColor: colors.background,
+    padding: spacing.base,
+    ...commonStyles.borderBottom,
   },
   searchInput: {
-    backgroundColor: '#f3f4f6',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    color: '#111827',
+    backgroundColor: colors.backgroundTertiary,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    ...textStyles.body,
   },
   listContent: {
-    padding: 16,
+    padding: spacing.base,
     paddingBottom: 80, // Space for FAB
   },
   tripCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...commonStyles.card,
+    marginBottom: spacing.base,
   },
   tripCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 16,
+    ...commonStyles.flexRow,
+    ...commonStyles.flexBetween,
+    ...commonStyles.alignCenter,
+    padding: spacing.base,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: colors.backgroundTertiary,
   },
   tripName: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
+    ...textStyles.h5,
     flex: 1,
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   statusBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
+    ...commonStyles.badge,
   },
   status_upcoming: {
-    backgroundColor: '#dbeafe',
+    backgroundColor: colors.infoLight,
   },
   status_active: {
-    backgroundColor: '#d1fae5',
+    backgroundColor: colors.successLight,
   },
   status_completed: {
-    backgroundColor: '#e5e7eb',
+    ...commonStyles.badgeGray,
   },
   statusText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#374151',
+    ...textStyles.badge,
+    fontSize: textStyles.caption.fontSize,
+    color: colors.textSecondary,
   },
   tripCardBody: {
-    padding: 16,
+    padding: spacing.base,
   },
   infoRow: {
-    flexDirection: 'row',
-    marginBottom: 8,
+    ...commonStyles.flexRow,
+    marginBottom: spacing.sm,
   },
   infoLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
+    ...textStyles.labelSmall,
+    color: colors.textTertiary,
     width: 90,
   },
   infoValue: {
-    fontSize: 14,
-    color: '#111827',
+    ...textStyles.body,
     flex: 1,
   },
   tripCardFooter: {
-    marginTop: 12,
-    paddingTop: 12,
+    marginTop: spacing.md,
+    paddingTop: spacing.md,
     borderTopWidth: 1,
-    borderTopColor: '#f3f4f6',
+    borderTopColor: colors.backgroundTertiary,
   },
   expenseCount: {
-    fontSize: 14,
-    color: '#6b7280',
+    ...textStyles.body,
+    color: colors.textTertiary,
   },
   emptyState: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 60,
+    ...commonStyles.emptyContainer,
   },
   emptyStateTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 8,
+    ...commonStyles.emptyTitle,
   },
   emptyStateText: {
-    fontSize: 16,
-    color: '#6b7280',
-    textAlign: 'center',
-    marginBottom: 24,
-    paddingHorizontal: 40,
+    ...commonStyles.emptySubtitle,
+    marginBottom: spacing.xl,
+    paddingHorizontal: spacing.xxxl,
   },
   emptyStateButton: {
-    backgroundColor: '#3b82f6',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    ...commonStyles.buttonPrimary,
+    paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
+    borderRadius: borderRadius.md,
   },
   emptyStateButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...textStyles.button,
   },
   fab: {
     position: 'absolute',
-    right: 20,
-    bottom: 20,
+    right: spacing.lg,
+    bottom: spacing.lg,
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#3b82f6',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 8,
+    backgroundColor: colors.primary,
+    ...commonStyles.flexCenter,
+    ...shadows.xl,
   },
   fabIcon: {
-    fontSize: 32,
-    color: '#fff',
-    fontWeight: '300',
+    fontSize: spacing.xxl + spacing.sm,
+    color: colors.textInverse,
+    fontWeight: fontWeights.regular,
   },
 });

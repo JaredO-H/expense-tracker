@@ -11,11 +11,15 @@ import { CameraCapture } from '../components/camera/CameraCapture';
 import { ImagePreview } from '../components/camera/ImagePreview';
 import { compressReceiptImage } from '../utils/imageCompression';
 import RNFS from 'react-native-fs';
+import { commonStyles } from '../styles';
+import { processingQueue } from '../services/queue/processingQueue';
+import { useSettingsStore } from '../stores/settingsStore';
 
 type CameraMode = 'capture' | 'preview';
 
 export const CameraScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { selectedAIService } = useSettingsStore();
 
   const [mode, setMode] = useState<CameraMode>('capture');
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null);
@@ -99,17 +103,30 @@ export const CameraScreen: React.FC = () => {
 
       console.log('Image saved to:', finalUri);
 
+      // Add to processing queue
+      const queueId = await processingQueue.addItem(
+        finalUri,
+        selectedAIService,
+        'immediate'
+      );
+
+      console.log('Added to processing queue:', queueId);
+
       Alert.alert(
-        'Success',
-        'Receipt image captured and saved successfully!',
+        'Receipt Captured',
+        'Your receipt has been saved and is being processed with AI. You can view the results in the expenses list shortly.',
         [
+          {
+            text: 'View Processing',
+            onPress: () => {
+              // Navigate to processing status screen
+              navigation.navigate('ProcessingStatus' as never);
+            },
+          },
           {
             text: 'OK',
             onPress: () => {
-              // Navigate back or to expense form with the image URI
               navigation.goBack();
-              // TODO: Pass the finalUri to the expense form
-              // This will be implemented when integrating with the expense creation flow
             },
           },
         ]
@@ -159,7 +176,7 @@ export const CameraScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#000',
+    ...commonStyles.flex1,
+    backgroundColor: '#000', // Keep black for camera screen
   },
 });

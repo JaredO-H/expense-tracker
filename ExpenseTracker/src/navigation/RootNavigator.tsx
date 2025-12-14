@@ -14,18 +14,27 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { CameraScreen } from '../screens/CameraScreen';
 import { CreateExpenseScreen } from '../screens/expenses/CreateExpenseScreen';
 import { TripDetailScreen } from '../screens/trips/TripDetailScreen';
+import { AIServiceSettings } from '../screens/settings/AIServiceSettings';
+import { AIServiceHelp } from '../screens/settings/AIServiceHelp';
+import { SettingsScreen } from '../screens/settings/SettingsScreen';
+import { ProcessingStatusScreen } from '../screens/ProcessingStatusScreen';
+import { colors } from '../styles';
 
 export type RootStackParamList = {
   MainTabs: undefined;
   Camera: undefined;
   CreateExpense: undefined;
   TripDetail: { tripId: number };
+  AIServiceSettings: undefined;
+  AIServiceHelp: undefined;
+  ProcessingStatus: undefined;
 };
 
 export type AppTabParamList = {
   HomeTab: undefined;
   TripsTab: undefined;
   ExpensesTab: undefined;
+  SettingsTab: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,8 +46,8 @@ const MainTabs: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#3b82f6',
-        tabBarInactiveTintColor: '#6b7280',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textTertiary,
         tabBarStyle: {
           paddingBottom: 5,
           paddingTop: 5,
@@ -73,9 +82,25 @@ const MainTabs: React.FC = () => {
           tabBarLabel: 'Expenses',
           headerShown: true,
           headerStyle: {
-            backgroundColor: '#3b82f6',
+            backgroundColor: colors.primary,
           },
-          headerTintColor: '#fff',
+          headerTintColor: colors.textInverse,
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+        }}
+      />
+      <Tab.Screen
+        name="SettingsTab"
+        component={SettingsScreen}
+        options={{
+          title: 'Settings',
+          tabBarLabel: 'Settings',
+          headerShown: true,
+          headerStyle: {
+            backgroundColor: colors.primary,
+          },
+          headerTintColor: colors.textInverse,
           headerTitleStyle: {
             fontWeight: '600',
           },
@@ -110,9 +135,9 @@ export const RootNavigator: React.FC = () => {
             headerShown: true,
             headerTitle: 'Create Expense',
             headerStyle: {
-              backgroundColor: '#3b82f6',
+              backgroundColor: colors.primary,
             },
-            headerTintColor: '#fff',
+            headerTintColor: colors.textInverse,
             headerTitleStyle: {
               fontWeight: '600',
             },
@@ -125,9 +150,57 @@ export const RootNavigator: React.FC = () => {
             headerShown: true,
             headerTitle: 'Trip Details',
             headerStyle: {
-              backgroundColor: '#3b82f6',
+              backgroundColor: colors.primary,
             },
-            headerTintColor: '#fff',
+            headerTintColor: colors.textInverse,
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="AIServiceSettings"
+          component={AIServiceSettings}
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            headerTitle: 'AI Service Settings',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: colors.textInverse,
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="AIServiceHelp"
+          component={AIServiceHelp}
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            headerTitle: 'API Key Setup Guide',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: colors.textInverse,
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="ProcessingStatus"
+          component={ProcessingStatusScreen}
+          options={{
+            presentation: 'modal',
+            headerShown: true,
+            headerTitle: 'Processing Status',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: colors.textInverse,
             headerTitleStyle: {
               fontWeight: '600',
             },

@@ -14,9 +14,10 @@ import {
   Alert,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
-import { format, isValid, parse } from 'date-fns';
+import { format } from 'date-fns';
 import { Trip, CreateTripModel } from '../../types/database';
 import {isValidDateFormat} from '../../components/common/DateChecker';
+import { colors, spacing, textStyles, commonStyles } from '../../styles';
 
 
 
@@ -268,76 +269,60 @@ export const TripForm: React.FC<TripFormProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    ...commonStyles.flex1,
+    backgroundColor: colors.background,
   },
   formContent: {
-    padding: 16,
+    padding: spacing.base,
   },
   fieldContainer: {
-    marginBottom: 20,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#333',
-    marginBottom: 8,
+    ...textStyles.label,
+    marginBottom: spacing.sm,
   },
   required: {
-    color: '#e53e3e',
+    color: colors.error,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#d1d5db',
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 16,
-    backgroundColor: '#fff',
+    ...commonStyles.input,
   },
   inputError: {
-    borderColor: '#e53e3e',
+    ...commonStyles.inputError,
   },
   textArea: {
     minHeight: 80,
   },
   hint: {
-    fontSize: 12,
-    color: '#6b7280',
-    marginTop: 4,
+    ...textStyles.helper,
+    marginTop: spacing.xs,
   },
   errorText: {
-    fontSize: 12,
-    color: '#e53e3e',
-    marginTop: 4,
+    ...textStyles.error,
+    marginTop: spacing.xs,
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 24,
-    gap: 12,
+    ...commonStyles.flexRow,
+    ...commonStyles.flexBetween,
+    marginTop: spacing.xl,
+    gap: spacing.md,
   },
   button: {
+    ...commonStyles.button,
     flex: 1,
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#f3f4f6',
-    borderWidth: 1,
-    borderColor: '#d1d5db',
+    ...commonStyles.buttonSecondary,
   },
   cancelButtonText: {
-    color: '#374151',
-    fontSize: 16,
-    fontWeight: '600',
+    ...textStyles.button,
+    color: colors.textSecondary,
   },
   submitButton: {
-    backgroundColor: '#3b82f6',
+    ...commonStyles.buttonPrimary,
   },
   submitButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...textStyles.button,
   },
 });

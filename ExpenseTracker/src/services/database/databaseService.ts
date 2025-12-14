@@ -270,7 +270,7 @@ class DatabaseService {
       }
 
       // Fetch and return the created expense
-      const createdExpense = await this.getExpenseById(model.trip_id);
+      const createdExpense = await this.getExpenseById(expenseId);
       if (!createdExpense) {
         throw new Error('Failed to retrieve created expense');
       }
@@ -478,6 +478,7 @@ class DatabaseService {
        date: row.expense_date,
        time: row.expense_time,
        category: row.category_id,
+       processed: row.processing_status === 'complete' || row.processed === 1,
        ai_service_used: row.ai_service_used,
        capture_method: row.capture_method,
        notes: row.notes,

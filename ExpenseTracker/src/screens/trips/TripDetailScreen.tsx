@@ -17,6 +17,7 @@ import { useTripStore } from '../../stores/tripStore';
 import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
 import { format } from 'date-fns';
+import { colors, spacing, textStyles, commonStyles } from '../../styles';
 
 interface TripDetailScreenProps {
   route: any;
@@ -95,7 +96,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
   if (!trip) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#3b82f6" />
+        <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
   }
@@ -206,94 +207,73 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
+    ...commonStyles.containerGray,
   },
   loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    ...commonStyles.loadingContainer,
   },
   content: {
-    padding: 16,
+    padding: spacing.base,
   },
   card: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    ...commonStyles.card,
+    marginBottom: spacing.base,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 16,
+    ...textStyles.h5,
+    marginBottom: spacing.base,
   },
   infoRow: {
-    marginBottom: 12,
+    marginBottom: spacing.md,
   },
   infoLabel: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#6b7280',
-    marginBottom: 4,
+    ...textStyles.labelSmall,
+    color: colors.textTertiary,
+    marginBottom: spacing.xs,
   },
   infoValue: {
-    fontSize: 16,
-    color: '#111827',
+    ...textStyles.bodyLarge,
   },
   summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    ...commonStyles.flexRow,
+    ...commonStyles.flexBetween,
+    ...commonStyles.alignCenter,
+    marginBottom: spacing.sm,
   },
   summaryLabel: {
-    fontSize: 16,
-    color: '#374151',
+    ...textStyles.bodyLarge,
+    color: colors.textSecondary,
   },
   summaryValue: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
+    ...textStyles.bodyLarge,
+    fontWeight: textStyles.label.fontWeight,
   },
   summaryNote: {
-    fontSize: 12,
-    color: '#9ca3af',
+    ...textStyles.caption,
+    color: colors.textDisabled,
     fontStyle: 'italic',
-    marginTop: 8,
+    marginTop: spacing.sm,
   },
   actionButtons: {
-    gap: 12,
-    marginTop: 8,
+    gap: spacing.md,
+    marginTop: spacing.sm,
   },
   actionButton: {
-    padding: 16,
-    borderRadius: 8,
-    alignItems: 'center',
+    ...commonStyles.button,
   },
   editButton: {
-    backgroundColor: '#3b82f6',
+    ...commonStyles.buttonPrimary,
   },
   editButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '600',
+    ...textStyles.button,
   },
   deleteButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     borderWidth: 2,
-    borderColor: '#ef4444',
+    borderColor: colors.errorDark,
   },
   deleteButtonText: {
-    color: '#ef4444',
-    fontSize: 16,
-    fontWeight: '600',
+    ...textStyles.button,
+    color: colors.errorDark,
   },
 });

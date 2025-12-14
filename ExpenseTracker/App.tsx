@@ -11,15 +11,18 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { initializeDatabase } from './src/services/database/databaseInit';
 import { testDatabaseInitialization } from './src/services/database/testDatabase';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { useSettingsStore } from './src/stores/settingsStore';
+import { processingQueue } from './src/services/queue/processingQueue';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const [dbInitialized, setDbInitialized] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
+  const { initializeSettings } = useSettingsStore();
 
   useEffect(() => {
-    // Initialize database on app startup
-    const setupDatabase = async () => {
+    // Initialize database and settings on app startup
+    const setupApp = async () => {
       try {
         console.log('Starting database initialization...');
         await initializeDatabase();
@@ -31,37 +34,48 @@ function App() {
 
         if (testsPassed) {
           console.log('All database tests passed!');
-          setDbInitialized(true);
         } else {
           throw new Error('Database tests failed');
         }
+
+        // Initialize settings store
+        console.log('Initializing settings...');
+        await initializeSettings();
+        console.log('Settings initialized successfully');
+
+        // Initialize processing queue
+        console.log('Initializing processing queue...');
+        await processingQueue.initialize();
+        console.log('Processing queue initialized successfully');
+
+        setDbInitialized(true);
       } catch (error) {
-        console.error('Database initialization error:', error);
+        console.error('App initialization error:', error);
         setDbError(error instanceof Error ? error.message : 'Unknown error');
       }
     };
 
-    setupDatabase();
-  }, []);
+    setupApp();
+  }, [initializeSettings]);
 
-  // Show loading screen while database initializes
+  // Show loading screen while app initializes
   if (!dbInitialized && !dbError) {
     return (
       <SafeAreaProvider>
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loadingText}>Initializing database...</Text>
+          <Text style={styles.loadingText}>Initializing app...</Text>
         </View>
       </SafeAreaProvider>
     );
   }
 
-  // Show error screen if database initialization failed
+  // Show error screen if app initialization failed
   if (dbError) {
     return (
       <SafeAreaProvider>
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Database Error:</Text>
+          <Text style={styles.errorText}>Initialization Error:</Text>
           <Text style={styles.errorMessage}>{dbError}</Text>
         </View>
       </SafeAreaProvider>

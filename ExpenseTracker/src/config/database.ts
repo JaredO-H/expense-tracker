@@ -36,9 +36,9 @@ export const CREATE_TRIP_DATE_INDEX = `
     CREATE INDEX IF NOT EXISTS idx_trip_date ON trip(start_date, end_date);
 `;
 
-/**
- * Trigger to automatically update updated_at timestamp for trips
- */
+
+ //Trigger to automatically update updated_at timestamp for trips
+
 export const CREATE_TRIP_UPDATE_TRIGGER = `
     CREATE TRIGGER IF NOT EXISTS trip_updated_at
     AFTER UPDATE ON trip
@@ -118,9 +118,9 @@ export const CREATE_EXPENSE_DATE_INDEX = `
   CREATE INDEX IF NOT EXISTS idx_expense_date ON expense(expense_date);
 `;
 
-/**
- * Trigger to automatically update updated_at timestamp for expenses
- */
+
+ //Trigger to automatically update updated_at timestamp for expenses
+
 export const CREATE_EXPENSE_UPDATE_TRIGGER = `
   CREATE TRIGGER IF NOT EXISTS expense_updated_at
   AFTER UPDATE ON expense
@@ -209,9 +209,9 @@ export const CREATE_USER_SETTING_INDEX = `
     CREATE INDEX IF NOT EXISTS idx_user_setting_key ON user_setting(setting_key);
 `;
 
-/**
- * Database metadata table for version tracking and migrations
- */
+
+ //Database metadata table for version tracking and migrations
+
 export const CREATE_METADATA_TABLE = `
   CREATE TABLE IF NOT EXISTS db_metadata (
     key TEXT PRIMARY KEY,
@@ -220,9 +220,9 @@ export const CREATE_METADATA_TABLE = `
   );
 `;
 
-/**
- * All initialization SQL statements in order
- */
+
+ //All initialization SQL statements in order
+
 export const INITIALIZATION_STATEMENTS = [
   CREATE_TRIP_TABLE,
   CREATE_TRIP_DATE_INDEX,

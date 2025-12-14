@@ -1,0 +1,46 @@
+/**
+ * Centralized Styles
+ * Export all styling constants and utilities
+ */
+
+export { colors } from './colors';
+export type { ColorName } from './colors';
+
+export {
+  spacing,
+  borderRadius,
+  iconSizes,
+  buttonHeights,
+  inputHeights,
+  containerPadding,
+  tabBarHeight,
+  headerHeight,
+  shadows,
+} from './spacing';
+
+export {
+  fontSizes,
+  fontWeights,
+  lineHeights,
+  textStyles,
+} from './typography';
+export type { TextStyleName } from './typography';
+
+export { commonStyles } from './common';
+
+// Re-export everything as a theme object for convenience
+import { colors } from './colors';
+import { spacing, borderRadius, shadows } from './spacing';
+import { textStyles, fontSizes, fontWeights } from './typography';
+
+export const theme = {
+  colors,
+  spacing,
+  borderRadius,
+  shadows,
+  textStyles,
+  fontSizes,
+  fontWeights,
+} as const;
+
+export type Theme = typeof theme;

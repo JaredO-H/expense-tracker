@@ -16,6 +16,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TripCard } from '../components/cards/TripCard';
 import { useTripStore } from '../stores/tripStore';
+import { colors, spacing, borderRadius, textStyles, commonStyles, shadows } from '../styles';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 
@@ -161,78 +162,65 @@ export const HomeScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f9fafb',
+    ...commonStyles.flex1,
+    backgroundColor: colors.backgroundSecondary,
   },
   contentContainer: {
-    padding: 16,
-    paddingBottom: 32,
+    padding: spacing.base,
+    paddingBottom: spacing.xxl,
   },
   loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    ...commonStyles.loadingContainer,
   },
   loadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: '#6b7280',
+    ...commonStyles.loadingText,
   },
   header: {
-    marginBottom: 24,
-    paddingTop: 8,
+    marginBottom: spacing.xl,
+    paddingTop: spacing.sm,
   },
   headerTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#111827',
-    marginBottom: 4,
+    ...textStyles.h2,
+    marginBottom: spacing.xs,
   },
   headerSubtitle: {
-    fontSize: 16,
-    color: '#6b7280',
+    ...textStyles.bodyLarge,
+    color: colors.textTertiary,
   },
   section: {
-    marginBottom: 24,
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: 12,
+    ...textStyles.h5,
+    marginBottom: spacing.md,
   },
   actionButton: {
-    flexDirection: 'row',
+    ...commonStyles.flexRow,
     alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    padding: spacing.base,
+    borderRadius: borderRadius.lg,
+    marginBottom: spacing.md,
+    ...shadows.medium,
   },
   primaryButton: {
-    backgroundColor: '#3b82f6',
+    backgroundColor: colors.primary,
   },
   secondaryButton: {
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
     borderWidth: 1,
-    borderColor: '#e5e7eb',
+    borderColor: colors.border,
   },
   buttonIcon: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.whiteOverlay20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginRight: 12,
+    marginRight: spacing.md,
   },
   secondaryButtonIcon: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: colors.backgroundTertiary,
   },
   buttonIconText: {
     fontSize: 24,
@@ -241,39 +229,37 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#fff',
+    ...textStyles.h6,
+    color: colors.textInverse,
     marginBottom: 2,
   },
   secondaryButtonTitle: {
-    color: '#111827',
+    color: colors.textPrimary,
   },
   buttonSubtitle: {
-    fontSize: 13,
-    color: 'rgba(255, 255, 255, 0.8)',
+    ...textStyles.bodySmall,
+    color: colors.whiteOverlay80,
   },
   secondaryButtonSubtitle: {
-    color: '#6b7280',
+    color: colors.textTertiary,
   },
   buttonArrow: {
     fontSize: 24,
-    color: 'rgba(255, 255, 255, 0.6)',
-    marginLeft: 8,
+    color: colors.whiteOverlay60,
+    marginLeft: spacing.sm,
   },
   secondaryButtonArrow: {
-    color: '#9ca3af',
+    color: colors.textDisabled,
   },
   infoSection: {
-    backgroundColor: '#eff6ff',
-    padding: 16,
-    borderRadius: 12,
+    backgroundColor: colors.infoBg,
+    padding: spacing.base,
+    borderRadius: borderRadius.lg,
     borderLeftWidth: 4,
-    borderLeftColor: '#3b82f6',
+    borderLeftColor: colors.primary,
   },
   infoText: {
-    fontSize: 14,
-    color: '#1e40af',
-    lineHeight: 20,
+    ...textStyles.body,
+    color: colors.info,
   },
 });

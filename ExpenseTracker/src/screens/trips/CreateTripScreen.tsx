@@ -8,6 +8,7 @@ import { View, StyleSheet, Alert } from 'react-native';
 import { TripForm } from '../../components/forms/TripForm';
 import { useTripStore } from '../../stores/tripStore';
 import { CreateTripModel } from '../../types/database';
+import { commonStyles } from '../../styles';
 
 interface CreateTripScreenProps {
   navigation: any;
@@ -40,7 +41,6 @@ export const CreateTripScreen: React.FC<CreateTripScreenProps> = ({ navigation }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#fff',
+    ...commonStyles.container,
   },
 });
