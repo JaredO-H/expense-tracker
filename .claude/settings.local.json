@@ -23,7 +23,8 @@
       "Bash(gh:*)",
       "Bash(winget install:*)",
       "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth login)",
-      "Bash(npm start -- --reset-cache)"
+      "Bash(npm start -- --reset-cache)",
+      "Bash(npm run:*)"
     ]
   }
 }
