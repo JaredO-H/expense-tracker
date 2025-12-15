@@ -231,20 +231,28 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
           </View>
           {/* Tax Amount */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Tax Amount</Text>
+            <Text style={styles.label}>Tax Amount (Optional)</Text>
             <Controller
               control={control}
               name="tax_amount"
               rules={{
-                min: {
-                  value: 0.01,
-                  message: 'Tax Amount must be greater than 0.00',
+                validate: (value) => {
+                  // Allow empty/null values (field is optional)
+                  if (value === undefined || value === null || value === '') {
+                    return true;
                   }
+                  // If a value is provided, ensure it's not negative
+                  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                  if (numValue < 0) {
+                    return 'Tax amount cannot be negative';
+                  }
+                  return true;
+                },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   style={styles.input}
-                  placeholder="5.00"
+                  placeholder="0.00"
                   value={value?.toString() || ''}
                   onChangeText={(text) => onChange(text ? parseFloat(text) : undefined)}
                   onBlur={onBlur}
@@ -281,20 +289,31 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
           </View>
           {/* Tax Rate */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Tax Rate</Text>
+            <Text style={styles.label}>Tax Rate (Optional)</Text>
             <Controller
               control={control}
               name="tax_rate"
               rules={{
-                min: {
-                  value: 0.01,
-                  message: 'Tax Rate must be greater than 0.00',
+                validate: (value) => {
+                  // Allow empty/null values (field is optional)
+                  if (value === undefined || value === null || value === '') {
+                    return true;
                   }
+                  // If a value is provided, ensure it's valid
+                  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                  if (numValue < 0) {
+                    return 'Tax rate cannot be negative';
+                  }
+                  if (numValue > 100) {
+                    return 'Tax rate cannot exceed 100%';
+                  }
+                  return true;
+                },
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
                   style={styles.input}
-                  placeholder="5.00"
+                  placeholder="0.00"
                   value={value?.toString() || ''}
                   onChangeText={(text) => onChange(text ? parseFloat(text) : undefined)}
                   onBlur={onBlur}

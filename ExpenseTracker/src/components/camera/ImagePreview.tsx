@@ -21,6 +21,7 @@ interface ImagePreviewProps {
   imageUri: string;
   onRetake: () => void;
   onAccept: () => void;
+  onCancel?: () => void;
   isProcessing?: boolean;
 }
 
@@ -28,6 +29,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
   imageUri,
   onRetake,
   onAccept,
+  onCancel,
   isProcessing = false,
 }) => {
   const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
@@ -66,6 +68,16 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
 
   return (
     <View style={styles.container}>
+      {/* Back button */}
+      {onCancel && (
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={onCancel}
+          disabled={isProcessing}>
+          <Text style={styles.backButtonText}>✕</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Image display */}
       <View style={styles.imageContainer}>
         {isLoading && (
@@ -125,6 +137,23 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000',
+  },
+  backButton: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 24,
+    fontWeight: '300',
   },
   imageContainer: {
     flex: 1,

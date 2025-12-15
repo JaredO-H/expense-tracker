@@ -18,6 +18,7 @@ import { AIServiceSettings } from '../screens/settings/AIServiceSettings';
 import { AIServiceHelp } from '../screens/settings/AIServiceHelp';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { ProcessingStatusScreen } from '../screens/ProcessingStatusScreen';
+import { ReceiptVerificationScreen } from '../screens/verification/ReceiptVerificationScreen';
 import { colors } from '../styles';
 
 export type RootStackParamList = {
@@ -28,6 +29,7 @@ export type RootStackParamList = {
   AIServiceSettings: undefined;
   AIServiceHelp: undefined;
   ProcessingStatus: undefined;
+  ReceiptVerification: { queueItemId: string };
 };
 
 export type AppTabParamList = {
@@ -204,6 +206,14 @@ export const RootNavigator: React.FC = () => {
             headerTitleStyle: {
               fontWeight: '600',
             },
+          }}
+        />
+        <Stack.Screen
+          name="ReceiptVerification"
+          component={ReceiptVerificationScreen}
+          options={{
+            presentation: 'fullScreenModal',
+            headerShown: false,
           }}
         />
       </Stack.Navigator>

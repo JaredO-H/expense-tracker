@@ -73,6 +73,14 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
     navigation.navigate('ExpenseDetail', { expenseId: expense.id });
   };
 
+  const handleViewProcessingQueue = () => {
+    // Navigate to ProcessingStatus screen in the root navigator
+    const rootNavigation = navigation.getParent();
+    if (rootNavigation) {
+      rootNavigation.navigate('ProcessingStatus');
+    }
+  };
+
   const renderExpenseCard = ({ item: expense }: { item: Expense }) => {
     return (
       <TouchableOpacity
@@ -121,6 +129,14 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
 
   return (
     <View style={styles.container}>
+      {/* Processing Queue Button */}
+      <View style={styles.topButtonContainer}>
+        <TouchableOpacity style={styles.queueButton} onPress={handleViewProcessingQueue}>
+          <Text style={styles.queueButtonIcon}>⏱️</Text>
+          <Text style={styles.queueButtonText}>Processing Queue</Text>
+        </TouchableOpacity>
+      </View>
+
       {/* Search Bar */}
       <View style={styles.searchContainer}>
         <TextInput
@@ -156,9 +172,35 @@ const styles = StyleSheet.create({
   container: {
     ...commonStyles.containerGray,
   },
+  topButtonContainer: {
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.base,
+    paddingTop: spacing.base,
+    paddingBottom: spacing.sm,
+  },
+  queueButton: {
+    ...commonStyles.flexRow,
+    ...commonStyles.alignCenter,
+    ...commonStyles.flexCenter,
+    backgroundColor: colors.primary,
+    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.base,
+    borderRadius: borderRadius.md,
+    ...shadows.sm,
+  },
+  queueButtonIcon: {
+    fontSize: 18,
+    marginRight: spacing.xs,
+  },
+  queueButtonText: {
+    ...textStyles.body,
+    color: colors.textInverse,
+    fontWeight: fontWeights.semibold,
+  },
   searchContainer: {
     backgroundColor: colors.background,
     padding: spacing.base,
+    paddingTop: spacing.sm,
     ...commonStyles.borderBottom,
   },
   searchInput: {

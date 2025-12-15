@@ -24,7 +24,24 @@
       "Bash(winget install:*)",
       "Bash(\"C:\\Program Files\\GitHub CLI\\gh.exe\" auth login)",
       "Bash(npm start -- --reset-cache)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(adb devices:*)",
+      "Bash(adb kill-server:*)",
+      "Bash(adb start-server:*)",
+      "Bash(adb:*)",
+      "Bash(emulator:*)",
+      "Bash(npx react-native config)",
+      "Bash(npx react-native run-android:*)",
+      "Bash(gradlew.bat assembleDebug:*)",
+      "Bash(./gradlew.bat assembleDebug:*)",
+      "Bash(npx react-native codegen --platform android)",
+      "Bash(taskkill //F //PID 17440)",
+      "Bash(npm start)",
+      "Bash(mkdir:*)",
+      "Bash(taskkill /F /PID 22752)",
+      "Bash(taskkill //F //PID 22752)"
     ]
   }
 }

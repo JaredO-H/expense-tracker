@@ -5,7 +5,7 @@
 
 import * as Keychain from 'react-native-keychain';
 
-export type AIServiceId = 'openai' | 'anthropic' | 'gemini';
+export type AIServiceId = 'openai' | 'anthropic' | 'gemini' | 'mlkit';
 
 //Secure credential storage using device keychain
 export class CredentialService {

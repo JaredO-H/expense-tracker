@@ -148,7 +148,7 @@ export const CameraScreen: React.FC = () => {
    */
   const handleCancel = () => {
     // Clean up any captured images
-    if (capturedImageUri) {
+    if (capturedImageUri && capturedImageUri !== null) {
       RNFS.unlink(capturedImageUri.replace('file://', '')).catch(error => {
         console.error('Error deleting temporary image:', error);
       });
@@ -166,6 +166,7 @@ export const CameraScreen: React.FC = () => {
             imageUri={capturedImageUri}
             onRetake={handleRetake}
             onAccept={handleAccept}
+            onCancel={handleCancel}
             isProcessing={isProcessing}
           />
         )

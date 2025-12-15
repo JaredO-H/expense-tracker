@@ -14,11 +14,13 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { processingQueue, QueueItem } from '../services/queue/processingQueue';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
 import { AI_SERVICE_CONFIGS } from '../types/aiService';
 
 export const ProcessingStatusScreen: React.FC = () => {
+  const navigation = useNavigation();
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -118,6 +120,15 @@ export const ProcessingStatusScreen: React.FC = () => {
   };
 
   /**
+   * Handle tapping completed item to verify
+   */
+  const handleVerifyItem = (item: QueueItem) => {
+    if (item.status === 'completed' && item.result) {
+      navigation.navigate('ReceiptVerification' as never, { queueItemId: item.id } as never);
+    }
+  };
+
+  /**
    * Get status color
    */
   const getStatusColor = (status: QueueItem['status']) => {
@@ -156,12 +167,27 @@ export const ProcessingStatusScreen: React.FC = () => {
   /**
    * Render queue item
    */
+  /**
+   * Get processing method badge color and label
+   */
+  const getProcessingMethodBadge = (serviceId: QueueItem['serviceId']) => {
+    if (serviceId === 'mlkit') {
+      return { label: 'OCR', color: '#FF8C00', icon: '📱' }; // Orange
+    } else if (serviceId === 'openai' || serviceId === 'anthropic' || serviceId === 'gemini') {
+      return { label: 'AI', color: colors.primary, icon: '🤖' }; // Blue
+    } else {
+      return { label: 'Manual', color: colors.textSecondary, icon: '✍️' }; // Gray
+    }
+  };
+
   const renderItem = ({ item }: { item: QueueItem }) => {
     const serviceName = AI_SERVICE_CONFIGS[item.serviceId].name;
     const statusColor = getStatusColor(item.status);
     const statusIcon = getStatusIcon(item.status);
+    const isCompleted = item.status === 'completed' && item.result;
+    const methodBadge = getProcessingMethodBadge(item.serviceId);
 
-    return (
+    const cardContent = (
       <View style={styles.itemCard}>
         <View style={styles.itemHeader}>
           <View style={styles.statusBadge}>
@@ -179,7 +205,15 @@ export const ProcessingStatusScreen: React.FC = () => {
         </View>
 
         <View style={styles.itemBody}>
-          <Text style={styles.serviceText}>Service: {serviceName}</Text>
+          <View style={styles.serviceRow}>
+            <Text style={styles.serviceText}>Service: {serviceName}</Text>
+            <View style={[styles.methodBadge, { backgroundColor: methodBadge.color + '20', borderColor: methodBadge.color }]}>
+              <Text style={styles.methodIcon}>{methodBadge.icon}</Text>
+              <Text style={[styles.methodText, { color: methodBadge.color }]}>
+                {methodBadge.label}
+              </Text>
+            </View>
+          </View>
           <Text style={styles.dateText}>
             Created: {new Date(item.createdAt).toLocaleString()}
           </Text>
@@ -208,6 +242,9 @@ export const ProcessingStatusScreen: React.FC = () => {
                   Processed: {new Date(item.processedAt).toLocaleString()}
                 </Text>
               )}
+              <Text style={styles.tapToVerifyText}>
+                👆 Tap to verify and create expense
+              </Text>
             </View>
           )}
 
@@ -244,6 +281,20 @@ export const ProcessingStatusScreen: React.FC = () => {
         </View>
       </View>
     );
+
+    // Wrap completed items in TouchableOpacity to make them tappable
+    if (isCompleted) {
+      return (
+        <TouchableOpacity
+          style={styles.completedItemWrapper}
+          onPress={() => handleVerifyItem(item)}
+          activeOpacity={0.7}>
+          {cardContent}
+        </TouchableOpacity>
+      );
+    }
+
+    return cardContent;
   };
 
   /**
@@ -414,10 +465,35 @@ const styles = StyleSheet.create({
   itemBody: {
     gap: spacing.xs,
   },
+  serviceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: spacing.xs,
+  },
   serviceText: {
     ...textStyles.body,
     color: colors.textPrimary,
     fontWeight: '500',
+    flex: 1,
+  },
+  methodBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+    borderRadius: borderRadius.sm,
+    borderWidth: 1,
+    marginLeft: spacing.sm,
+  },
+  methodIcon: {
+    fontSize: 12,
+    marginRight: spacing.xs / 2,
+  },
+  methodText: {
+    ...textStyles.caption,
+    fontWeight: '600',
+    fontSize: 11,
   },
   dateText: {
     ...textStyles.caption,
@@ -532,5 +608,15 @@ const styles = StyleSheet.create({
     ...textStyles.body,
     color: colors.textSecondary,
     textAlign: 'center',
+  },
+  tapToVerifyText: {
+    ...textStyles.caption,
+    color: colors.primary,
+    marginTop: spacing.md,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  completedItemWrapper: {
+    // No additional styles needed, TouchableOpacity handles the touch feedback
   },
 });

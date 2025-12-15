@@ -124,6 +124,16 @@ export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
     setupInstructions: 'Create API key in Google Cloud Console AI Platform section',
     documentationUrl: 'https://ai.google.dev/tutorials/python_quickstart',
   },
+  mlkit: {
+    id: 'mlkit',
+    name: 'ML Kit OCR (Offline)',
+    description: 'On-device text recognition using ML Kit. Works offline with 60-80% accuracy. Used as fallback.',
+    apiKeyFormat: /.*/,  // No API key required
+    apiKeyPlaceholder: 'No API key needed',
+    testEndpoint: '',
+    setupInstructions: 'ML Kit is built-in and requires no setup. Works offline automatically.',
+    documentationUrl: 'https://developers.google.com/ml-kit/vision/text-recognition',
+  },
 };
 
 

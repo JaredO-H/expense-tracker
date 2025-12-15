@@ -7,6 +7,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AIServiceId, ReceiptProcessingResult } from '../../types/aiService';
 import { processImageForAI } from '../ai/imageProcessor';
 import { processReceiptWithAI } from '../ai/aiServiceClient';
+import { recognizeText } from '../ocr/mlKitService';
+import { parseReceipt } from '../ocr/receiptParser';
 
 export type QueueItemStatus = 'pending' | 'processing' | 'completed' | 'failed';
 export type QueuePriority = 'immediate' | 'normal' | 'retry';
@@ -228,8 +230,27 @@ class ProcessingQueue {
       item.retryCount++;
 
       if (item.retryCount >= item.maxRetries) {
-        item.status = 'failed';
-        item.error = error instanceof Error ? error.message : 'Unknown error';
+        // AI processing failed after all retries - try offline OCR as fallback
+        console.log(`[Queue] AI processing exhausted retries. Attempting offline OCR fallback for ${item.id}`);
+
+        try {
+          const offlineResult = await this.processWithOfflineOCR(item.imageUri);
+
+          // Offline OCR successful
+          item.status = 'completed';
+          item.result = offlineResult;
+          item.serviceId = 'mlkit' as any; // Mark as processed by ML Kit
+          item.processedAt = new Date();
+          item.error = undefined;
+
+          console.log(`[Queue] Offline OCR successful for receipt ${item.id}`);
+        } catch (ocrError) {
+          // Both AI and offline OCR failed
+          console.error(`[Queue] Offline OCR also failed for ${item.id}:`, ocrError);
+
+          item.status = 'failed';
+          item.error = 'Both AI and offline processing failed. Please try manual entry.';
+        }
       } else {
         item.status = 'pending';
         item.priority = 'retry';
@@ -238,6 +259,24 @@ class ProcessingQueue {
       await this.saveQueue();
       this.notifyListeners();
     }
+  }
+
+  /**
+   * Process receipt using offline OCR (ML Kit)
+   * Used as fallback when AI processing fails
+   */
+  private async processWithOfflineOCR(imageUri: string): Promise<ReceiptProcessingResult> {
+    console.log('[Queue] Starting offline OCR processing...');
+
+    // Step 1: Run ML Kit text recognition
+    const mlKitResult = await recognizeText(imageUri);
+
+    // Step 2: Parse extracted text to structured data
+    const parsedResult = await parseReceipt(mlKitResult);
+
+    console.log('[Queue] Offline OCR processing complete');
+
+    return parsedResult;
   }
 
   //Save queue to storage

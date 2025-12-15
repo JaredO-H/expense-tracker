@@ -191,15 +191,15 @@ function sanitizeReceiptData(data: ParsedReceiptData): ParsedReceiptData {
 
   // Sanitize numeric values
   if (data.amount !== undefined) {
-    sanitized.amount = Number(data.amount.toFixed(2));
+    sanitized.amount = Number((data.amount || 0).toFixed(2));
   }
 
   if (data.tax_amount !== undefined) {
-    sanitized.tax_amount = Number(data.tax_amount.toFixed(2));
+    sanitized.tax_amount = Number((data.tax_amount || 0).toFixed(2));
   }
 
   if (data.tax_rate !== undefined) {
-    sanitized.tax_rate = Number(data.tax_rate.toFixed(2));
+    sanitized.tax_rate = Number((data.tax_rate || 0).toFixed(2));
   }
 
   // Sanitize tax type
