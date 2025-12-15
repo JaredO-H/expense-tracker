@@ -15,7 +15,8 @@ import {
   Vibration,
 } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
-import { ensureCameraPermission } from '../../utils/cameraPermissions';
+import { launchImageLibrary } from 'react-native-image-picker';
+import { ensureCameraPermission, ensureGalleryPermission } from '../../utils/cameraPermissions';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
 
 interface CameraCaptureProps {
@@ -102,6 +103,56 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
     setFlashEnabled(prev => !prev);
   };
 
+  const handleSelectFromGallery = async () => {
+    try {
+      // Check and request gallery permissions before launching image picker
+      const hasPermission = await ensureGalleryPermission();
+
+      if (!hasPermission) {
+        console.log('Gallery permission not granted');
+        return;
+      }
+
+      const result = await launchImageLibrary({
+        mediaType: 'photo',
+        quality: 1,
+        selectionLimit: 1,
+      });
+
+      if (result.didCancel) {
+        console.log('User cancelled image picker');
+        return;
+      }
+
+      if (result.errorCode) {
+        console.error('ImagePicker Error:', result.errorMessage);
+        Alert.alert(
+          'Selection Failed',
+          'Failed to select image from gallery. Please try again.',
+          [{ text: 'OK' }]
+        );
+        return;
+      }
+
+      if (result.assets && result.assets.length > 0) {
+        const asset = result.assets[0];
+        const imageUri = asset.uri;
+
+        if (imageUri) {
+          console.log('Image selected from gallery:', imageUri);
+          onCapture(imageUri);
+        }
+      }
+    } catch (error) {
+      console.error('Error selecting image:', error);
+      Alert.alert(
+        'Selection Failed',
+        'Failed to select image from gallery. Please try again.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
   // Show loading while camera initializes
   if (!device) {
     return (
@@ -155,6 +206,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
       <View style={styles.controls}>
         {/* Top controls */}
         <View style={styles.topControls}>
+          <TouchableOpacity style={styles.galleryButton} onPress={handleSelectFromGallery}>
+            <Text style={styles.galleryButtonText}>📁 Gallery</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={styles.flashButton} onPress={toggleFlash}>
             <Text style={styles.flashButtonText}>
               {flashEnabled ? '⚡ Flash On' : '⚡ Flash Off'}
@@ -299,9 +353,20 @@ const styles = StyleSheet.create({
   },
   topControls: {
     ...commonStyles.flexRow,
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     padding: spacing.lg,
     paddingTop: 60,
+  },
+  galleryButton: {
+    backgroundColor: colors.blackOverlay50,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.xl,
+  },
+  galleryButtonText: {
+    ...textStyles.body,
+    color: colors.textInverse,
+    fontWeight: '600',
   },
   flashButton: {
     backgroundColor: colors.blackOverlay50,

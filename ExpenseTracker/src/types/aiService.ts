@@ -106,7 +106,7 @@ export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
   },
   anthropic: {
     id: 'anthropic',
-    name: 'Anthropic Claude 3 Sonnet',
+    name: 'Anthropic Claude 4 Sonnet',
     description: 'Fast and reliable AI model optimized for structured data extraction with great value.',
     apiKeyFormat: /^sk-ant-[A-Za-z0-9-_]{95,}$/,
     apiKeyPlaceholder: 'sk-ant-...',

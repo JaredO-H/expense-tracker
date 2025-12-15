@@ -149,7 +149,7 @@ async function testAnthropicConnection(apiKey: string): Promise<ValidationResult
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'claude-3-sonnet-20240229',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 10,
         messages: [
           {
