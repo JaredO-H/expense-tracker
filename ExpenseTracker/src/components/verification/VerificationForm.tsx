@@ -19,6 +19,7 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { format } from 'date-fns';
 import { Picker } from '@react-native-picker/picker';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { CreateExpenseModel, TaxType } from '../../types/database';
 import { QueueItem } from '../../services/queue/processingQueue';
 import { useCategoryStore } from '../../stores/categoryStore';
@@ -55,11 +56,11 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
   // Determine processing method for display
   const getProcessingMethod = () => {
     if (queueItem.serviceId === 'mlkit') {
-      return { label: 'Processed with Offline OCR', icon: '📱', color: '#FF8C00' };
+      return { label: 'Processed with Offline OCR', iconName: 'phone-portrait-outline', color: '#FF8C00' };
     } else if (queueItem.serviceId) {
-      return { label: `Processed with AI (${queueItem.serviceId.toUpperCase()})`, icon: '🤖', color: colors.primary };
+      return { label: `Processed with AI (${queueItem.serviceId.toUpperCase()})`, iconName: 'hardware-chip-outline', color: colors.primary };
     } else {
-      return { label: 'Manual Entry', icon: '✍️', color: colors.textSecondary };
+      return { label: 'Manual Entry', iconName: 'create-outline', color: colors.textSecondary };
     }
   };
 
@@ -123,7 +124,7 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
         showsVerticalScrollIndicator={true}>
         {/* Processing Method Indicator */}
         <View style={[styles.processingMethodBadge, { backgroundColor: processingMethod.color + '20', borderColor: processingMethod.color }]}>
-          <Text style={styles.processingIcon}>{processingMethod.icon}</Text>
+          <Icon name={processingMethod.iconName} size={16} color={processingMethod.color} style={styles.processingIcon} />
           <Text style={[styles.processingText, { color: processingMethod.color }]}>
             {processingMethod.label}
           </Text>
@@ -391,7 +392,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   processingIcon: {
-    fontSize: 16,
     marginRight: spacing.sm,
   },
   processingText: {
