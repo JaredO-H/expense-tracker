@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   fabOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.blackOverlay50,
+    backgroundColor: 'transparent',
     zIndex: 998,
   },
   fabMenuContainer: {
