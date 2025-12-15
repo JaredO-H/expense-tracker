@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { TripCard } from '../components/cards/TripCard';
 import { useTripStore } from '../stores/tripStore';
 import { colors, spacing, borderRadius, textStyles, commonStyles, shadows } from '../styles';
@@ -80,7 +81,7 @@ export const HomeScreen: React.FC = () => {
   };
 
   const handleManualExpense = () => {
-    navigation.navigate('CreateExpense');
+    navigation.navigate('CreateExpense', { tripId: currentTrip?.id });
   };
 
   const handleTripPress = () => {
@@ -121,13 +122,13 @@ export const HomeScreen: React.FC = () => {
           onPress={handleCaptureExpense}
           activeOpacity={0.8}>
           <View style={styles.buttonIcon}>
-            <Text style={styles.buttonIconText}>📷</Text>
+            <Icon name="camera" size={24} color={colors.textInverse} />
           </View>
           <View style={styles.buttonContent}>
             <Text style={styles.buttonTitle}>Capture Expense</Text>
             <Text style={styles.buttonSubtitle}>Take a photo of your receipt</Text>
           </View>
-          <Text style={styles.buttonArrow}>›</Text>
+          <Icon name="chevron-forward" size={24} color={colors.whiteOverlay60} />
         </TouchableOpacity>
 
         {/* Manual Entry Button */}
@@ -136,7 +137,7 @@ export const HomeScreen: React.FC = () => {
           onPress={handleManualExpense}
           activeOpacity={0.8}>
           <View style={[styles.buttonIcon, styles.secondaryButtonIcon]}>
-            <Text style={styles.buttonIconText}>✏️</Text>
+            <Icon name="create-outline" size={24} color={colors.primary} />
           </View>
           <View style={styles.buttonContent}>
             <Text style={[styles.buttonTitle, styles.secondaryButtonTitle]}>
@@ -146,15 +147,18 @@ export const HomeScreen: React.FC = () => {
               Enter expense details manually
             </Text>
           </View>
-          <Text style={[styles.buttonArrow, styles.secondaryButtonArrow]}>›</Text>
+          <Icon name="chevron-forward" size={24} color={colors.textDisabled} />
         </TouchableOpacity>
       </View>
 
       {/* Info Section */}
       <View style={styles.infoSection}>
-        <Text style={styles.infoText}>
-          💡 Tip: Use the camera to quickly capture receipts and let AI extract the details
-        </Text>
+        <View style={styles.infoContent}>
+          <Icon name="bulb" size={20} color={colors.primary} style={styles.infoIcon} />
+          <Text style={styles.infoText}>
+            Tip: Use the camera to quickly capture receipts and let AI extract the details
+          </Text>
+        </View>
       </View>
     </ScrollView>
   );
@@ -222,9 +226,6 @@ const styles = StyleSheet.create({
   secondaryButtonIcon: {
     backgroundColor: colors.backgroundTertiary,
   },
-  buttonIconText: {
-    fontSize: 24,
-  },
   buttonContent: {
     flex: 1,
   },
@@ -243,14 +244,6 @@ const styles = StyleSheet.create({
   secondaryButtonSubtitle: {
     color: colors.textTertiary,
   },
-  buttonArrow: {
-    fontSize: 24,
-    color: colors.whiteOverlay60,
-    marginLeft: spacing.sm,
-  },
-  secondaryButtonArrow: {
-    color: colors.textDisabled,
-  },
   infoSection: {
     backgroundColor: colors.infoBg,
     padding: spacing.base,
@@ -258,8 +251,16 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: colors.primary,
   },
+  infoContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  infoIcon: {
+    marginRight: spacing.sm,
+  },
   infoText: {
     ...textStyles.body,
     color: colors.info,
+    flex: 1,
   },
 });

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { Camera, useCameraDevice, useCameraPermission } from 'react-native-vision-camera';
 import { launchImageLibrary } from 'react-native-image-picker';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { ensureCameraPermission, ensureGalleryPermission } from '../../utils/cameraPermissions';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
 
@@ -207,11 +208,18 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
         {/* Top controls */}
         <View style={styles.topControls}>
           <TouchableOpacity style={styles.galleryButton} onPress={handleSelectFromGallery}>
-            <Text style={styles.galleryButtonText}>📁 Gallery</Text>
+            <Icon name="images-outline" size={20} color={colors.textInverse} style={styles.buttonIcon} />
+            <Text style={styles.galleryButtonText}>Gallery</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.flashButton} onPress={toggleFlash}>
+            <Icon
+              name={flashEnabled ? 'flash' : 'flash-off'}
+              size={20}
+              color={colors.textInverse}
+              style={styles.buttonIcon}
+            />
             <Text style={styles.flashButtonText}>
-              {flashEnabled ? '⚡ Flash On' : '⚡ Flash Off'}
+              {flashEnabled ? 'Flash On' : 'Flash Off'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -358,21 +366,28 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   galleryButton: {
+    ...commonStyles.flexRow,
+    ...commonStyles.alignCenter,
     backgroundColor: colors.blackOverlay50,
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.sm,
     borderRadius: borderRadius.xl,
+  },
+  flashButton: {
+    ...commonStyles.flexRow,
+    ...commonStyles.alignCenter,
+    backgroundColor: colors.blackOverlay50,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.xl,
+  },
+  buttonIcon: {
+    marginRight: spacing.xs,
   },
   galleryButtonText: {
     ...textStyles.body,
     color: colors.textInverse,
     fontWeight: '600',
-  },
-  flashButton: {
-    backgroundColor: colors.blackOverlay50,
-    paddingHorizontal: spacing.base,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.xl,
   },
   flashButtonText: {
     ...textStyles.body,

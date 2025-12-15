@@ -15,6 +15,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { processingQueue, QueueItem } from '../services/queue/processingQueue';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
 import { AI_SERVICE_CONFIGS } from '../types/aiService';
@@ -149,18 +150,18 @@ export const ProcessingStatusScreen: React.FC = () => {
   /**
    * Get status icon
    */
-  const getStatusIcon = (status: QueueItem['status']) => {
+  const getStatusIconName = (status: QueueItem['status']) => {
     switch (status) {
       case 'pending':
-        return '⏳';
+        return 'time-outline';
       case 'processing':
-        return '🔄';
+        return 'sync-outline';
       case 'completed':
-        return '✅';
+        return 'checkmark-circle';
       case 'failed':
-        return '❌';
+        return 'close-circle';
       default:
-        return '❓';
+        return 'help-circle-outline';
     }
   };
 
@@ -172,18 +173,18 @@ export const ProcessingStatusScreen: React.FC = () => {
    */
   const getProcessingMethodBadge = (serviceId: QueueItem['serviceId']) => {
     if (serviceId === 'mlkit') {
-      return { label: 'OCR', color: '#FF8C00', icon: '📱' }; // Orange
+      return { label: 'OCR', color: '#FF8C00', iconName: 'phone-portrait-outline' }; // Orange
     } else if (serviceId === 'openai' || serviceId === 'anthropic' || serviceId === 'gemini') {
-      return { label: 'AI', color: colors.primary, icon: '🤖' }; // Blue
+      return { label: 'AI', color: colors.primary, iconName: 'hardware-chip-outline' }; // Blue
     } else {
-      return { label: 'Manual', color: colors.textSecondary, icon: '✍️' }; // Gray
+      return { label: 'Manual', color: colors.textSecondary, iconName: 'create-outline' }; // Gray
     }
   };
 
   const renderItem = ({ item }: { item: QueueItem }) => {
     const serviceName = AI_SERVICE_CONFIGS[item.serviceId].name;
     const statusColor = getStatusColor(item.status);
-    const statusIcon = getStatusIcon(item.status);
+    const statusIconName = getStatusIconName(item.status);
     const isCompleted = item.status === 'completed' && item.result;
     const methodBadge = getProcessingMethodBadge(item.serviceId);
 
@@ -191,7 +192,7 @@ export const ProcessingStatusScreen: React.FC = () => {
       <View style={styles.itemCard}>
         <View style={styles.itemHeader}>
           <View style={styles.statusBadge}>
-            <Text style={styles.statusIcon}>{statusIcon}</Text>
+            <Icon name={statusIconName} size={16} color={statusColor} style={styles.statusIcon} />
             <Text style={[styles.statusText, { color: statusColor }]}>
               {item.status.toUpperCase()}
             </Text>
@@ -200,7 +201,7 @@ export const ProcessingStatusScreen: React.FC = () => {
             onPress={() => handleRemove(item)}
             style={styles.removeButton}
           >
-            <Text style={styles.removeButtonText}>✕</Text>
+            <Icon name="close" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -208,7 +209,7 @@ export const ProcessingStatusScreen: React.FC = () => {
           <View style={styles.serviceRow}>
             <Text style={styles.serviceText}>Service: {serviceName}</Text>
             <View style={[styles.methodBadge, { backgroundColor: methodBadge.color + '20', borderColor: methodBadge.color }]}>
-              <Text style={styles.methodIcon}>{methodBadge.icon}</Text>
+              <Icon name={methodBadge.iconName} size={12} color={methodBadge.color} style={styles.methodIcon} />
               <Text style={[styles.methodText, { color: methodBadge.color }]}>
                 {methodBadge.label}
               </Text>
@@ -242,9 +243,12 @@ export const ProcessingStatusScreen: React.FC = () => {
                   Processed: {new Date(item.processedAt).toLocaleString()}
                 </Text>
               )}
-              <Text style={styles.tapToVerifyText}>
-                👆 Tap to verify and create expense
-              </Text>
+              <View style={styles.tapToVerifyContainer}>
+                <Icon name="hand-left-outline" size={16} color={colors.primary} style={styles.tapIcon} />
+                <Text style={styles.tapToVerifyText}>
+                  Tap to verify and create expense
+                </Text>
+              </View>
             </View>
           )}
 
@@ -302,7 +306,7 @@ export const ProcessingStatusScreen: React.FC = () => {
    */
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <Text style={styles.emptyIcon}>📋</Text>
+      <Icon name="clipboard-outline" size={64} color={colors.textDisabled} style={styles.emptyIcon} />
       <Text style={styles.emptyTitle}>No Processing Items</Text>
       <Text style={styles.emptyText}>
         Capture a receipt to see it appear here for processing.
@@ -448,7 +452,6 @@ const styles = StyleSheet.create({
     borderRadius: borderRadius.sm,
   },
   statusIcon: {
-    fontSize: 16,
     marginRight: spacing.xs,
   },
   statusText: {
@@ -457,10 +460,6 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     padding: spacing.xs,
-  },
-  removeButtonText: {
-    ...textStyles.h3,
-    color: colors.textSecondary,
   },
   itemBody: {
     gap: spacing.xs,
@@ -487,7 +486,6 @@ const styles = StyleSheet.create({
     marginLeft: spacing.sm,
   },
   methodIcon: {
-    fontSize: 12,
     marginRight: spacing.xs / 2,
   },
   methodText: {
@@ -596,7 +594,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   emptyIcon: {
-    fontSize: 64,
     marginBottom: spacing.lg,
   },
   emptyTitle: {
@@ -609,12 +606,19 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
   },
+  tapToVerifyContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: spacing.md,
+  },
+  tapIcon: {
+    marginRight: spacing.xs,
+  },
   tapToVerifyText: {
     ...textStyles.caption,
     color: colors.primary,
-    marginTop: spacing.md,
     fontWeight: '600',
-    textAlign: 'center',
   },
   completedItemWrapper: {
     // No additional styles needed, TouchableOpacity handles the touch feedback

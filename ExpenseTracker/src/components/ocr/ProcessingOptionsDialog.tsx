@@ -11,6 +11,7 @@ import {
   TouchableOpacity,
   Modal,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
 
 export interface ProcessingOptionsDialogProps {
@@ -50,7 +51,9 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
             onPress={onSelectOfflineOCR}
             activeOpacity={0.7}>
             <View style={styles.optionContent}>
-              <Text style={styles.optionIcon}>📱</Text>
+              <View style={styles.optionIconContainer}>
+                <Icon name="document-text-outline" size={28} color={colors.primary} />
+              </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Try Offline OCR</Text>
                 <Text style={styles.optionDesc}>
@@ -58,7 +61,7 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
                 </Text>
               </View>
             </View>
-            <Text style={styles.optionArrow}>›</Text>
+            <Icon name="chevron-forward" size={24} color={colors.textTertiary} />
           </TouchableOpacity>
 
           {/* Option 2: Enter Manually */}
@@ -67,7 +70,9 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
             onPress={onSelectManual}
             activeOpacity={0.7}>
             <View style={styles.optionContent}>
-              <Text style={styles.optionIcon}>✍️</Text>
+              <View style={styles.optionIconContainer}>
+                <Icon name="create-outline" size={28} color={colors.primary} />
+              </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Enter Manually</Text>
                 <Text style={styles.optionDesc}>
@@ -75,7 +80,7 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
                 </Text>
               </View>
             </View>
-            <Text style={styles.optionArrow}>›</Text>
+            <Icon name="chevron-forward" size={24} color={colors.textTertiary} />
           </TouchableOpacity>
 
           {/* Option 3: Retry Later */}
@@ -84,7 +89,9 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
             onPress={onSelectRetryLater}
             activeOpacity={0.7}>
             <View style={styles.optionContent}>
-              <Text style={styles.optionIcon}>🔄</Text>
+              <View style={styles.optionIconContainer}>
+                <Icon name="refresh-outline" size={28} color={colors.primary} />
+              </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Retry Later</Text>
                 <Text style={styles.optionDesc}>
@@ -92,7 +99,7 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
                 </Text>
               </View>
             </View>
-            <Text style={styles.optionArrow}>›</Text>
+            <Icon name="chevron-forward" size={24} color={colors.textTertiary} />
           </TouchableOpacity>
 
           {/* Cancel Button */}
@@ -163,9 +170,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
-  optionIcon: {
-    fontSize: 28,
+  optionIconContainer: {
     marginRight: spacing.md,
+    width: 32,
+    alignItems: 'center',
   },
   optionTextContainer: {
     flex: 1,
@@ -180,11 +188,6 @@ const styles = StyleSheet.create({
     ...textStyles.caption,
     color: colors.textSecondary,
     lineHeight: 16,
-  },
-  optionArrow: {
-    ...textStyles.h2,
-    color: colors.textTertiary,
-    marginLeft: spacing.sm,
   },
   cancelButton: {
     paddingVertical: spacing.md,

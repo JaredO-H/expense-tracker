@@ -14,6 +14,7 @@ import {
   RefreshControl,
   Alert,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { Expense } from '../../types/database';
 import { format } from 'date-fns';
@@ -87,26 +88,17 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
         style={styles.expenseCard}
         onPress={() => handleExpensePress(expense)}
         activeOpacity={0.7}>
-        <View style={styles.expenseCardHeader}>
-          <Text style={styles.expenseName}>{expense.merchant}</Text>
+        <View style={styles.expenseCardRow}>
+          <Text style={styles.merchantName} numberOfLines={1}>
+            {expense.merchant || 'Unknown Merchant'}
+          </Text>
+          <Text style={styles.amountText}>
+            ${expense.amount?.toFixed(2) || '0.00'}
+          </Text>
         </View>
-
-        <View style={styles.expenseCardBody}>
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Date:</Text>
-            <Text style={styles.infoValue}>
-              {format(new Date(expense.date), 'MMM dd, yyyy')}
-            </Text>
-          </View>
-
-          {expense.amount && (
-            <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Amount:</Text>
-              <Text style={styles.infoValue}>{expense.amount}</Text>
-            </View>
-          )}
-
-        </View>
+        <Text style={styles.dateText}>
+          {format(new Date(expense.date), 'MMM dd, yyyy')}
+        </Text>
       </TouchableOpacity>
     );
   };
@@ -132,7 +124,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
       {/* Processing Queue Button */}
       <View style={styles.topButtonContainer}>
         <TouchableOpacity style={styles.queueButton} onPress={handleViewProcessingQueue}>
-          <Text style={styles.queueButtonIcon}>⏱️</Text>
+          <Icon name="time-outline" size={20} color={colors.textInverse} style={styles.queueButtonIcon} />
           <Text style={styles.queueButtonText}>Processing Queue</Text>
         </TouchableOpacity>
       </View>
@@ -189,7 +181,6 @@ const styles = StyleSheet.create({
     ...shadows.sm,
   },
   queueButtonIcon: {
-    fontSize: 18,
     marginRight: spacing.xs,
   },
   queueButtonText: {
@@ -214,63 +205,33 @@ const styles = StyleSheet.create({
     paddingBottom: 80, // Space for FAB
   },
   expenseCard: {
-    ...commonStyles.card,
-    marginBottom: spacing.base,
+    backgroundColor: colors.background,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.xs,
+    ...shadows.sm,
   },
-  expenseCardHeader: {
-    ...commonStyles.flexRow,
-    ...commonStyles.flexBetween,
-    ...commonStyles.alignCenter,
-    padding: spacing.base,
-    borderBottomWidth: 1,
-    borderBottomColor: colors.backgroundTertiary,
+  expenseCardRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: spacing.xs / 2,
   },
-  expenseName: {
-    ...textStyles.h5,
+  merchantName: {
+    ...textStyles.body,
+    color: colors.textPrimary,
+    fontWeight: fontWeights.medium,
     flex: 1,
     marginRight: spacing.md,
   },
-  statusBadge: {
-    ...commonStyles.badge,
-  },
-  status_upcoming: {
-    backgroundColor: colors.infoLight,
-  },
-  status_active: {
-    backgroundColor: colors.successLight,
-  },
-  status_completed: {
-    ...commonStyles.badgeGray,
-  },
-  statusText: {
-    ...textStyles.badge,
-    fontSize: textStyles.caption.fontSize,
-    color: colors.textSecondary,
-  },
-  expenseCardBody: {
-    padding: spacing.base,
-  },
-  infoRow: {
-    ...commonStyles.flexRow,
-    marginBottom: spacing.sm,
-  },
-  infoLabel: {
-    ...textStyles.labelSmall,
-    color: colors.textTertiary,
-    width: 90,
-  },
-  infoValue: {
+  amountText: {
     ...textStyles.body,
-    flex: 1,
+    color: colors.textPrimary,
+    fontWeight: fontWeights.semibold,
   },
-  expenseCardFooter: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 1,
-    borderTopColor: colors.backgroundTertiary,
-  },
-  expenseCount: {
-    ...textStyles.body,
+  dateText: {
+    ...textStyles.caption,
+    fontSize: 11,
     color: colors.textTertiary,
   },
   emptyState: {

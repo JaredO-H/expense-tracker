@@ -12,6 +12,7 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, textStyles, commonStyles } from '../../styles';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -179,7 +180,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
   if (hasError) {
     return (
       <View style={styles.errorContainer}>
-        <Text style={styles.errorIcon}>⚠️</Text>
+        <Icon name="warning" size={48} color={colors.warning} style={styles.errorIcon} />
         <Text style={styles.errorText}>Failed to load receipt image</Text>
         <Text style={styles.errorSubtext}>The image may be corrupted or missing</Text>
       </View>
@@ -243,7 +244,6 @@ const styles = StyleSheet.create({
     padding: spacing.xl,
   },
   errorIcon: {
-    fontSize: 48,
     marginBottom: spacing.md,
   },
   errorText: {

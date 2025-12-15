@@ -5,6 +5,7 @@
 
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { Trip } from '../../types/database';
 import { format, differenceInDays } from 'date-fns';
 import { colors, spacing, borderRadius, textStyles, shadows } from '../../styles';
@@ -83,7 +84,7 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
 
       {trip.destination && (
         <View style={styles.row}>
-          <Text style={styles.icon}>📍</Text>
+          <Icon name="location" size={16} color={colors.primary} style={styles.icon} />
           <Text style={styles.destination}>{trip.destination}</Text>
         </View>
       )}
@@ -95,7 +96,7 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
             {format(startDate, 'MMM dd, yyyy')}
           </Text>
         </View>
-        <Text style={styles.dateSeparator}>→</Text>
+        <Icon name="arrow-forward" size={16} color={colors.textDisabled} style={styles.dateSeparator} />
         <View style={styles.dateItem}>
           <Text style={styles.dateLabel}>End</Text>
           <Text style={styles.dateValue}>
@@ -171,7 +172,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
   },
   icon: {
-    fontSize: 16,
     marginRight: spacing.xs + 2,
   },
   destination: {
@@ -201,8 +201,6 @@ const styles = StyleSheet.create({
     color: colors.textPrimary,
   },
   dateSeparator: {
-    fontSize: 16,
-    color: colors.textDisabled,
     marginHorizontal: spacing.sm,
   },
   footer: {

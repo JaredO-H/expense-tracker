@@ -12,11 +12,17 @@ import { commonStyles } from '../../styles';
 
 interface CreateExpenseScreenProps {
   navigation: any;
+  route?: {
+    params?: {
+      tripId?: number;
+    };
+  };
 }
 
 
-export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigation}) => {
+export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigation, route}) => {
   const { createExpense, isLoading } = useExpenseStore();
+  const initialTripId = route?.params?.tripId;
 
   const handleCreate = async (model: CreateExpenseModel) => {
     try {
@@ -35,7 +41,12 @@ export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigat
 
   return (
     <View style={styles.container}>
-      <ExpenseForm onSubmit={handleCreate} onCancel={handleCancel} isLoading={isLoading} />
+      <ExpenseForm
+        onSubmit={handleCreate}
+        onCancel={handleCancel}
+        isLoading={isLoading}
+        initialTripId={initialTripId}
+      />
     </View>
   );
 };

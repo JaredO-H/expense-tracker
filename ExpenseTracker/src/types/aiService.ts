@@ -93,7 +93,7 @@ export interface UsageInfo {
 
  //AI Service Constants and Configuration
 
-export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
+export const AI_SERVICE_CONFIGS: Record<Exclude<AIServiceId, 'mlkit'>, AIServiceConfig> = {
   openai: {
     id: 'openai',
     name: 'OpenAI GPT-4 Vision',
@@ -123,16 +123,6 @@ export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
     testEndpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent',
     setupInstructions: 'Create API key in Google Cloud Console AI Platform section',
     documentationUrl: 'https://ai.google.dev/tutorials/python_quickstart',
-  },
-  mlkit: {
-    id: 'mlkit',
-    name: 'ML Kit OCR (Offline)',
-    description: 'On-device text recognition using ML Kit. Works offline with 60-80% accuracy. Used as fallback.',
-    apiKeyFormat: /.*/,  // No API key required
-    apiKeyPlaceholder: 'No API key needed',
-    testEndpoint: '',
-    setupInstructions: 'ML Kit is built-in and requires no setup. Works offline automatically.',
-    documentationUrl: 'https://developers.google.com/ml-kit/vision/text-recognition',
   },
 };
 

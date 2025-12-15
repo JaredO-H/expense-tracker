@@ -18,6 +18,7 @@ import { useTripStore } from '../../stores/tripStore';
 import { Trip } from '../../types/database';
 import { format, isPast, isFuture } from 'date-fns';
 import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, fontWeights } from '../../styles';
+import databaseService from '../../services/database/databaseService';
 
 interface TripsScreenProps {
   navigation: any;
@@ -42,10 +43,14 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   const { trips, fetchTrips, error, clearError } = useTripStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [tripStats, setTripStats] = useState<Map<number, { expenseCount: number; totalAmount: number }>>(new Map());
 
   const loadTrips = useCallback(async () => {
     try {
       await fetchTrips();
+      // Fetch trip statistics
+      const stats = await databaseService.getAllTripsStatistics();
+      setTripStats(stats);
     } catch (err) {
       console.error('Failed to load trips:', err);
     }
@@ -90,8 +95,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 
   const renderTripCard = ({ item: trip }: { item: Trip }) => {
     const status = getTripStatus(trip);
-    // Mock expense count - will be replaced with actual data later
-    const expenseCount = 0;
+    const stats = tripStats.get(trip.id) || { expenseCount: 0, totalAmount: 0 };
 
     return (
       <TouchableOpacity
@@ -131,7 +135,17 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
           )}
 
           <View style={styles.tripCardFooter}>
-            <Text style={styles.expenseCount}>{expenseCount} expenses (coming soon)</Text>
+            <View style={styles.statsRow}>
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>{stats.expenseCount}</Text>
+                <Text style={styles.statLabel}>{stats.expenseCount === 1 ? 'expense' : 'expenses'}</Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>${stats.totalAmount.toFixed(2)}</Text>
+                <Text style={styles.statLabel}>total</Text>
+              </View>
+            </View>
           </View>
         </View>
       </TouchableOpacity>
@@ -261,6 +275,31 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     borderTopWidth: 1,
     borderTopColor: colors.backgroundTertiary,
+  },
+  statsRow: {
+    ...commonStyles.flexRow,
+    ...commonStyles.flexBetween,
+    alignItems: 'center',
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    ...textStyles.h4,
+    color: colors.primary,
+    fontWeight: fontWeights.semiBold,
+    marginBottom: spacing.xs / 2,
+  },
+  statLabel: {
+    ...textStyles.caption,
+    color: colors.textTertiary,
+  },
+  statDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: colors.backgroundTertiary,
+    marginHorizontal: spacing.md,
   },
   expenseCount: {
     ...textStyles.body,

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, textStyles, commonStyles } from '../../styles';
 
 type NavigationProp = NativeStackNavigationProp<any>;
@@ -25,13 +26,13 @@ export const SettingsScreen: React.FC = () => {
       title: 'AI Service Configuration',
       description: 'Configure your AI service provider and API keys',
       onPress: () => navigation.navigate('AIServiceSettings'),
-      icon: '🤖',
+      icon: 'hardware-chip-outline',
     },
     {
       title: 'API Key Setup Guide',
       description: 'Learn how to obtain API keys for each service',
       onPress: () => navigation.navigate('AIServiceHelp'),
-      icon: '📖',
+      icon: 'book-outline',
     },
   ];
 
@@ -40,7 +41,6 @@ export const SettingsScreen: React.FC = () => {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Settings</Text>
           <Text style={styles.headerSubtitle}>
             Configure your expense tracker preferences
           </Text>
@@ -54,13 +54,13 @@ export const SettingsScreen: React.FC = () => {
             onPress={option.onPress}
             activeOpacity={0.7}>
             <View style={styles.optionIcon}>
-              <Text style={styles.optionIconText}>{option.icon}</Text>
+              <Icon name={option.icon} size={24} color={colors.primary} />
             </View>
             <View style={styles.optionContent}>
               <Text style={styles.optionTitle}>{option.title}</Text>
               <Text style={styles.optionDescription}>{option.description}</Text>
             </View>
-            <Text style={styles.optionArrow}>›</Text>
+            <Icon name="chevron-forward" size={24} color={colors.textDisabled} />
           </TouchableOpacity>
         ))}
 
@@ -88,10 +88,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xl,
     paddingTop: spacing.sm,
   },
-  headerTitle: {
-    ...textStyles.h2,
-    marginBottom: spacing.xs,
-  },
   headerSubtitle: {
     ...textStyles.bodyLarge,
     color: colors.textTertiary,
@@ -111,9 +107,6 @@ const styles = StyleSheet.create({
     ...commonStyles.flexCenter,
     marginRight: spacing.md,
   },
-  optionIconText: {
-    fontSize: 24,
-  },
   optionContent: {
     flex: 1,
   },
@@ -124,11 +117,6 @@ const styles = StyleSheet.create({
   optionDescription: {
     ...textStyles.bodySmall,
     color: colors.textTertiary,
-  },
-  optionArrow: {
-    fontSize: 24,
-    color: colors.textDisabled,
-    marginLeft: spacing.sm,
   },
   infoSection: {
     ...commonStyles.card,

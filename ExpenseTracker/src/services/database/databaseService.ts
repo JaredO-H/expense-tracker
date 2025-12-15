@@ -533,6 +533,72 @@ class DatabaseService {
     };
   }
 
+  /**
+   * Get trip statistics (expense count and total amount)
+   */
+  async getTripStatistics(tripId: number): Promise<{ expenseCount: number; totalAmount: number }> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `SELECT
+          COUNT(*) as expense_count,
+          COALESCE(SUM(total_amount), 0) as total_amount
+         FROM expense
+         WHERE trip_id = ?`,
+        [tripId]
+      );
+
+      const row = result[0].rows.item(0);
+
+      return {
+        expenseCount: row.expense_count,
+        totalAmount: parseFloat(row.total_amount) || 0,
+      };
+    } catch (error) {
+      console.error('Error getting trip statistics:', error);
+      // Return zeros on error rather than throwing
+      return {
+        expenseCount: 0,
+        totalAmount: 0,
+      };
+    }
+  }
+
+  /**
+   * Get statistics for all trips at once (optimized)
+   */
+  async getAllTripsStatistics(): Promise<Map<number, { expenseCount: number; totalAmount: number }>> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `SELECT
+          trip_id,
+          COUNT(*) as expense_count,
+          COALESCE(SUM(total_amount), 0) as total_amount
+         FROM expense
+         GROUP BY trip_id`,
+        []
+      );
+
+      const statsMap = new Map<number, { expenseCount: number; totalAmount: number }>();
+
+      for (let i = 0; i < result[0].rows.length; i++) {
+        const row = result[0].rows.item(i);
+        statsMap.set(row.trip_id, {
+          expenseCount: row.expense_count,
+          totalAmount: parseFloat(row.total_amount) || 0,
+        });
+      }
+
+      return statsMap;
+    } catch (error) {
+      console.error('Error getting all trips statistics:', error);
+      return new Map();
+    }
+  }
+
 }
 
 

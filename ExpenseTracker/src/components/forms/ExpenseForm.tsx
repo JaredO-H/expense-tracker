@@ -30,6 +30,7 @@ interface ExpenseFormProps {
   onSubmit: (data: CreateExpenseModel) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  initialTripId?: number; // Pre-fill trip field when creating from home
 }
 
 interface ExpenseFormData {
@@ -54,6 +55,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
   onSubmit,
   onCancel,
   isLoading = false,
+  initialTripId,
 }) => {
   // Fetch trips for dropdown
   const { trips, fetchTrips } = useTripStore();
@@ -95,7 +97,7 @@ export const ExpenseForm : React.FC<ExpenseFormProps> = ({
     formState: { errors },
   } = useForm<ExpenseFormData>({
     defaultValues: {
-      trip_id: expense?.trip_id || undefined,
+      trip_id: expense?.trip_id || initialTripId || undefined,
       image_path: expense?.image_path || undefined,
       merchant: expense?.merchant || undefined,
       amount: expense?.amount || 0,

@@ -12,6 +12,7 @@ import {
   TouchableOpacity,
   Linking,
 } from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { getAllServices } from '../../services/ai/aiServiceFactory';
 import { colors, spacing, textStyles, commonStyles } from '../../styles';
 
@@ -75,18 +76,34 @@ export const AIServiceHelp: React.FC = () => {
               <TouchableOpacity
                 style={styles.linkButton}
                 onPress={() => handleOpenLink(service.documentationUrl)}>
-                <Text style={styles.linkButtonText}>View Official Documentation →</Text>
+                <Text style={styles.linkButtonText}>View Official Documentation</Text>
+                <Icon name="arrow-forward" size={16} color={colors.primary} style={styles.linkIcon} />
               </TouchableOpacity>
             </View>
 
             {/* Security Tips */}
             <View style={styles.guideCard}>
               <Text style={styles.sectionTitle}>Security Best Practices:</Text>
-              <Text style={styles.tip}>• Never share your API key with others</Text>
-              <Text style={styles.tip}>• Store it securely (we use device keychain)</Text>
-              <Text style={styles.tip}>• Rotate keys periodically for security</Text>
-              <Text style={styles.tip}>• Monitor usage for unexpected activity</Text>
-              <Text style={styles.tip}>• Set billing limits in service console</Text>
+              <View style={styles.tipRow}>
+                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
+                <Text style={styles.tip}>Never share your API key with others</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
+                <Text style={styles.tip}>Store it securely (we use device keychain)</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
+                <Text style={styles.tip}>Rotate keys periodically for security</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
+                <Text style={styles.tip}>Monitor usage for unexpected activity</Text>
+              </View>
+              <View style={styles.tipRow}>
+                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
+                <Text style={styles.tip}>Set billing limits in service console</Text>
+              </View>
             </View>
           </View>
         ))}
@@ -97,22 +114,39 @@ export const AIServiceHelp: React.FC = () => {
 
           <View style={styles.troubleshootingItem}>
             <Text style={styles.troubleshootingQuestion}>Connection test failed?</Text>
-            <Text style={styles.troubleshootingAnswer}>
-              • Check your internet connection
-              {'\n'}• Verify API key is correct (no extra spaces)
-              {'\n'}• Ensure you have sufficient credits in your account
-              {'\n'}• Check if the service is experiencing outages
-            </Text>
+            <View style={styles.answerRow}>
+              <Icon name="wifi-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>Check your internet connection</Text>
+            </View>
+            <View style={styles.answerRow}>
+              <Icon name="key-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>Verify API key is correct (no extra spaces)</Text>
+            </View>
+            <View style={styles.answerRow}>
+              <Icon name="card-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>Ensure you have sufficient credits in your account</Text>
+            </View>
+            <View style={styles.answerRow}>
+              <Icon name="alert-circle-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>Check if the service is experiencing outages</Text>
+            </View>
           </View>
 
           <View style={styles.troubleshootingItem}>
             <Text style={styles.troubleshootingQuestion}>Invalid API key format?</Text>
-            <Text style={styles.troubleshootingAnswer}>
-              Each service has a specific key format:
-              {'\n'}• OpenAI: Starts with "sk-"
-              {'\n'}• Anthropic: Starts with "sk-ant-"
-              {'\n'}• Gemini: Starts with "AIza"
-            </Text>
+            <Text style={styles.troubleshootingAnswer}>Each service has a specific key format:</Text>
+            <View style={styles.answerRow}>
+              <Icon name="ellipse" size={8} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>OpenAI: Starts with "sk-"</Text>
+            </View>
+            <View style={styles.answerRow}>
+              <Icon name="ellipse" size={8} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>Anthropic: Starts with "sk-ant-"</Text>
+            </View>
+            <View style={styles.answerRow}>
+              <Icon name="ellipse" size={8} color={colors.textSecondary} style={styles.answerIcon} />
+              <Text style={styles.troubleshootingAnswer}>Gemini: Starts with "AIza"</Text>
+            </View>
           </View>
 
           <View style={styles.troubleshootingItem}>
@@ -171,6 +205,8 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.sm,
   },
   linkButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: spacing.sm,
     marginTop: spacing.sm,
   },
@@ -178,6 +214,9 @@ const styles = StyleSheet.create({
     ...textStyles.link,
     color: colors.primary,
     textDecorationLine: 'none',
+  },
+  linkIcon: {
+    marginLeft: spacing.xs,
   },
   infoText: {
     ...textStyles.body,
@@ -188,11 +227,19 @@ const styles = StyleSheet.create({
     fontWeight: textStyles.label.fontWeight,
     color: colors.textPrimary,
   },
+  tipRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: spacing.xs,
+  },
+  tipIcon: {
+    marginRight: spacing.sm,
+    marginTop: 2,
+  },
   tip: {
     ...textStyles.bodySmall,
     color: colors.textSecondary,
-    marginBottom: spacing.xs,
-    paddingLeft: spacing.sm,
+    flex: 1,
   },
   troubleshootingSection: {
     ...commonStyles.card,
@@ -212,8 +259,19 @@ const styles = StyleSheet.create({
     ...textStyles.label,
     marginBottom: spacing.sm,
   },
+  answerRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: spacing.xs,
+    marginTop: spacing.xs,
+  },
+  answerIcon: {
+    marginRight: spacing.sm,
+    marginTop: 2,
+  },
   troubleshootingAnswer: {
     ...textStyles.body,
     color: colors.textSecondary,
+    flex: 1,
   },
 });

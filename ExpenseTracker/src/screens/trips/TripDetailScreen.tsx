@@ -18,6 +18,7 @@ import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
 import { format } from 'date-fns';
 import { colors, spacing, textStyles, commonStyles } from '../../styles';
+import databaseService from '../../services/database/databaseService';
 
 interface TripDetailScreenProps {
   route: any;
@@ -28,6 +29,8 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
   const { tripId } = route.params;
   const { trips, updateTrip, deleteTrip, isLoading } = useTripStore();
   const [isEditing, setIsEditing] = useState(false);
+  const [tripStats, setTripStats] = useState({ expenseCount: 0, totalAmount: 0 });
+  const [loadingStats, setLoadingStats] = useState(true);
 
   const trip = trips.find(t => t.id === tripId);
 
@@ -42,6 +45,19 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
       navigation.setOptions({
         title: trip.name,
       });
+
+      // Fetch trip statistics
+      const loadStats = async () => {
+        try {
+          const stats = await databaseService.getTripStatistics(trip.id);
+          setTripStats(stats);
+        } catch (error) {
+          console.error('Failed to load trip statistics:', error);
+        } finally {
+          setLoadingStats(false);
+        }
+      };
+      loadStats();
     }
   }, [trip, navigation]);
 
@@ -114,9 +130,6 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
     );
   }
 
-  // Mock expense count - will be replaced with actual data later
-  const expenseCount = 0;
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.content}>
@@ -158,14 +171,42 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
         {/* Expense Summary Card */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Expense Summary</Text>
-          <View style={styles.summaryRow}>
-            <Text style={styles.summaryLabel}>Total Expenses</Text>
-            <Text style={styles.summaryValue}>{expenseCount} expenses</Text>
+          <View style={styles.summaryHeader}>
+            <Text style={styles.sectionTitle}>Expense Summary</Text>
+            {tripStats.expenseCount > 0 && (
+              <TouchableOpacity
+                style={styles.viewExpensesButton}
+                onPress={() => navigation.navigate('ExpensesTab', { tripId: trip.id })}>
+                <Text style={styles.viewExpensesButtonText}>View Expenses →</Text>
+              </TouchableOpacity>
+            )}
           </View>
-          <Text style={styles.summaryNote}>
-            Expense tracking will be available in a future update
-          </Text>
+
+          {loadingStats ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <View style={styles.statsContainer}>
+              <View style={styles.statBox}>
+                <Text style={styles.statValue}>{tripStats.expenseCount}</Text>
+                <Text style={styles.statLabel}>
+                  {tripStats.expenseCount === 1 ? 'expense' : 'expenses'}
+                </Text>
+              </View>
+              <View style={styles.statDivider} />
+              <View style={styles.statBox}>
+                <Text style={styles.statValue}>${tripStats.totalAmount.toFixed(2)}</Text>
+                <Text style={styles.statLabel}>total amount</Text>
+              </View>
+            </View>
+          )}
+
+          {!loadingStats && tripStats.expenseCount === 0 && (
+            <TouchableOpacity
+              style={styles.addExpensePrompt}
+              onPress={() => navigation.navigate('CreateExpense')}>
+              <Text style={styles.addExpenseText}>No expenses yet. Tap to add one.</Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         {/* Metadata Card */}
@@ -233,6 +274,58 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     ...textStyles.bodyLarge,
+  },
+  summaryHeader: {
+    ...commonStyles.flexRow,
+    ...commonStyles.flexBetween,
+    ...commonStyles.alignCenter,
+    marginBottom: spacing.md,
+  },
+  viewExpensesButton: {
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.sm,
+  },
+  viewExpensesButtonText: {
+    ...textStyles.caption,
+    color: colors.primary,
+    fontWeight: '600',
+  },
+  statsContainer: {
+    ...commonStyles.flexRow,
+    ...commonStyles.flexBetween,
+    alignItems: 'center',
+    paddingVertical: spacing.md,
+  },
+  statBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  statValue: {
+    ...textStyles.h3,
+    color: colors.primary,
+    fontWeight: '600',
+    marginBottom: spacing.xs,
+  },
+  statLabel: {
+    ...textStyles.caption,
+    color: colors.textTertiary,
+  },
+  statDivider: {
+    width: 1,
+    height: 40,
+    backgroundColor: colors.border,
+    marginHorizontal: spacing.lg,
+  },
+  addExpensePrompt: {
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.md,
+    backgroundColor: colors.backgroundTertiary,
+    borderRadius: spacing.sm,
+    alignItems: 'center',
+  },
+  addExpenseText: {
+    ...textStyles.body,
+    color: colors.textSecondary,
   },
   summaryRow: {
     ...commonStyles.flexRow,
