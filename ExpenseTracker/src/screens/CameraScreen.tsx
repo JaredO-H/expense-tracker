@@ -40,8 +40,8 @@ export const CameraScreen: React.FC = () => {
   const handleRetake = () => {
     // Clean up the captured image
     if (capturedImageUri) {
-      RNFS.unlink(capturedImageUri.replace('file://', '')).catch(error => {
-        console.error('Error deleting temporary image:', error);
+      RNFS.unlink(capturedImageUri.replace('file://', '')).catch(() => {
+        // Ignore errors during cleanup
       });
     }
     setCapturedImageUri(null);
@@ -94,8 +94,8 @@ export const CameraScreen: React.FC = () => {
 
       // Clean up original captured image if different
       if (capturedImageUri !== compressionResult.uri) {
-        await RNFS.unlink(capturedImageUri.replace('file://', '')).catch(error => {
-          console.error('Error deleting original image:', error);
+        await RNFS.unlink(capturedImageUri.replace('file://', '')).catch(() => {
+          // Ignore errors during cleanup
         });
       }
 
@@ -149,8 +149,8 @@ export const CameraScreen: React.FC = () => {
   const handleCancel = () => {
     // Clean up any captured images
     if (capturedImageUri && capturedImageUri !== null) {
-      RNFS.unlink(capturedImageUri.replace('file://', '')).catch(error => {
-        console.error('Error deleting temporary image:', error);
+      RNFS.unlink(capturedImageUri.replace('file://', '')).catch(() => {
+        // Ignore errors during cleanup
       });
     }
     navigation.goBack();

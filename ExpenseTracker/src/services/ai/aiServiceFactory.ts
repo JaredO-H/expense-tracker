@@ -254,5 +254,5 @@ export function getServiceConfig(serviceId: AIServiceId): AIServiceConfig {
  * Get all available AI services
  */
 export function getAllServices(): AIServiceConfig[] {
-  return Object.values(AI_SERVICE_CONFIGS);
+  return Object.values(AI_SERVICE_CONFIGS).filter(config => config.id !== 'mlkit');
 }

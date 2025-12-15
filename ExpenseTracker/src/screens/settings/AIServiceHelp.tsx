@@ -80,31 +80,6 @@ export const AIServiceHelp: React.FC = () => {
                 <Icon name="arrow-forward" size={16} color={colors.primary} style={styles.linkIcon} />
               </TouchableOpacity>
             </View>
-
-            {/* Security Tips */}
-            <View style={styles.guideCard}>
-              <Text style={styles.sectionTitle}>Security Best Practices:</Text>
-              <View style={styles.tipRow}>
-                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
-                <Text style={styles.tip}>Never share your API key with others</Text>
-              </View>
-              <View style={styles.tipRow}>
-                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
-                <Text style={styles.tip}>Store it securely (we use device keychain)</Text>
-              </View>
-              <View style={styles.tipRow}>
-                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
-                <Text style={styles.tip}>Rotate keys periodically for security</Text>
-              </View>
-              <View style={styles.tipRow}>
-                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
-                <Text style={styles.tip}>Monitor usage for unexpected activity</Text>
-              </View>
-              <View style={styles.tipRow}>
-                <Icon name="checkmark-circle" size={16} color={colors.success} style={styles.tipIcon} />
-                <Text style={styles.tip}>Set billing limits in service console</Text>
-              </View>
-            </View>
           </View>
         ))}
 
@@ -226,20 +201,6 @@ const styles = StyleSheet.create({
   boldText: {
     fontWeight: textStyles.label.fontWeight,
     color: colors.textPrimary,
-  },
-  tipRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: spacing.xs,
-  },
-  tipIcon: {
-    marginRight: spacing.sm,
-    marginTop: 2,
-  },
-  tip: {
-    ...textStyles.bodySmall,
-    color: colors.textSecondary,
-    flex: 1,
   },
   troubleshootingSection: {
     ...commonStyles.card,

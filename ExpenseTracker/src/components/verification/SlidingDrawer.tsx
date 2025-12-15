@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: SCREEN_HEIGHT,
-    backgroundColor: colors.background,
+    backgroundColor: 'rgba(255, 255, 255, 0.60)',
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
     ...shadows.xl,

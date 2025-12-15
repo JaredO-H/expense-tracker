@@ -28,6 +28,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   const { expenses, fetchExpenses, error, clearError } = useExpenseStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [fabMenuOpen, setFabMenuOpen] = useState(false);
 
   const loadExpenses = useCallback(async () => {
     try {
@@ -67,7 +68,17 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   });
 
   const handleCreateExpense = () => {
+    setFabMenuOpen(false);
     navigation.navigate('CreateExpense');
+  };
+
+  const handleCaptureExpense = () => {
+    setFabMenuOpen(false);
+    navigation.navigate('Camera');
+  };
+
+  const toggleFabMenu = () => {
+    setFabMenuOpen(!fabMenuOpen);
   };
 
   const handleExpensePress = (expense: Expense) => {
@@ -152,9 +163,47 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
         }
       />
 
+      {/* FAB Menu Overlay */}
+      {fabMenuOpen && (
+        <TouchableOpacity
+          style={styles.fabOverlay}
+          activeOpacity={1}
+          onPress={() => setFabMenuOpen(false)}
+        />
+      )}
+
+      {/* FAB Menu Options */}
+      {fabMenuOpen && (
+        <View style={styles.fabMenuContainer}>
+          <TouchableOpacity
+            style={styles.fabMenuOption}
+            onPress={handleCaptureExpense}
+            activeOpacity={0.7}>
+            <View style={styles.fabMenuButton}>
+              <Icon name="camera" size={24} color={colors.textInverse} />
+            </View>
+            <Text style={styles.fabMenuLabel}>Capture Receipt</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.fabMenuOption}
+            onPress={handleCreateExpense}
+            activeOpacity={0.7}>
+            <View style={styles.fabMenuButton}>
+              <Icon name="create-outline" size={24} color={colors.textInverse} />
+            </View>
+            <Text style={styles.fabMenuLabel}>Manual Entry</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={handleCreateExpense}>
-        <Text style={styles.fabIcon}>+</Text>
+      <TouchableOpacity style={styles.fab} onPress={toggleFabMenu}>
+        <Icon
+          name={fabMenuOpen ? 'close' : 'add'}
+          size={32}
+          color={colors.textInverse}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -264,10 +313,42 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     ...commonStyles.flexCenter,
     ...shadows.xl,
+    zIndex: 1000,
   },
-  fabIcon: {
-    fontSize: spacing.xxl + spacing.sm,
-    color: colors.textInverse,
-    fontWeight: fontWeights.regular,
+  fabOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.blackOverlay50,
+    zIndex: 998,
+  },
+  fabMenuContainer: {
+    position: 'absolute',
+    right: spacing.lg,
+    bottom: spacing.lg + 70,
+    alignItems: 'flex-end',
+    zIndex: 999,
+  },
+  fabMenuOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  fabMenuLabel: {
+    ...textStyles.body,
+    color: colors.textPrimary,
+    backgroundColor: colors.background,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.md,
+    marginRight: spacing.sm,
+    fontWeight: fontWeights.semibold,
+    ...shadows.md,
+  },
+  fabMenuButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: colors.primary,
+    ...commonStyles.flexCenter,
+    ...shadows.lg,
   },
 });
