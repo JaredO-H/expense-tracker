@@ -20,6 +20,8 @@ import { AIServiceHelp } from '../screens/settings/AIServiceHelp';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { ProcessingStatusScreen } from '../screens/ProcessingStatusScreen';
 import { ReceiptVerificationScreen } from '../screens/verification/ReceiptVerificationScreen';
+import { ExportScreen } from '../screens/exports/ExportScreen';
+import { GeneralSettingsScreen } from '../screens/settings/GeneralSettingsScreen';
 import { colors } from '../styles';
 
 export type RootStackParamList = {
@@ -27,6 +29,8 @@ export type RootStackParamList = {
   Camera: undefined;
   CreateExpense: { tripId?: number } | undefined;
   TripDetail: { tripId: number };
+  ExportScreen: { tripId: number };
+  GeneralSettings: undefined;
   AIServiceSettings: undefined;
   AIServiceHelp: undefined;
   ProcessingStatus: undefined;
@@ -164,6 +168,36 @@ export const RootNavigator: React.FC = () => {
           options={{
             headerShown: true,
             headerTitle: 'Trip Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: colors.textInverse,
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="ExportScreen"
+          component={ExportScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'Export Trip',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: colors.textInverse,
+            headerTitleStyle: {
+              fontWeight: '600',
+            },
+          }}
+        />
+        <Stack.Screen
+          name="GeneralSettings"
+          component={GeneralSettingsScreen}
+          options={{
+            headerShown: true,
+            headerTitle: 'General Settings',
             headerStyle: {
               backgroundColor: colors.primary,
             },

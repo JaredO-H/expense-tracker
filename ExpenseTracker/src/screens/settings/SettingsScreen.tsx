@@ -23,6 +23,12 @@ export const SettingsScreen: React.FC = () => {
 
   const settingsOptions = [
     {
+      title: 'General Settings',
+      description: 'Currency, date format, and default preferences',
+      onPress: () => navigation.navigate('GeneralSettings'),
+      icon: 'settings-outline',
+    },
+    {
       title: 'AI Service Configuration',
       description: 'Configure your AI service provider and API keys',
       onPress: () => navigation.navigate('AIServiceSettings'),

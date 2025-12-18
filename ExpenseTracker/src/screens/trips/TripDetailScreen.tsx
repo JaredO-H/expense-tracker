@@ -229,6 +229,14 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
+          {tripStats.expenseCount > 0 && (
+            <TouchableOpacity
+              style={[styles.actionButton, styles.exportButton]}
+              onPress={() => navigation.navigate('ExportScreen', { tripId: trip.id })}>
+              <Text style={styles.exportButtonText}>Export Trip</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity
             style={[styles.actionButton, styles.editButton]}
             onPress={() => setIsEditing(true)}>
@@ -353,6 +361,12 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     ...commonStyles.button,
+  },
+  exportButton: {
+    backgroundColor: '#4CAF50',
+  },
+  exportButtonText: {
+    ...textStyles.button,
   },
   editButton: {
     ...commonStyles.buttonPrimary,
