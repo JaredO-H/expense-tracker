@@ -17,6 +17,7 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, textStyles, commonStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface GeneralSettings {
   defaultCurrency: string;
@@ -24,6 +25,8 @@ interface GeneralSettings {
   useSystemLocale: boolean;
   showCents: boolean;
   defaultTaxType: string;
+  darkMode: boolean;
+  useSystemTheme: boolean;
 }
 
 const CURRENCIES = [
@@ -62,9 +65,21 @@ const defaultSettings: GeneralSettings = {
   useSystemLocale: true,
   showCents: true,
   defaultTaxType: 'none',
+  darkMode: false,
+  useSystemTheme: true,
 };
 
 export const GeneralSettingsScreen: React.FC = () => {
+  // Theme context is optional - app may not be wrapped with ThemeProvider yet
+  let refreshTheme: (() => Promise<void>) | undefined;
+  try {
+    const theme = useTheme();
+    refreshTheme = theme.refreshTheme;
+  } catch (error) {
+    // ThemeProvider not set up yet - that's okay
+    refreshTheme = undefined;
+  }
+
   const [settings, setSettings] = useState<GeneralSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
@@ -90,6 +105,12 @@ export const GeneralSettingsScreen: React.FC = () => {
     try {
       await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       setHasChanges(false);
+
+      // Refresh theme if appearance settings changed and ThemeProvider is available
+      if (refreshTheme) {
+        await refreshTheme();
+      }
+
       Alert.alert('Success', 'Settings saved successfully');
     } catch (error) {
       Alert.alert('Error', 'Failed to save settings');
@@ -122,6 +143,12 @@ export const GeneralSettingsScreen: React.FC = () => {
                 SETTINGS_KEY,
                 JSON.stringify(defaultSettings)
               );
+
+              // Refresh theme after reset if ThemeProvider is available
+              if (refreshTheme) {
+                await refreshTheme();
+              }
+
               Alert.alert('Success', 'Settings reset to defaults');
               setHasChanges(false);
             } catch (error) {
@@ -228,6 +255,46 @@ export const GeneralSettingsScreen: React.FC = () => {
           </View>
         </View>
 
+        {/* Appearance Settings */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Appearance</Text>
+          <View style={styles.settingCard}>
+            <View style={styles.settingRow}>
+              <View style={styles.settingTextContainer}>
+                <Text style={styles.settingLabel}>Use System Theme</Text>
+                <Text style={styles.settingDescription}>
+                  Follow device dark mode preference
+                </Text>
+              </View>
+              <Switch
+                value={settings.useSystemTheme}
+                onValueChange={value => updateSetting('useSystemTheme', value)}
+                trackColor={{ false: colors.border, true: colors.primary }}
+                thumbColor={colors.background}
+              />
+            </View>
+          </View>
+
+          {!settings.useSystemTheme && (
+            <View style={styles.settingCard}>
+              <View style={styles.settingRow}>
+                <View style={styles.settingTextContainer}>
+                  <Text style={styles.settingLabel}>Dark Mode</Text>
+                  <Text style={styles.settingDescription}>
+                    Use dark color scheme
+                  </Text>
+                </View>
+                <Switch
+                  value={settings.darkMode}
+                  onValueChange={value => updateSetting('darkMode', value)}
+                  trackColor={{ false: colors.border, true: colors.primary }}
+                  thumbColor={colors.background}
+                />
+              </View>
+            </View>
+          )}
+        </View>
+
         {/* Expense Defaults */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Expense Defaults</Text>
@@ -281,7 +348,8 @@ export const GeneralSettingsScreen: React.FC = () => {
           />
           <Text style={styles.infoText}>
             These settings affect how data is displayed and the default values
-            for new expenses. Changes do not affect existing expenses.
+            for new expenses. Theme changes take effect immediately after saving.
+            Changes do not affect existing expenses.
           </Text>
         </View>
       </View>

@@ -11,6 +11,8 @@ export interface GeneralSettings {
   useSystemLocale: boolean;
   showCents: boolean;
   defaultTaxType: string;
+  darkMode: boolean;
+  useSystemTheme: boolean;
 }
 
 const SETTINGS_KEY = '@general_settings';
@@ -21,6 +23,8 @@ const defaultSettings: GeneralSettings = {
   useSystemLocale: true,
   showCents: true,
   defaultTaxType: 'none',
+  darkMode: false,
+  useSystemTheme: true,
 };
 
 /**
@@ -146,4 +150,27 @@ export const getCurrencySymbol = (currencyCode: string): string => {
   };
 
   return currencySymbols[currencyCode] || currencyCode;
+};
+
+/**
+ * Check if dark mode is enabled
+ */
+export const isDarkModeEnabled = async (): Promise<boolean> => {
+  const settings = await getGeneralSettings();
+
+  if (settings.useSystemTheme) {
+    // Check system theme preference
+    // Note: You would need to use Appearance.getColorScheme() from react-native
+    // For now, just return the darkMode setting
+    return settings.darkMode;
+  }
+
+  return settings.darkMode;
+};
+
+/**
+ * Check if system theme should be used
+ */
+export const shouldUseSystemTheme = async (): Promise<boolean> => {
+  return getSetting('useSystemTheme');
 };

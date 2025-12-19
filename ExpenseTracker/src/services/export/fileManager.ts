@@ -164,28 +164,39 @@ export const shareExportFile = async (
     const mimeType = getMimeType(filePath);
     console.log('MIME type:', mimeType);
 
-    // Construct proper file URL
-    let fileUrl = filePath;
+    // Construct proper file URL for the platform
+    let fileUrl: string;
 
-    // Ensure file:// prefix
-    if (!fileUrl.startsWith('file://')) {
+    // Ensure file:// prefix for all platforms
+    if (!filePath.startsWith('file://')) {
       fileUrl = `file://${filePath}`;
+    } else {
+      fileUrl = filePath;
     }
 
     console.log('Sharing with URL:', fileUrl);
 
-    const shareOptions = {
-      url: fileUrl,
-      type: mimeType,
-      title: title,
-      subject: title,
-      failOnCancel: false,
-    };
+    // On Android, use urls array for better FileProvider support
+    const shareOptions: any = Platform.OS === 'android'
+      ? {
+          title: title,
+          subject: title,
+          failOnCancel: false,
+          urls: [fileUrl],
+          type: mimeType,
+        }
+      : {
+          title: title,
+          subject: title,
+          failOnCancel: false,
+          url: fileUrl,
+          type: mimeType,
+        };
 
     console.log('Share options:', shareOptions);
 
-    await Share.open(shareOptions);
-    console.log('Share completed successfully');
+    const result = await Share.open(shareOptions);
+    console.log('Share result:', result);
   } catch (error) {
     // User cancelled sharing or error occurred
     if (error instanceof Error && error.message !== 'User did not share') {

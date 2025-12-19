@@ -43,7 +43,9 @@
       "Bash(taskkill /F /PID 22752)",
       "Bash(taskkill //F //PID 22752)",
       "Bash(taskkill /F /PID 15724)",
-      "Bash(taskkill //F //PID 15724)"
+      "Bash(taskkill //F //PID 15724)",
+      "Bash(gradlew.bat:*)",
+      "Bash(./gradlew.bat clean assembleDebug)"
     ]
   }
 }

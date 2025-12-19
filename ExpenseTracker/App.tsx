@@ -13,6 +13,7 @@ import { testDatabaseInitialization } from './src/services/database/testDatabase
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useSettingsStore } from './src/stores/settingsStore';
 import { processingQueue } from './src/services/queue/processingQueue';
+import { ThemeProvider } from './src/contexts/ThemeContext';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
@@ -61,32 +62,38 @@ function App() {
   // Show loading screen while app initializes
   if (!dbInitialized && !dbError) {
     return (
-      <SafeAreaProvider>
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#0000ff" />
-          <Text style={styles.loadingText}>Initializing app...</Text>
-        </View>
-      </SafeAreaProvider>
+      <ThemeProvider>
+        <SafeAreaProvider>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#0000ff" />
+            <Text style={styles.loadingText}>Initializing app...</Text>
+          </View>
+        </SafeAreaProvider>
+      </ThemeProvider>
     );
   }
 
   // Show error screen if app initialization failed
   if (dbError) {
     return (
-      <SafeAreaProvider>
-        <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>Initialization Error:</Text>
-          <Text style={styles.errorMessage}>{dbError}</Text>
-        </View>
-      </SafeAreaProvider>
+      <ThemeProvider>
+        <SafeAreaProvider>
+          <View style={styles.errorContainer}>
+            <Text style={styles.errorText}>Initialization Error:</Text>
+            <Text style={styles.errorMessage}>{dbError}</Text>
+          </View>
+        </SafeAreaProvider>
+      </ThemeProvider>
     );
   }
 
   return (
-    <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <RootNavigator />
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider>
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+        <RootNavigator />
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 
