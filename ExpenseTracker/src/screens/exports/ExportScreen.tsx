@@ -41,7 +41,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
   const [trip, setTrip] = useState<Trip | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
-    ExportFormat.CSV
+    ExportFormat.EXCEL
   );
   const [includeReceipts, setIncludeReceipts] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -113,9 +113,6 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
         case ExportFormat.CSV:
           result = await csvExportService.generateExport(trip, expenses, options);
           break;
-        case ExportFormat.PDF:
-          result = await pdfExportService.generateExport(trip, expenses, options);
-          break;
         case ExportFormat.EXCEL:
           result = await excelExportService.generateExport(trip, expenses, options);
           break;
@@ -125,6 +122,15 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
         Alert.alert('Export Failed', result.error || 'Unknown error occurred');
         return;
       }
+
+      if (options.includeReceipts) {
+        pdfResult = await pdfExportService.generateExport(trip, expenses, options);
+        if (!pdfResult.success || !pdfResult.filePath) {
+          Alert.alert('PDF Export Failed', pdfResult.error || 'Unknown error occurred');
+          return;
+        }
+      }
+
 
       // Show success and offer actions
       showExportSuccess(result.filePath, result.fileSize || 0);
@@ -255,22 +261,6 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.sectionTitle}>Export Format</Text>
           <View style={styles.formatOptions}>
             <FormatOption
-              format={ExportFormat.CSV}
-              icon="file-delimited"
-              title="CSV"
-              description="Spreadsheet format for Excel, Google Sheets"
-              selected={selectedFormat === ExportFormat.CSV}
-              onSelect={() => setSelectedFormat(ExportFormat.CSV)}
-            />
-            <FormatOption
-              format={ExportFormat.PDF}
-              icon="file-pdf-box"
-              title="PDF"
-              description="Professional document with receipt images"
-              selected={selectedFormat === ExportFormat.PDF}
-              onSelect={() => setSelectedFormat(ExportFormat.PDF)}
-            />
-            <FormatOption
               format={ExportFormat.EXCEL}
               icon="file-excel"
               title="Excel"
@@ -278,6 +268,15 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
               selected={selectedFormat === ExportFormat.EXCEL}
               onSelect={() => setSelectedFormat(ExportFormat.EXCEL)}
             />
+            <FormatOption
+              format={ExportFormat.CSV}
+              icon="file-delimited"
+              title="CSV"
+              description="Spreadsheet format for Excel, Google Sheets"
+              selected={selectedFormat === ExportFormat.CSV}
+              onSelect={() => setSelectedFormat(ExportFormat.CSV)}
+            />
+
           </View>
         </View>
 
@@ -295,7 +294,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
               size={24}
               color={includeReceipts ? '#007AFF' : '#999'}
             />
-            <Text style={styles.checkboxLabel}>Include receipt images</Text>
+            <Text style={styles.checkboxLabel}>Generate PDF with receipt images</Text>
           </TouchableOpacity>
           <Text style={styles.note}>
             {selectedFormat === ExportFormat.CSV && includeReceipts

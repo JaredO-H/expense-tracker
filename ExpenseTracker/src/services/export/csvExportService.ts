@@ -94,16 +94,13 @@ export class CSVExportService implements ExportService {
     const expenseRows = expenses.map(expense => ({
       Date: format(new Date(expense.date), 'yyyy-MM-dd'),
       Merchant: expense.merchant || 'N/A',
-      Category: expense.category.toString(),
       Amount: `$${expense.amount.toFixed(2)}`,
       'Tax Amount': expense.tax_amount
         ? `$${expense.tax_amount.toFixed(2)}`
         : '$0.00',
       'Tax Type': expense.tax_type || 'None',
       'Tax Rate': expense.tax_rate ? `${expense.tax_rate.toFixed(1)}%` : '0%',
-      Receipt: expense.image_path
-        ? expense.image_path.split('/').pop() || 'N/A'
-        : 'N/A',
+      'Has Receipt': expense.image_path ? 'Yes' : 'No',
       Notes: expense.notes || '',
     }));
 
@@ -118,20 +115,6 @@ export class CSVExportService implements ExportService {
     });
 
     lines.push(csvData);
-    lines.push(''); // Empty line before totals
-
-    // Calculate totals
-    const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-    const totalTax = expenses.reduce(
-      (sum, exp) => sum + (exp.tax_amount || 0),
-      0
-    );
-
-    // Add summary rows
-    lines.push(`Total Expenses:,$${totalAmount.toFixed(2)}`);
-    lines.push(`Total Tax:,$${totalTax.toFixed(2)}`);
-    lines.push(`Grand Total:,$${(totalAmount + totalTax).toFixed(2)}`);
-
     return lines.join('\r\n');
   }
 

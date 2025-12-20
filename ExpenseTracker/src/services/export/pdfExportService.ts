@@ -43,13 +43,12 @@ export class PDFExportService implements ExportService {
       );
 
       // Generate PDF from HTML
-      const directory = await getExportDirectory();
       const filename = generateFilename(trip.name, ExportFormat.PDF);
 
+      // Generate PDF in temp location first
       const pdfOptions = {
         html: htmlContent,
         fileName: filename.replace('.pdf', ''),
-        directory: directory,
         base64: false,
       };
 
@@ -59,12 +58,19 @@ export class PDFExportService implements ExportService {
         throw new Error('PDF generation failed - no file path returned');
       }
 
+      // Move PDF to the correct export directory
+      const directory = await getExportDirectory();
+      const targetPath = `${directory}/${filename}`;
+
+      // Copy the file to the target location
+      await RNFS.moveFile(pdf.filePath, targetPath);
+
       // Get file size
-      const fileSize = await getFileSize(pdf.filePath);
+      const fileSize = await getFileSize(targetPath);
 
       return {
         success: true,
-        filePath: pdf.filePath,
+        filePath: targetPath,
         fileSize,
       };
     } catch (error) {
@@ -160,21 +166,33 @@ export class PDFExportService implements ExportService {
       border-top: 2px solid #4472C4;
     }
     .receipt-section {
-      page-break-before: always;
       margin-top: 30px;
     }
     .receipt-item {
       page-break-inside: avoid;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    .receipt-item:last-child {
+      border-bottom: none;
     }
     .receipt-item h3 {
       color: #4472C4;
+      font-size: 1em;
+      margin-bottom: 8px;
+    }
+    .receipt-item p {
+      margin: 3px 0;
+      font-size: 0.9em;
     }
     .receipt-item img {
-      max-width: 100%;
+      max-width: 400px;
+      width: 100%;
       height: auto;
       border: 1px solid #ddd;
       margin: 10px 0;
+      display: block;
     }
     .footer {
       margin-top: 30px;
@@ -205,7 +223,6 @@ export class PDFExportService implements ExportService {
         <th>#</th>
         <th>Date</th>
         <th>Merchant</th>
-        <th>Category</th>
         <th>Amount</th>
         <th>Tax</th>
         <th>Total</th>
@@ -219,7 +236,6 @@ export class PDFExportService implements ExportService {
           <td>${index + 1}</td>
           <td>${format(new Date(expense.date), 'MMM dd, yyyy')}</td>
           <td>${this.escapeHTML(expense.merchant || 'N/A')}</td>
-          <td>${expense.category}</td>
           <td>$${expense.amount.toFixed(2)}</td>
           <td>${expense.tax_amount ? `$${expense.tax_amount.toFixed(2)}` : '$0.00'}</td>
           <td>$${(expense.amount + (expense.tax_amount || 0)).toFixed(2)}</td>

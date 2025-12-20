@@ -6,6 +6,7 @@ import RNFS from 'react-native-fs';
 import Share from 'react-native-share';
 import { Platform } from 'react-native';
 import { ExportFormat } from '../../types/export';
+import { ensureStoragePermission } from '../../utils/storagePermissions';
 
 /**
  * Sanitize a filename by removing invalid characters
@@ -60,24 +61,45 @@ export const getFileExtension = (format: ExportFormat): string => {
 
 /**
  * Get the appropriate directory path for saving exports
+ * Uses device's public storage for easy access to exported files
  */
 export const getExportDirectory = async (): Promise<string> => {
-  if (Platform.OS === 'android') {
-    // Use Downloads directory on Android
-    const downloadDir = RNFS.DownloadDirectoryPath;
-    const exportDir = `${downloadDir}/ExpenseTracker`;
-
-    // Create directory if it doesn't exist
-    const exists = await RNFS.exists(exportDir);
-    if (!exists) {
-      await RNFS.mkdir(exportDir);
-    }
-
-    return exportDir;
-  } else {
-    // Use Documents directory on iOS
-    return RNFS.DocumentDirectoryPath;
+  // Request storage permission
+  const hasPermission = await ensureStoragePermission();
+  if (!hasPermission) {
+    throw new Error('Storage permission not granted');
   }
+
+  let exportDir: string;
+
+  if (Platform.OS === 'android') {
+    // For Android, use public Documents folder for easy user access
+    // On Android 10+ (API 29+), we use the Downloads folder as it's more accessible
+    // with scoped storage
+    if (Platform.Version >= 29) {
+      // Android 10+ - Use Downloads folder which is accessible with scoped storage
+      const downloadDir = RNFS.DownloadDirectoryPath;
+      exportDir = `${downloadDir}/ExpenseTracker`;
+    } else {
+      // Android 9 and below - Use public Documents folder
+      const externalStorage = RNFS.ExternalStorageDirectoryPath;
+      exportDir = `${externalStorage}/Documents/ExpenseTracker`;
+    }
+  } else {
+    // iOS - Use app's Documents directory (standard iOS sandbox location)
+    // Files saved here can be accessed via Files app
+    exportDir = `${RNFS.DocumentDirectoryPath}/ExpenseTracker`;
+  }
+
+  console.log('Export directory:', exportDir);
+
+  // Create directory if it doesn't exist
+  const exists = await RNFS.exists(exportDir);
+  if (!exists) {
+    await RNFS.mkdir(exportDir);
+  }
+
+  return exportDir;
 };
 
 /**

@@ -42,10 +42,6 @@ export class ExcelExportService implements ExportService {
       const expensesSheet = this.createExpensesSheet(trip, expenses, options);
       XLSX.utils.book_append_sheet(workbook, expensesSheet, 'Expenses');
 
-      // Add Summary sheet
-      const summarySheet = this.createSummarySheet(trip, expenses);
-      XLSX.utils.book_append_sheet(workbook, summarySheet, 'Summary');
-
       // Generate Excel file as base64
       const wbout = XLSX.write(workbook, {
         type: 'base64',
@@ -106,13 +102,12 @@ export class ExcelExportService implements ExportService {
     const headerRow = [
       'Date',
       'Merchant',
-      'Category',
       'Amount',
       'Tax Amount',
       'Tax Type',
       'Tax Rate',
       'Total',
-      'Receipt',
+      'Has Receipt',
       'Notes',
     ];
     data.push(headerRow);
@@ -122,13 +117,12 @@ export class ExcelExportService implements ExportService {
       data.push([
         format(new Date(expense.date), 'yyyy-MM-dd'),
         expense.merchant || 'N/A',
-        expense.category.toString(),
         expense.amount,
         expense.tax_amount || 0,
         expense.tax_type || 'None',
         expense.tax_rate ? expense.tax_rate / 100 : 0, // Convert to decimal for Excel percentage format
         expense.amount + (expense.tax_amount || 0),
-        expense.image_path ? expense.image_path.split('/').pop() : 'N/A',
+        expense.image_path ? 'Yes' : 'No',
         expense.notes || '',
       ]);
     });
@@ -143,7 +137,6 @@ export class ExcelExportService implements ExportService {
     data.push([]); // Empty row
     data.push([
       '',
-      '',
       'Subtotal:',
       totalAmount,
       '',
@@ -155,7 +148,6 @@ export class ExcelExportService implements ExportService {
     ]);
     data.push([
       '',
-      '',
       'Total Tax:',
       totalTax,
       '',
@@ -166,7 +158,6 @@ export class ExcelExportService implements ExportService {
       '',
     ]);
     data.push([
-      '',
       '',
       'Grand Total:',
       totalAmount + totalTax,
@@ -185,100 +176,13 @@ export class ExcelExportService implements ExportService {
     ws['!cols'] = [
       { wch: 12 }, // Date
       { wch: 20 }, // Merchant
-      { wch: 12 }, // Category
       { wch: 12 }, // Amount
       { wch: 12 }, // Tax Amount
       { wch: 12 }, // Tax Type
       { wch: 10 }, // Tax Rate
       { wch: 12 }, // Total
-      { wch: 25 }, // Receipt
+      { wch: 12 }, // Has Receipt
       { wch: 30 }, // Notes
-    ];
-
-    return ws;
-  }
-
-  /**
-   * Create the Summary sheet
-   */
-  private createSummarySheet(trip: Trip, expenses: Expense[]): XLSX.WorkSheet {
-    const data: any[][] = [];
-
-    // Trip Information
-    data.push(['TRIP SUMMARY']);
-    data.push([]);
-    data.push(['Trip Name:', trip.name]);
-    data.push([
-      'Trip Dates:',
-      `${format(new Date(trip.start_date), 'MMM dd, yyyy')} - ${format(new Date(trip.end_date), 'MMM dd, yyyy')}`,
-    ]);
-    if (trip.destination) {
-      data.push(['Destination:', trip.destination]);
-    }
-    if (trip.purpose) {
-      data.push(['Purpose:', trip.purpose]);
-    }
-    data.push(['Number of Expenses:', expenses.length]);
-    data.push([]);
-
-    // Financial Summary
-    const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-    const totalTax = expenses.reduce(
-      (sum, exp) => sum + (exp.tax_amount || 0),
-      0
-    );
-
-    data.push(['FINANCIAL SUMMARY']);
-    data.push([]);
-    data.push(['Subtotal:', totalAmount]);
-    data.push(['Total Tax:', totalTax]);
-    data.push(['Grand Total:', totalAmount + totalTax]);
-    data.push([]);
-
-    // Category Breakdown
-    data.push(['CATEGORY BREAKDOWN']);
-    data.push([]);
-    data.push(['Category', 'Count', 'Total Amount']);
-
-    const categoryTotals = new Map<number, number>();
-    expenses.forEach(expense => {
-      const current = categoryTotals.get(expense.category) || 0;
-      categoryTotals.set(expense.category, current + expense.amount);
-    });
-
-    categoryTotals.forEach((total, category) => {
-      const count = expenses.filter(e => e.category === category).length;
-      data.push([`Category ${category}`, count, total]);
-    });
-
-    data.push([]);
-
-    // Tax Breakdown
-    data.push(['TAX BREAKDOWN']);
-    data.push([]);
-    data.push(['Tax Type', 'Count', 'Total Tax']);
-
-    const taxTotals = new Map<string, number>();
-    expenses.forEach(expense => {
-      if (expense.tax_type && expense.tax_amount) {
-        const current = taxTotals.get(expense.tax_type) || 0;
-        taxTotals.set(expense.tax_type, current + expense.tax_amount);
-      }
-    });
-
-    taxTotals.forEach((total, taxType) => {
-      const count = expenses.filter(e => e.tax_type === taxType).length;
-      data.push([taxType, count, total]);
-    });
-
-    // Create worksheet
-    const ws = XLSX.utils.aoa_to_sheet(data);
-
-    // Set column widths
-    ws['!cols'] = [
-      { wch: 20 }, // First column
-      { wch: 15 }, // Second column
-      { wch: 15 }, // Third column
     ];
 
     return ws;
