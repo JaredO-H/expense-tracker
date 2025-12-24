@@ -53,7 +53,8 @@
       "Bash(git restore:*)",
       "Bash(start emulator -avd Medium_Phone_API_36.1)",
       "Bash(tasklist:*)",
-      "Bash(npx react-native start --reset-cache)"
+      "Bash(npx react-native start --reset-cache)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

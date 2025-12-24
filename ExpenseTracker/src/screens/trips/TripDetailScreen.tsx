@@ -1,6 +1,7 @@
 /**
  * Trip Detail Screen
  * Displays trip details with edit and delete capabilities
+ * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -18,7 +19,7 @@ import { useTripStore } from '../../stores/tripStore';
 import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
 import { format } from 'date-fns';
-import { colors, spacing, textStyles, commonStyles } from '../../styles';
+import { colors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
 import databaseService from '../../services/database/databaseService';
 
 interface TripDetailScreenProps {
@@ -119,7 +120,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
   if (!trip) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={screenStyles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -127,7 +128,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
   if (isEditing) {
     return (
-      <View style={styles.container}>
+      <View style={screenStyles.screenContainer}>
         <TripForm
           trip={trip}
           onSubmit={handleUpdate}
@@ -139,11 +140,11 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.containerGray}>
       <View style={styles.content}>
         {/* Trip Information Card */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Trip Information</Text>
+          <Text style={screenStyles.sectionTitle}>Trip Information</Text>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Name</Text>
@@ -180,7 +181,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
         {/* Expense Summary Card */}
         <View style={styles.card}>
           <View style={styles.summaryHeader}>
-            <Text style={styles.sectionTitle}>Expense Summary</Text>
+            <Text style={screenStyles.sectionTitle}>Expense Summary</Text>
             {tripStats.expenseCount > 0 && (
               <TouchableOpacity
                 style={styles.viewExpensesButton}
@@ -262,24 +263,25 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
   );
 };
 
+// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
-  container: {
+  // Gray container for detail view
+  containerGray: {
     ...commonStyles.containerGray,
   },
-  loadingContainer: {
-    ...commonStyles.loadingContainer,
-  },
+
+  // Content padding
   content: {
     padding: spacing.base,
   },
+
+  // Card - uses common card style
   card: {
     ...commonStyles.card,
     marginBottom: spacing.base,
   },
-  sectionTitle: {
-    ...textStyles.h5,
-    marginBottom: spacing.base,
-  },
+
+  // Info Row - Key-value pair display pattern
   infoRow: {
     marginBottom: spacing.md,
   },
@@ -291,6 +293,8 @@ const styles = StyleSheet.create({
   infoValue: {
     ...textStyles.bodyLarge,
   },
+
+  // Summary Header - Header with action link
   summaryHeader: {
     ...commonStyles.flexRow,
     ...commonStyles.flexBetween,
@@ -306,6 +310,8 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontWeight: '600',
   },
+
+  // Stats Display
   statsContainer: {
     ...commonStyles.flexRow,
     ...commonStyles.flexBetween,
@@ -332,6 +338,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.border,
     marginHorizontal: spacing.lg,
   },
+
+  // Empty State Prompt
   addExpensePrompt: {
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
@@ -343,26 +351,8 @@ const styles = StyleSheet.create({
     ...textStyles.body,
     color: colors.textSecondary,
   },
-  summaryRow: {
-    ...commonStyles.flexRow,
-    ...commonStyles.flexBetween,
-    ...commonStyles.alignCenter,
-    marginBottom: spacing.sm,
-  },
-  summaryLabel: {
-    ...textStyles.bodyLarge,
-    color: colors.textSecondary,
-  },
-  summaryValue: {
-    ...textStyles.bodyLarge,
-    fontWeight: textStyles.label.fontWeight,
-  },
-  summaryNote: {
-    ...textStyles.caption,
-    color: colors.textDisabled,
-    fontStyle: 'italic',
-    marginTop: spacing.sm,
-  },
+
+  // Action Buttons
   actionButtons: {
     gap: spacing.md,
     marginTop: spacing.sm,

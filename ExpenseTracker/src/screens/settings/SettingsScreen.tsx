@@ -1,6 +1,7 @@
 /**
  * Settings Screen - Neo-Memphis Edition
  * Bold settings menu with geometric flair
+ * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState } from 'react';
@@ -15,7 +16,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors, spacing, textStyles, commonStyles, borderRadius, shadows } from '../../styles';
+import { colors, spacing, textStyles, borderRadius, shadows, screenStyles } from '../../styles';
 import { staggeredFadeIn, createAnimatedValues } from '../../utils/animations';
 
 type NavigationProp = NativeStackNavigationProp<any>;
@@ -59,14 +60,14 @@ export const SettingsScreen: React.FC = () => {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={screenStyles.screenWithDecorations}>
       {/* Background decorations */}
-      <View style={styles.bgDecor1} />
-      <View style={styles.bgDecor2} />
+      <View style={screenStyles.bgDecorCircleMedium} />
+      <View style={screenStyles.bgDecorSquareLeft} />
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={screenStyles.scrollViewContent}
         showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
@@ -141,49 +142,19 @@ export const SettingsScreen: React.FC = () => {
             </View>
           </View>
         </View>
-
-        {/* Bottom spacing */}
-        <View style={{ height: spacing.massive }} />
       </ScrollView>
     </View>
   );
 };
 
+// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  // ScrollView basic style
   scrollView: {
     flex: 1,
   },
-  content: {
-    padding: spacing.lg,
-  },
 
-  // Background decorations
-  bgDecor1: {
-    position: 'absolute',
-    top: -30,
-    right: -40,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: colors.accent2,
-    opacity: 0.2,
-  },
-  bgDecor2: {
-    position: 'absolute',
-    bottom: 100,
-    left: -30,
-    width: 90,
-    height: 90,
-    backgroundColor: colors.accent4,
-    opacity: 0.2,
-    transform: [{ rotate: '30deg' }],
-  },
-
-  // Header
+  // Header - Settings-specific centered header with icon
   header: {
     marginBottom: spacing.xxl,
     alignItems: 'center',
@@ -227,7 +198,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
 
-  // Option Cards
+  // Option Cards - Settings menu items
   optionCard: {
     backgroundColor: colors.backgroundElevated,
     borderRadius: borderRadius.lg,
@@ -282,7 +253,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
 
-  // Info Card
+  // Info Card - App information display
   infoCard: {
     backgroundColor: colors.accent3Light,
     borderRadius: borderRadius.lg,
@@ -347,17 +318,5 @@ const styles = StyleSheet.create({
   infoValue: {
     ...textStyles.bodyBold,
     color: colors.textPrimary,
-  },
-  infoFooter: {
-    marginTop: spacing.md,
-    paddingTop: spacing.md,
-    borderTopWidth: 2,
-    borderTopColor: colors.accent3,
-    alignItems: 'center',
-  },
-  infoFooterText: {
-    ...textStyles.body,
-    color: colors.textPrimary,
-    fontWeight: '600',
   },
 });

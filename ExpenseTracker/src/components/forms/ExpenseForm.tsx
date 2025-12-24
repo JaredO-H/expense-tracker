@@ -1,6 +1,7 @@
 /**
  * Expense Form Component - Neo-Memphis Edition
  * Making expense forms actually exciting!
+ * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState } from 'react';
@@ -21,7 +22,7 @@ import { Expense, CreateExpenseModel, TaxType } from '../../types/database';
 import { isValidDateFormat } from '../../components/common/DateChecker';
 import { useTripStore } from '../../stores/tripStore';
 import { useCategoryStore } from '../../stores/categoryStore';
-import { colors, spacing, borderRadius, textStyles, commonStyles, shadows } from '../../styles';
+import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface ExpenseFormProps {
@@ -145,14 +146,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={screenStyles.screenWithDecorations}>
       {/* Background decorations */}
-      <View style={styles.bgDecor1} />
-      <View style={styles.bgDecor2} />
+      <View style={screenStyles.bgDecorSmall} />
+      <View style={screenStyles.bgDecorSquareLeft} />
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.formContent}
+        contentContainerStyle={screenStyles.scrollViewContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}>
         {/* Form Header */}
@@ -170,7 +171,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
         {/* Trip Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>TRIP INFO</Text>
+          <Text style={screenStyles.sectionTitle}>TRIP INFO</Text>
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>Trip (Optional)</Text>
             {tripsLoading ? (
@@ -202,7 +203,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
         {/* Merchant & Amount */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>BASIC DETAILS</Text>
+          <Text style={screenStyles.sectionTitle}>BASIC DETAILS</Text>
 
           {/* Merchant Name */}
           <View style={styles.fieldContainer}>
@@ -345,7 +346,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
         {/* Category */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>CATEGORY</Text>
+          <Text style={screenStyles.sectionTitle}>CATEGORY</Text>
           <View style={styles.fieldContainer}>
             {categoriesLoading ? (
               <View style={styles.loadingBox}>
@@ -376,7 +377,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
         {/* Tax Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>TAX (OPTIONAL)</Text>
+          <Text style={screenStyles.sectionTitle}>TAX (OPTIONAL)</Text>
 
           <View style={styles.fieldContainer}>
             <Text style={styles.label}>Tax Amount</Text>
@@ -479,7 +480,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
         {/* Notes */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>NOTES</Text>
+          <Text style={screenStyles.sectionTitle}>NOTES</Text>
           <View style={styles.fieldContainer}>
             <Controller
               control={control}
@@ -527,48 +528,19 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             <Text style={[styles.buttonText, styles.cancelButtonText]}>CANCEL</Text>
           </TouchableOpacity>
         </View>
-
-        <View style={{ height: spacing.massive }} />
       </ScrollView>
     </View>
   );
 };
 
+// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  // ScrollView basic style
   scrollView: {
     flex: 1,
   },
-  formContent: {
-    padding: spacing.lg,
-  },
 
-  // Background decorations
-  bgDecor1: {
-    position: 'absolute',
-    top: -30,
-    right: -40,
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: colors.accent2,
-    opacity: 0.2,
-  },
-  bgDecor2: {
-    position: 'absolute',
-    bottom: 50,
-    left: -30,
-    width: 80,
-    height: 80,
-    backgroundColor: colors.accent4,
-    opacity: 0.2,
-    transform: [{ rotate: '35deg' }],
-  },
-
-  // Form Header
+  // Form Header - Form-specific centered header
   formHeader: {
     marginBottom: spacing.xxl,
     alignItems: 'center',
@@ -593,17 +565,12 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  // Sections
+  // Sections - Form section spacing
   section: {
     marginBottom: spacing.xl,
   },
-  sectionTitle: {
-    ...textStyles.labelMedium,
-    color: colors.textSecondary,
-    marginBottom: spacing.base,
-  },
 
-  // Fields
+  // Fields - Form field layout
   fieldContainer: {
     marginBottom: spacing.base,
   },
@@ -627,7 +594,7 @@ const styles = StyleSheet.create({
     ...commonStyles.inputError,
   },
 
-  // Amount Input - Special treatment!
+  // Amount Input - Special highlighted input for main expense amount
   amountInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -651,7 +618,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
   },
 
-  // Picker
+  // Picker - Dropdown selector styling
   pickerContainer: {
     borderWidth: 3,
     borderColor: colors.border,
@@ -663,14 +630,14 @@ const styles = StyleSheet.create({
     height: 50,
   },
 
-  // Text Area
+  // Text Area - Multiline input
   textArea: {
     minHeight: 100,
     textAlignVertical: 'top',
     paddingTop: spacing.md,
   },
 
-  // Loading
+  // Loading - Inline loading state for pickers
   loadingBox: {
     padding: spacing.lg,
     alignItems: 'center',

@@ -1,6 +1,7 @@
 /**
  * Trips Screen
  * Displays list of all trips with search, filtering, and status indicators
+ * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState, useCallback } from 'react';
@@ -20,7 +21,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTripStore } from '../../stores/tripStore';
 import { Trip } from '../../types/database';
 import { format, isPast, isFuture } from 'date-fns';
-import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, fontWeights } from '../../styles';
+import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
 import databaseService from '../../services/database/databaseService';
 import { TripCard } from '../../components/cards/TripCard';
 import { cardEntrance } from '../../utils/animations';
@@ -219,27 +220,31 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   };
 
   const renderEmptyState = () => (
-    <View style={styles.emptyState}>
-      <Text style={styles.emptyStateTitle}>No Trips Found</Text>
-      <Text style={styles.emptyStateText}>
+    <View style={screenStyles.emptyStateContainer}>
+      <View style={screenStyles.emptyStateIcon}>
+        <Icon name="airplane-outline" size={64} color={colors.primary} />
+      </View>
+      <Text style={screenStyles.emptyStateTitle}>No Trips Found</Text>
+      <Text style={screenStyles.emptyStateText}>
         {searchQuery
           ? 'No trips match your search criteria'
           : 'Get started by creating your first business trip'}
       </Text>
       {!searchQuery && (
-        <TouchableOpacity style={styles.emptyStateButton} onPress={handleCreateTrip}>
-          <Text style={styles.emptyStateButtonText}>Create Trip</Text>
+        <TouchableOpacity style={screenStyles.emptyStateButton} onPress={handleCreateTrip}>
+          <Icon name="add-circle" size={24} color={colors.textInverse} style={{ marginRight: spacing.sm }} />
+          <Text style={screenStyles.emptyStateButtonText}>CREATE TRIP</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 
   return (
-    <View style={styles.container}>
+    <View style={[screenStyles.screenWithDecorations, styles.containerGray]}>
       {/* Background geometric decorations */}
-      <View style={styles.bgDecorCircle1} />
-      <View style={styles.bgDecorCircle2} />
-      <View style={styles.bgDecorSquare} />
+      <View style={screenStyles.bgDecorCircleMedium} />
+      <View style={screenStyles.bgDecorCircleLargeBottom} />
+      <View style={screenStyles.bgDecorSquare} />
 
       {/* Search Bar */}
       <View style={styles.searchContainer}>
@@ -257,7 +262,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
         data={filteredTrips}
         renderItem={renderTripCard}
         keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles.listContent}
+        contentContainerStyle={screenStyles.listContentPadding}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[colors.primary]} />
@@ -265,50 +270,23 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
       />
 
       {/* Floating Action Button */}
-      <TouchableOpacity style={styles.fab} onPress={handleCreateTrip}>
-        <Text style={styles.fabIcon}>+</Text>
-      </TouchableOpacity>
+      <View style={screenStyles.fabContainer}>
+        <TouchableOpacity style={screenStyles.fabButton} onPress={handleCreateTrip}>
+          <Text style={screenStyles.fabIconText}>+</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
+// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
-  container: {
-    ...commonStyles.containerGray,
+  // Container override for gray background
+  containerGray: {
+    backgroundColor: colors.backgroundSecondary,
   },
 
-  // Background decorations - Neo-Memphis style
-  bgDecorCircle1: {
-    position: 'absolute',
-    top: -40,
-    right: -30,
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: colors.accent1,
-    opacity: 0.3,
-  },
-  bgDecorCircle2: {
-    position: 'absolute',
-    bottom: 100,
-    left: -50,
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: colors.secondary,
-    opacity: 0.2,
-  },
-  bgDecorSquare: {
-    position: 'absolute',
-    top: 200,
-    right: 20,
-    width: 60,
-    height: 60,
-    backgroundColor: colors.accent3,
-    opacity: 0.25,
-    transform: [{ rotate: '25deg' }],
-  },
-
+  // Search container (unique to this screen - no icon)
   searchContainer: {
     backgroundColor: 'transparent',
     padding: spacing.base,
@@ -320,17 +298,13 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     ...textStyles.body,
   },
-  listContent: {
-    padding: spacing.lg,
-    paddingBottom: 100,
-  },
 
   // Trip Card Wrapper with Stats
   tripCardWrapper: {
     marginBottom: spacing.lg,
   },
 
-  // Expand Button
+  // Expand Button - unique interaction element
   expandButton: {
     position: 'absolute',
     bottom: spacing.sm,
@@ -348,7 +322,7 @@ const styles = StyleSheet.create({
     ...shadows.medium,
   },
 
-  // Stats Footer - Neo-Memphis Style
+  // Stats Footer - unique expandable stats (trip-specific feature)
   statsFooter: {
     overflow: 'hidden',
     backgroundColor: colors.backgroundElevated,
@@ -394,7 +368,7 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
   },
 
-  // Purpose Section
+  // Purpose Section - trip-specific feature
   purposeSection: {
     borderTopWidth: 3,
     borderTopColor: colors.border,
@@ -417,42 +391,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.textPrimary,
     lineHeight: 20,
-  },
-
-  emptyState: {
-    ...commonStyles.emptyContainer,
-  },
-  emptyStateTitle: {
-    ...commonStyles.emptyTitle,
-  },
-  emptyStateText: {
-    ...commonStyles.emptySubtitle,
-    marginBottom: spacing.xl,
-    paddingHorizontal: spacing.xxxl,
-  },
-  emptyStateButton: {
-    ...commonStyles.buttonPrimary,
-    paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
-    borderRadius: borderRadius.md,
-  },
-  emptyStateButtonText: {
-    ...textStyles.button,
-  },
-  fab: {
-    position: 'absolute',
-    right: spacing.lg,
-    bottom: spacing.lg,
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-    ...commonStyles.flexCenter,
-    ...shadows.xl,
-  },
-  fabIcon: {
-    fontSize: spacing.xxl + spacing.sm,
-    color: colors.textInverse,
-    fontWeight: fontWeights.regular,
   },
 });

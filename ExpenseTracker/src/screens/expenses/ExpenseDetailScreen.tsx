@@ -1,6 +1,7 @@
 /**
  * Expense Detail Screen
  * Displays expense details with edit and delete capabilities
+ * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ import { useExpenseStore } from '../../stores/expenseStore';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { CreateExpenseModel } from '../../types/database';
 import { format } from 'date-fns';
-import { colors, spacing, textStyles, commonStyles } from '../../styles';
+import { colors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
 
 interface ExpenseDetailScreenProps {
   route: any;
@@ -95,7 +96,7 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
   if (!expense) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={screenStyles.loadingContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -103,7 +104,7 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
   if (isEditing) {
     return (
-      <View style={styles.container}>
+      <View style={screenStyles.screenContainer}>
         <ExpenseForm
           expense={expense}
           onSubmit={handleUpdate}
@@ -115,11 +116,11 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.containerGray}>
       <View style={styles.content}>
         {/* Expense Information Card */}
         <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Expense Information</Text>
+          <Text style={screenStyles.sectionTitle}>Expense Information</Text>
 
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Merchant Name</Text>
@@ -243,24 +244,25 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
   );
 };
 
+// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
-  container: {
+  // Gray container for detail view
+  containerGray: {
     ...commonStyles.containerGray,
   },
-  loadingContainer: {
-    ...commonStyles.loadingContainer,
-  },
+
+  // Content padding
   content: {
     padding: spacing.base,
   },
+
+  // Card - uses common card style
   card: {
     ...commonStyles.card,
     marginBottom: spacing.base,
   },
-  sectionTitle: {
-    ...textStyles.h5,
-    marginBottom: spacing.base,
-  },
+
+  // Info Row - Key-value pair display pattern
   infoRow: {
     marginBottom: spacing.md,
   },
@@ -272,26 +274,8 @@ const styles = StyleSheet.create({
   infoValue: {
     ...textStyles.bodyLarge,
   },
-  summaryRow: {
-    ...commonStyles.flexRow,
-    ...commonStyles.flexBetween,
-    ...commonStyles.alignCenter,
-    marginBottom: spacing.sm,
-  },
-  summaryLabel: {
-    ...textStyles.bodyLarge,
-    color: colors.textSecondary,
-  },
-  summaryValue: {
-    ...textStyles.bodyLarge,
-    fontWeight: textStyles.label.fontWeight,
-  },
-  summaryNote: {
-    ...textStyles.caption,
-    color: colors.textDisabled,
-    fontStyle: 'italic',
-    marginTop: spacing.sm,
-  },
+
+  // Action Buttons
   actionButtons: {
     gap: spacing.md,
     marginTop: spacing.sm,

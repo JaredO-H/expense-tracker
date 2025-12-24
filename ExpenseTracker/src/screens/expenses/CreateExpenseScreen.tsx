@@ -1,14 +1,15 @@
 /**
- * Expenses Screen (Placeholder)
- * This will be implemented in a future story
+ * Create Expense Screen
+ * Screen for creating new expenses
+ * Refactored to use centralized screenStyles
  */
 
 import React from 'react';
-import { View, StyleSheet, Alert } from 'react-native';
+import { View, Alert } from 'react-native';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { CreateExpenseModel} from '../../types/database';
-import { commonStyles } from '../../styles';
+import { screenStyles } from '../../styles';
 
 interface CreateExpenseScreenProps {
   navigation: any;
@@ -40,7 +41,7 @@ export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigat
   };
 
   return (
-    <View style={styles.container}>
+    <View style={screenStyles.screenContainer}>
       <ExpenseForm
         onSubmit={handleCreate}
         onCancel={handleCancel}
@@ -50,9 +51,3 @@ export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigat
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    ...commonStyles.container,
-  },
-});

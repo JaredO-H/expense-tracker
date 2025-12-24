@@ -1,6 +1,7 @@
 /**
  * Categories Screen - Neo-Memphis Edition
  * A visual showcase of expense categories with unique geometric patterns
+ * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState } from 'react';
@@ -21,8 +22,8 @@ import {
   spacing,
   borderRadius,
   textStyles,
-  commonStyles,
   shadows,
+  screenStyles,
   getPatternByIndex,
 } from '../styles';
 import { staggeredFadeIn, createAnimatedValues } from '../utils/animations';
@@ -96,9 +97,9 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={screenStyles.loadingStateContainer}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading categories...</Text>
+        <Text style={screenStyles.loadingStateText}>Loading categories...</Text>
       </View>
     );
   }
@@ -107,62 +108,62 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
   const totalAmount = (expenses || []).reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   return (
-    <View style={styles.container}>
+    <View style={screenStyles.screenWithDecorations}>
       {/* Background decorations */}
-      <View style={styles.bgDecor1} />
-      <View style={styles.bgDecor2} />
-      <View style={styles.bgDecor3} />
+      <View style={screenStyles.bgDecorCircleLarge} />
+      <View style={screenStyles.bgDecorSquare} />
+      <View style={screenStyles.bgDecorCircleSmallBottom} />
 
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.content}
+        contentContainerStyle={screenStyles.scrollViewContent}
         showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerDecor} />
-          <Text style={styles.headerTitle}>Categories</Text>
-          <Text style={styles.headerSubtitle}>
+        <View style={screenStyles.headerWithAccent}>
+          <View style={screenStyles.decorativeAccentBar} />
+          <Text style={screenStyles.headerTitle}>Categories</Text>
+          <Text style={screenStyles.headerSubtitle}>
             Organize your expenses with style
           </Text>
         </View>
 
         {/* Overall Stats */}
         <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <View style={styles.statIcon}>
+          <View style={screenStyles.statBoxHorizontal}>
+            <View style={screenStyles.statIconCircle}>
               <Icon name="albums" size={28} color={colors.primary} />
             </View>
-            <View style={styles.statContent}>
-              <Text style={styles.statValue}>{categories.length}</Text>
-              <Text style={styles.statLabel}>CATEGORIES</Text>
+            <View style={screenStyles.statTextContainer}>
+              <Text style={screenStyles.statValue}>{categories.length}</Text>
+              <Text style={screenStyles.statLabel}>CATEGORIES</Text>
             </View>
           </View>
 
-          <View style={styles.statCard}>
-            <View style={styles.statIcon}>
+          <View style={screenStyles.statBoxHorizontal}>
+            <View style={screenStyles.statIconCircle}>
               <Icon name="receipt" size={28} color={colors.secondary} />
             </View>
-            <View style={styles.statContent}>
-              <Text style={styles.statValue}>{totalExpenses}</Text>
-              <Text style={styles.statLabel}>EXPENSES</Text>
+            <View style={screenStyles.statTextContainer}>
+              <Text style={screenStyles.statValue}>{totalExpenses}</Text>
+              <Text style={screenStyles.statLabel}>EXPENSES</Text>
             </View>
           </View>
 
-          <View style={[styles.statCard, styles.statCardWide]}>
-            <View style={styles.statIcon}>
+          <View style={[screenStyles.statBoxHorizontal, styles.statCardWide]}>
+            <View style={screenStyles.statIconCircle}>
               <Icon name="cash" size={28} color={colors.accent1Dark} />
             </View>
-            <View style={styles.statContent}>
-              <Text style={styles.statValue}>${totalAmount.toFixed(0)}</Text>
-              <Text style={styles.statLabel}>TOTAL SPENT</Text>
+            <View style={screenStyles.statTextContainer}>
+              <Text style={screenStyles.statValue}>${totalAmount.toFixed(0)}</Text>
+              <Text style={screenStyles.statLabel}>TOTAL SPENT</Text>
             </View>
           </View>
         </View>
 
         {/* Section Title */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>YOUR CATEGORIES</Text>
-          <View style={styles.sectionLine} />
+        <View style={screenStyles.sectionHeader}>
+          <Text style={screenStyles.sectionTitle}>YOUR CATEGORIES</Text>
+          <View style={screenStyles.sectionLine} />
         </View>
 
         {/* Categories Grid */}
@@ -249,174 +250,45 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
         </View>
 
         {/* Info Banner */}
-        <View style={styles.infoBanner}>
-          <View style={styles.infoBannerDecor} />
-          <View style={styles.infoBannerContent}>
-            <View style={styles.infoBannerIcon}>
+        <View style={screenStyles.infoBanner}>
+          <View style={screenStyles.infoBannerDecor} />
+          <View style={screenStyles.infoBannerContent}>
+            <View style={screenStyles.infoBannerIcon}>
               <Icon name="color-palette" size={24} color={colors.accent3Dark} />
             </View>
-            <View style={styles.infoBannerText}>
-              <Text style={styles.infoBannerTitle}>Unique Patterns</Text>
-              <Text style={styles.infoBannerSubtitle}>
+            <View style={screenStyles.infoBannerTextContainer}>
+              <Text style={screenStyles.infoBannerTitle}>Unique Patterns</Text>
+              <Text style={screenStyles.infoBannerSubtitle}>
                 Each category has a distinctive color and border style for instant recognition
               </Text>
             </View>
           </View>
         </View>
-
-        {/* Bottom spacing */}
-        <View style={{ height: spacing.massive }} />
       </ScrollView>
     </View>
   );
 };
 
+// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.background,
-  },
+  // ScrollView basic style
   scrollView: {
     flex: 1,
   },
-  content: {
-    padding: spacing.lg,
-  },
 
-  // Loading
-  loadingContainer: {
-    ...commonStyles.loadingContainer,
-  },
-  loadingText: {
-    ...textStyles.bodyBold,
-    marginTop: spacing.md,
-    color: colors.textSecondary,
-  },
-
-  // Background decorations
-  bgDecor1: {
-    position: 'absolute',
-    top: -40,
-    right: -50,
-    width: 140,
-    height: 140,
-    borderRadius: 70,
-    backgroundColor: colors.accent1,
-    opacity: 0.15,
-  },
-  bgDecor2: {
-    position: 'absolute',
-    top: 200,
-    left: -30,
-    width: 100,
-    height: 100,
-    backgroundColor: colors.accent3,
-    opacity: 0.2,
-    transform: [{ rotate: '25deg' }],
-  },
-  bgDecor3: {
-    position: 'absolute',
-    bottom: 150,
-    right: 20,
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: colors.secondary,
-    opacity: 0.2,
-  },
-
-  // Header
-  header: {
-    marginBottom: spacing.xl,
-    position: 'relative',
-  },
-  headerDecor: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: 6,
-    height: 70,
-    backgroundColor: colors.secondary,
-  },
-  headerTitle: {
-    ...textStyles.display2,
-    paddingLeft: spacing.base,
-    marginBottom: spacing.xs,
-  },
-  headerSubtitle: {
-    ...textStyles.h6,
-    paddingLeft: spacing.base,
-    color: colors.textSecondary,
-    fontWeight: '500',
-  },
-
-  // Stats Container
+  // Stats Container - wrapping flexbox layout
   statsContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: spacing.md,
     marginBottom: spacing.xxl,
   },
-  statCard: {
-    flex: 1,
-    minWidth: '45%',
-    backgroundColor: colors.backgroundElevated,
-    borderRadius: borderRadius.lg,
-    padding: spacing.base,
-    borderWidth: 3,
-    borderColor: colors.border,
-    flexDirection: 'row',
-    alignItems: 'center',
-    ...shadows.medium,
-  },
   statCardWide: {
     flex: 1,
     minWidth: '100%',
   },
-  statIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: spacing.md,
-    borderWidth: 2,
-    borderColor: colors.border,
-  },
-  statContent: {
-    flex: 1,
-  },
-  statValue: {
-    ...textStyles.h2,
-    color: colors.primary,
-    marginBottom: spacing.xs,
-  },
-  statLabel: {
-    ...textStyles.labelSmall,
-    fontSize: 10,
-    color: colors.textSecondary,
-  },
 
-  // Section Header
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: spacing.lg,
-    gap: spacing.md,
-  },
-  sectionTitle: {
-    ...textStyles.labelMedium,
-    fontSize: 14,
-    color: colors.textSecondary,
-  },
-  sectionLine: {
-    flex: 1,
-    height: 3,
-    backgroundColor: colors.border,
-  },
-
-  // Categories Grid
+  // Categories Grid - unique grid layout for category cards
   categoriesGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -435,7 +307,7 @@ const styles = StyleSheet.create({
     ...shadows.medium,
   },
 
-  // Category Decorations - Unique geometric shapes
+  // Category Decorations - Unique geometric shapes per category
   categoryDecorContainer: {
     position: 'absolute',
     top: -10,
@@ -478,7 +350,7 @@ const styles = StyleSheet.create({
     borderColor: colors.whiteOverlay60,
   },
 
-  // Category Content
+  // Category Content - Category-specific layout
   categoryHeader: {
     marginBottom: spacing.md,
   },
@@ -491,7 +363,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 
-  // Category Stats
+  // Category Stats - Inline stats display
   categoryStats: {
     gap: spacing.xs,
   },
@@ -517,61 +389,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
   },
 
-  // Category Arrow
+  // Category Arrow indicator
   categoryArrow: {
     position: 'absolute',
     bottom: spacing.sm,
     right: spacing.sm,
-  },
-
-  // Info Banner
-  infoBanner: {
-    backgroundColor: colors.accent3Light,
-    borderRadius: borderRadius.lg,
-    padding: spacing.base,
-    borderWidth: 3,
-    borderColor: colors.accent3,
-    position: 'relative',
-    overflow: 'hidden',
-  },
-  infoBannerDecor: {
-    position: 'absolute',
-    top: -15,
-    right: -15,
-    width: 70,
-    height: 70,
-    borderRadius: 35,
-    backgroundColor: colors.accent3,
-    opacity: 0.3,
-  },
-  infoBannerContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  infoBannerIcon: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.backgroundElevated,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: colors.accent3,
-  },
-  infoBannerText: {
-    flex: 1,
-  },
-  infoBannerTitle: {
-    ...textStyles.h6,
-    fontSize: 16,
-    marginBottom: spacing.xs,
-    color: colors.textPrimary,
-  },
-  infoBannerSubtitle: {
-    ...textStyles.body,
-    fontSize: 13,
-    color: colors.textSecondary,
-    lineHeight: 18,
   },
 });
