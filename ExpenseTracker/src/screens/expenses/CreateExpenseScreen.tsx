@@ -10,6 +10,7 @@ import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { CreateExpenseModel} from '../../types/database';
 import { screenStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface CreateExpenseScreenProps {
   navigation: any;
@@ -23,6 +24,7 @@ interface CreateExpenseScreenProps {
 
 export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigation, route}) => {
   const { createExpense, isLoading } = useExpenseStore();
+  const { colors } = useTheme();
   const initialTripId = route?.params?.tripId;
 
   const handleCreate = async (model: CreateExpenseModel) => {
@@ -41,7 +43,7 @@ export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigat
   };
 
   return (
-    <View style={screenStyles.screenContainer}>
+    <View style={[screenStyles.screenContainer, { backgroundColor: colors.background }]}>
       <ExpenseForm
         onSubmit={handleCreate}
         onCancel={handleCancel}

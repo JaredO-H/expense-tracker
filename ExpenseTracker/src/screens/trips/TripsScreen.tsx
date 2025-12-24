@@ -21,10 +21,11 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTripStore } from '../../stores/tripStore';
 import { Trip } from '../../types/database';
 import { format, isPast, isFuture } from 'date-fns';
-import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
+import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
 import databaseService from '../../services/database/databaseService';
 import { TripCard } from '../../components/cards/TripCard';
 import { cardEntrance } from '../../utils/animations';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface TripsScreenProps {
   navigation: any;
@@ -47,6 +48,7 @@ const getTripStatus = (trip: Trip): TripStatus => {
 
 export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   const { trips, fetchTrips, error, clearError } = useTripStore();
+  const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
   const [tripStats, setTripStats] = useState<Map<number, { expenseCount: number; totalAmount: number }>>(new Map());
@@ -166,7 +168,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
             transform: [{ translateY: buttonTranslate }],
           }}>
           <TouchableOpacity
-            style={styles.expandButton}
+            style={[styles.expandButton, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}
             onPress={toggleExpanded}
             activeOpacity={0.7}>
             <Animated.View style={{ transform: [{ rotate: arrowRotate }] }}>
@@ -182,36 +184,38 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
             {
               maxHeight,
               opacity: animatedHeight,
+              backgroundColor: colors.backgroundElevated,
+              borderColor: colors.border,
             },
           ]}>
           <View style={styles.statsFooterContent}>
             <View style={styles.statItem}>
               <Icon name="receipt" size={20} color={colors.primary} />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statValue}>{stats.expenseCount}</Text>
-                <Text style={styles.statLabel}>{stats.expenseCount === 1 ? 'EXPENSE' : 'EXPENSES'}</Text>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>{stats.expenseCount}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stats.expenseCount === 1 ? 'EXPENSE' : 'EXPENSES'}</Text>
               </View>
             </View>
 
-            <View style={styles.statDivider} />
+            <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
 
             <View style={styles.statItem}>
               <Icon name="cash" size={20} color={colors.accent1Dark} />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statValue}>${stats.totalAmount.toFixed(2)}</Text>
-                <Text style={styles.statLabel}>TOTAL SPENT</Text>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>${stats.totalAmount.toFixed(2)}</Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>TOTAL SPENT</Text>
               </View>
             </View>
           </View>
 
           {/* Purpose if available */}
           {trip.purpose && (
-            <View style={styles.purposeSection}>
+            <View style={[styles.purposeSection, { borderTopColor: colors.border }]}>
               <View style={styles.purposeHeader}>
                 <Icon name="information-circle-outline" size={16} color={colors.textSecondary} />
-                <Text style={styles.purposeLabel}>PURPOSE</Text>
+                <Text style={[styles.purposeLabel, { color: colors.textSecondary }]}>PURPOSE</Text>
               </View>
-              <Text style={styles.purposeText}>{trip.purpose}</Text>
+              <Text style={[styles.purposeText, { color: colors.textPrimary }]}>{trip.purpose}</Text>
             </View>
           )}
         </Animated.View>
@@ -221,35 +225,35 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 
   const renderEmptyState = () => (
     <View style={screenStyles.emptyStateContainer}>
-      <View style={screenStyles.emptyStateIcon}>
+      <View style={[screenStyles.emptyStateIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
         <Icon name="airplane-outline" size={64} color={colors.primary} />
       </View>
-      <Text style={screenStyles.emptyStateTitle}>No Trips Found</Text>
-      <Text style={screenStyles.emptyStateText}>
+      <Text style={[screenStyles.emptyStateTitle, { color: colors.textPrimary }]}>No Trips Found</Text>
+      <Text style={[screenStyles.emptyStateText, { color: colors.textSecondary }]}>
         {searchQuery
           ? 'No trips match your search criteria'
           : 'Get started by creating your first business trip'}
       </Text>
       {!searchQuery && (
-        <TouchableOpacity style={screenStyles.emptyStateButton} onPress={handleCreateTrip}>
+        <TouchableOpacity style={[screenStyles.emptyStateButton, { backgroundColor: colors.primary, borderColor: colors.border }]} onPress={handleCreateTrip}>
           <Icon name="add-circle" size={24} color={colors.textInverse} style={{ marginRight: spacing.sm }} />
-          <Text style={screenStyles.emptyStateButtonText}>CREATE TRIP</Text>
+          <Text style={[screenStyles.emptyStateButtonText, { color: colors.textInverse }]}>CREATE TRIP</Text>
         </TouchableOpacity>
       )}
     </View>
   );
 
   return (
-    <View style={[screenStyles.screenWithDecorations, styles.containerGray]}>
+    <View style={[screenStyles.screenWithDecorations, styles.containerGray, { backgroundColor: colors.backgroundSecondary }]}>
       {/* Background geometric decorations */}
-      <View style={screenStyles.bgDecorCircleMedium} />
-      <View style={screenStyles.bgDecorCircleLargeBottom} />
-      <View style={screenStyles.bgDecorSquare} />
+      <View style={[screenStyles.bgDecorCircleMedium, { backgroundColor: colors.accent1 }]} />
+      <View style={[screenStyles.bgDecorCircleLargeBottom, { backgroundColor: colors.secondary }]} />
+      <View style={[screenStyles.bgDecorSquare, { backgroundColor: colors.accent3 }]} />
 
       {/* Search Bar */}
-      <View style={styles.searchContainer}>
+      <View style={[styles.searchContainer, { borderBottomColor: colors.border }]}>
         <TextInput
-          style={styles.searchInput}
+          style={[styles.searchInput, { backgroundColor: colors.backgroundTertiary, color: colors.textPrimary }]}
           placeholder="Search trips by name, destination, or purpose..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -270,9 +274,9 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
       />
 
       {/* Floating Action Button */}
-      <View style={screenStyles.fabContainer}>
-        <TouchableOpacity style={screenStyles.fabButton} onPress={handleCreateTrip}>
-          <Text style={screenStyles.fabIconText}>+</Text>
+      <View style={[screenStyles.fabContainer, { backgroundColor: colors.primary }]}>
+        <TouchableOpacity style={[screenStyles.fabButton, { backgroundColor: colors.primary }]} onPress={handleCreateTrip}>
+          <Text style={[screenStyles.fabIconText, { color: colors.textInverse }]}>+</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -283,7 +287,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 const styles = StyleSheet.create({
   // Container override for gray background
   containerGray: {
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
   },
 
   // Search container (unique to this screen - no icon)
@@ -293,7 +297,7 @@ const styles = StyleSheet.create({
     ...commonStyles.borderBottom,
   },
   searchInput: {
-    backgroundColor: colors.backgroundTertiary,
+    backgroundColor: staticColors.backgroundTertiary,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     ...textStyles.body,
@@ -313,9 +317,9 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: colors.backgroundElevated,
+    backgroundColor: staticColors.backgroundElevated,
     borderWidth: 3,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
@@ -325,12 +329,12 @@ const styles = StyleSheet.create({
   // Stats Footer - unique expandable stats (trip-specific feature)
   statsFooter: {
     overflow: 'hidden',
-    backgroundColor: colors.backgroundElevated,
+    backgroundColor: staticColors.backgroundElevated,
     marginTop: -spacing.sm,
     marginHorizontal: spacing.sm,
     borderRadius: borderRadius.lg,
     borderWidth: 3,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     borderTopWidth: 0,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
@@ -353,25 +357,25 @@ const styles = StyleSheet.create({
   },
   statValue: {
     ...textStyles.h5,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     marginBottom: 2,
   },
   statLabel: {
     ...textStyles.labelSmall,
     fontSize: 9,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   statDivider: {
     width: 3,
     height: 40,
-    backgroundColor: colors.border,
+    backgroundColor: staticColors.border,
     marginHorizontal: spacing.md,
   },
 
   // Purpose Section - trip-specific feature
   purposeSection: {
     borderTopWidth: 3,
-    borderTopColor: colors.border,
+    borderTopColor: staticColors.border,
     paddingHorizontal: spacing.base,
     paddingVertical: spacing.md,
   },
@@ -384,12 +388,12 @@ const styles = StyleSheet.create({
   purposeLabel: {
     ...textStyles.labelSmall,
     fontSize: 9,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   purposeText: {
     ...textStyles.body,
     fontSize: 14,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     lineHeight: 20,
   },
 });

@@ -9,6 +9,7 @@ import { TripForm } from '../../components/forms/TripForm';
 import { useTripStore } from '../../stores/tripStore';
 import { CreateTripModel } from '../../types/database';
 import { commonStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface CreateTripScreenProps {
   navigation: any;
@@ -16,6 +17,7 @@ interface CreateTripScreenProps {
 
 export const CreateTripScreen: React.FC<CreateTripScreenProps> = ({ navigation }) => {
   const { createTrip, isLoading } = useTripStore();
+  const { colors } = useTheme();
 
   const handleCreate = async (model: CreateTripModel) => {
     try {
@@ -33,7 +35,7 @@ export const CreateTripScreen: React.FC<CreateTripScreenProps> = ({ navigation }
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       <TripForm onSubmit={handleCreate} onCancel={handleCancel} isLoading={isLoading} />
     </View>
   );

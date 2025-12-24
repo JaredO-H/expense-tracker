@@ -6,7 +6,7 @@
 
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ExpenseNavigator } from './ExpenseNavigator';
@@ -22,7 +22,7 @@ import { ProcessingStatusScreen } from '../screens/ProcessingStatusScreen';
 import { ReceiptVerificationScreen } from '../screens/verification/ReceiptVerificationScreen';
 import { ExportScreen } from '../screens/exports/ExportScreen';
 import { GeneralSettingsScreen } from '../screens/settings/GeneralSettingsScreen';
-import { colors } from '../styles';
+import { useTheme } from '../contexts/ThemeContext';
 
 export type RootStackParamList = {
   MainTabs: undefined;
@@ -49,6 +49,8 @@ const Tab = createBottomTabNavigator<AppTabParamList>();
 
 // Bottom Tab Navigator
 const MainTabs: React.FC = () => {
+  const { colors, isDarkMode } = useTheme();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -59,6 +61,9 @@ const MainTabs: React.FC = () => {
           paddingBottom: 5,
           paddingTop: 5,
           height: 60,
+          backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.backgroundElevated,
+          borderTopColor: colors.border,
+          borderTopWidth: 1,
         },
         tabBarLabelStyle: {
           fontSize: 12,
@@ -131,11 +136,34 @@ const MainTabs: React.FC = () => {
 
 // Root Stack Navigator with Modals
 export const RootNavigator: React.FC = () => {
+  const { colors, isDarkMode } = useTheme();
+
+  // Create custom navigation theme based on current mode
+  const navigationTheme = {
+    ...(isDarkMode ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(isDarkMode ? DarkTheme.colors : DefaultTheme.colors),
+      primary: colors.primary,
+      background: colors.background,
+      card: isDarkMode ? colors.backgroundSecondary : colors.backgroundElevated,
+      text: colors.textPrimary,
+      border: colors.border,
+      notification: colors.primary,
+    },
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navigationTheme}>
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
+          headerStyle: {
+            backgroundColor: colors.primary,
+          },
+          headerTintColor: colors.textInverse,
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
         }}>
         <Stack.Screen name="MainTabs" component={MainTabs} />
         <Stack.Screen
@@ -153,13 +181,6 @@ export const RootNavigator: React.FC = () => {
             presentation: 'modal',
             headerShown: true,
             headerTitle: 'Create Expense',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen
@@ -168,13 +189,6 @@ export const RootNavigator: React.FC = () => {
           options={{
             headerShown: true,
             headerTitle: 'Trip Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen
@@ -183,13 +197,6 @@ export const RootNavigator: React.FC = () => {
           options={{
             headerShown: true,
             headerTitle: 'Export Trip',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen
@@ -198,13 +205,6 @@ export const RootNavigator: React.FC = () => {
           options={{
             headerShown: true,
             headerTitle: 'General Settings',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen
@@ -214,13 +214,6 @@ export const RootNavigator: React.FC = () => {
             presentation: 'modal',
             headerShown: true,
             headerTitle: 'AI Service Settings',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen
@@ -230,13 +223,6 @@ export const RootNavigator: React.FC = () => {
             presentation: 'modal',
             headerShown: true,
             headerTitle: 'API Key Setup Guide',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen
@@ -246,13 +232,6 @@ export const RootNavigator: React.FC = () => {
             presentation: 'modal',
             headerShown: true,
             headerTitle: 'Processing Status',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: colors.textInverse,
-            headerTitleStyle: {
-              fontWeight: '600',
-            },
           }}
         />
         <Stack.Screen

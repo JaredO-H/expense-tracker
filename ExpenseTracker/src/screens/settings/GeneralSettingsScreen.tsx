@@ -16,7 +16,7 @@ import {
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors, spacing, textStyles, commonStyles } from '../../styles';
+import { colors as staticColors, spacing, textStyles, commonStyles } from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface GeneralSettings {
@@ -70,16 +70,7 @@ const defaultSettings: GeneralSettings = {
 };
 
 export const GeneralSettingsScreen: React.FC = () => {
-  // Theme context is optional - app may not be wrapped with ThemeProvider yet
-  let refreshTheme: (() => Promise<void>) | undefined;
-  try {
-    const theme = useTheme();
-    refreshTheme = theme.refreshTheme;
-  } catch (error) {
-    // ThemeProvider not set up yet - that's okay
-    refreshTheme = undefined;
-  }
-
+  const { colors, refreshTheme } = useTheme();
   const [settings, setSettings] = useState<GeneralSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
@@ -106,10 +97,8 @@ export const GeneralSettingsScreen: React.FC = () => {
       await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       setHasChanges(false);
 
-      // Refresh theme if appearance settings changed and ThemeProvider is available
-      if (refreshTheme) {
-        await refreshTheme();
-      }
+      // Refresh theme if appearance settings changed
+      await refreshTheme();
 
       Alert.alert('Success', 'Settings saved successfully');
     } catch (error) {
@@ -144,10 +133,8 @@ export const GeneralSettingsScreen: React.FC = () => {
                 JSON.stringify(defaultSettings)
               );
 
-              // Refresh theme after reset if ThemeProvider is available
-              if (refreshTheme) {
-                await refreshTheme();
-              }
+              // Refresh theme after reset
+              await refreshTheme();
 
               Alert.alert('Success', 'Settings reset to defaults');
               setHasChanges(false);
@@ -360,7 +347,7 @@ export const GeneralSettingsScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
   },
   loadingContainer: {
     flex: 1,
@@ -376,7 +363,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     ...textStyles.h5,
     marginBottom: spacing.md,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
   },
   settingCard: {
     ...commonStyles.card,
@@ -395,20 +382,20 @@ const styles = StyleSheet.create({
   settingLabel: {
     ...textStyles.bodyLarge,
     fontWeight: '600',
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     marginBottom: spacing.xs,
   },
   settingDescription: {
     ...textStyles.bodySmall,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
     marginTop: spacing.xs,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     borderRadius: 8,
     marginTop: spacing.sm,
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
   },
   picker: {
     height: 50,
@@ -430,9 +417,9 @@ const styles = StyleSheet.create({
   },
   resetButton: {
     ...commonStyles.button,
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: staticColors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -440,19 +427,19 @@ const styles = StyleSheet.create({
   },
   resetButtonText: {
     ...textStyles.button,
-    color: colors.primary,
+    color: staticColors.primary,
   },
   infoCard: {
     flexDirection: 'row',
     ...commonStyles.card,
-    backgroundColor: colors.backgroundTertiary,
+    backgroundColor: staticColors.backgroundTertiary,
     padding: spacing.base,
     marginTop: spacing.xl,
     gap: spacing.sm,
   },
   infoText: {
     ...textStyles.bodySmall,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
     flex: 1,
   },
 });

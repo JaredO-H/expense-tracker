@@ -17,11 +17,13 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { processingQueue, QueueItem } from '../services/queue/processingQueue';
-import { colors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
+import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
 import { AI_SERVICE_CONFIGS } from '../types/aiService';
+import { useTheme } from '../contexts/ThemeContext';
 
 export const ProcessingStatusScreen: React.FC = () => {
   const navigation = useNavigation();
+  const { colors } = useTheme();
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -390,52 +392,52 @@ export const ProcessingStatusScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     ...commonStyles.flex1,
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: staticColors.border,
   },
   statItem: {
     alignItems: 'center',
   },
   statValue: {
     ...textStyles.h2,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     marginBottom: spacing.xs,
   },
   statLabel: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   clearButton: {
     margin: spacing.md,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.lg,
-    backgroundColor: colors.error,
+    backgroundColor: staticColors.error,
     borderRadius: borderRadius.md,
     alignItems: 'center',
   },
   clearButtonText: {
     ...textStyles.button,
-    color: colors.textInverse,
+    color: staticColors.textInverse,
   },
   listContent: {
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.lg,
   },
   itemCard: {
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
     borderRadius: borderRadius.lg,
     marginTop: spacing.md,
     padding: spacing.md,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
   itemHeader: {
     flexDirection: 'row',
@@ -448,7 +450,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
     borderRadius: borderRadius.sm,
   },
   statusIcon: {
@@ -472,7 +474,7 @@ const styles = StyleSheet.create({
   },
   serviceText: {
     ...textStyles.body,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     fontWeight: '500',
     flex: 1,
   },
@@ -495,7 +497,7 @@ const styles = StyleSheet.create({
   },
   dateText: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   processingIndicator: {
     flexDirection: 'row',
@@ -505,87 +507,87 @@ const styles = StyleSheet.create({
   },
   processingText: {
     ...textStyles.body,
-    color: colors.primary,
+    color: staticColors.primary,
     fontStyle: 'italic',
   },
   resultContainer: {
     marginTop: spacing.sm,
     padding: spacing.sm,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
     borderRadius: borderRadius.sm,
     borderLeftWidth: 3,
-    borderLeftColor: colors.success,
+    borderLeftColor: staticColors.success,
   },
   resultLabel: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginBottom: spacing.xs,
   },
   resultText: {
     ...textStyles.body,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     fontWeight: '600',
   },
   resultDate: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginTop: spacing.xs,
   },
   confidenceText: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginTop: spacing.xs,
   },
   processedAtText: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginTop: spacing.xs,
   },
   errorContainer: {
     marginTop: spacing.sm,
     padding: spacing.sm,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
     borderRadius: borderRadius.sm,
     borderLeftWidth: 3,
-    borderLeftColor: colors.error,
+    borderLeftColor: staticColors.error,
   },
   errorLabel: {
     ...textStyles.caption,
-    color: colors.error,
+    color: staticColors.error,
     marginBottom: spacing.xs,
     fontWeight: '600',
   },
   errorText: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   retryText: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginTop: spacing.xs,
   },
   retryButton: {
     marginTop: spacing.sm,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    backgroundColor: colors.primary,
+    backgroundColor: staticColors.primary,
     borderRadius: borderRadius.sm,
     alignSelf: 'flex-start',
   },
   retryButtonText: {
     ...textStyles.caption,
-    color: colors.textInverse,
+    color: staticColors.textInverse,
     fontWeight: '600',
   },
   pendingContainer: {
     marginTop: spacing.sm,
     padding: spacing.sm,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
     borderRadius: borderRadius.sm,
   },
   pendingText: {
     ...textStyles.caption,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   emptyContainer: {
     alignItems: 'center',
@@ -598,12 +600,12 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     ...textStyles.h2,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
     marginBottom: spacing.sm,
   },
   emptyText: {
     ...textStyles.body,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     textAlign: 'center',
   },
   tapToVerifyContainer: {
@@ -617,7 +619,7 @@ const styles = StyleSheet.create({
   },
   tapToVerifyText: {
     ...textStyles.caption,
-    color: colors.primary,
+    color: staticColors.primary,
     fontWeight: '600',
   },
   completedItemWrapper: {

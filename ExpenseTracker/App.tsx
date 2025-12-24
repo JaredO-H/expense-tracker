@@ -6,17 +6,30 @@
  */
 
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { ActivityIndicator, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { initializeDatabase } from './src/services/database/databaseInit';
 import { testDatabaseInitialization } from './src/services/database/testDatabase';
 import { RootNavigator } from './src/navigation/RootNavigator';
 import { useSettingsStore } from './src/stores/settingsStore';
 import { processingQueue } from './src/services/queue/processingQueue';
-import { ThemeProvider } from './src/contexts/ThemeContext';
+import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
+
+// Inner component that has access to theme
+function AppContent() {
+  const { isDarkMode } = useTheme();
+  return (
+    <>
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor={isDarkMode ? '#1A1B26' : '#FFF8F0'}
+      />
+      <RootNavigator />
+    </>
+  );
+}
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
   const [dbInitialized, setDbInitialized] = useState(false);
   const [dbError, setDbError] = useState<string | null>(null);
   const { initializeSettings } = useSettingsStore();
@@ -90,8 +103,7 @@ function App() {
   return (
     <ThemeProvider>
       <SafeAreaProvider>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <RootNavigator />
+        <AppContent />
       </SafeAreaProvider>
     </ThemeProvider>
   );

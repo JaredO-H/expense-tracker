@@ -16,6 +16,7 @@ import { useExpenseStore } from '../../stores/expenseStore';
 import { mapQueueItemToExpense } from '../../utils/expenseMapper';
 import { CreateExpenseModel } from '../../types/database';
 import { QueueItem } from '../../services/queue/processingQueue';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ReceiptVerificationScreenProps {
   route: {
@@ -28,6 +29,7 @@ interface ReceiptVerificationScreenProps {
 export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps> = ({ route }) => {
   const navigation = useNavigation();
   const { createExpense } = useExpenseStore();
+  const { colors } = useTheme(); // Theme hook for consistency, child components handle their own theming
 
   const [queueItem, setQueueItem] = useState<QueueItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);

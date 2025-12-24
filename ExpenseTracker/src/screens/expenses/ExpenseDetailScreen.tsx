@@ -18,7 +18,8 @@ import { useExpenseStore } from '../../stores/expenseStore';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { CreateExpenseModel } from '../../types/database';
 import { format } from 'date-fns';
-import { colors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
+import { colors as staticColors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface ExpenseDetailScreenProps {
   route: any;
@@ -28,6 +29,7 @@ interface ExpenseDetailScreenProps {
 export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route, navigation }) => {
   const { expenseId } = route.params;
   const { expenses, updateExpense, deleteExpense, isLoading } = useExpenseStore();
+  const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
 
   const expense = expenses.find(t => t.id === expenseId);
@@ -96,7 +98,7 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
   if (!expense) {
     return (
-      <View style={screenStyles.loadingContainer}>
+      <View style={[screenStyles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -104,7 +106,7 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
   if (isEditing) {
     return (
-      <View style={screenStyles.screenContainer}>
+      <View style={[screenStyles.screenContainer, { backgroundColor: colors.background }]}>
         <ExpenseForm
           expense={expense}
           onSubmit={handleUpdate}
@@ -116,109 +118,109 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
   }
 
   return (
-    <ScrollView style={styles.containerGray}>
+    <ScrollView style={[styles.containerGray, { backgroundColor: colors.backgroundSecondary }]}>
       <View style={styles.content}>
         {/* Expense Information Card */}
-        <View style={styles.card}>
-          <Text style={screenStyles.sectionTitle}>Expense Information</Text>
+        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+          <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>Expense Information</Text>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Merchant Name</Text>
-            <Text style={styles.infoValue}>{expense.merchant}</Text>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Merchant Name</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.merchant}</Text>
           </View>
 
 
 
           {expense.amount && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Amount</Text>
-              <Text style={styles.infoValue}>{expense.amount}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Amount</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.amount}</Text>
             </View>
           )}
 
           {expense.tax_amount && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Tax Amount</Text>
-              <Text style={styles.infoValue}>{expense.tax_amount}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Tax Amount</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.tax_amount}</Text>
             </View>
           )}
 
           {expense.tax_type && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Tax Type</Text>
-              <Text style={styles.infoValue}>{expense.tax_type}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Tax Type</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.tax_type}</Text>
             </View>
           )}
 
           {expense.tax_rate && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Tax Rate</Text>
-              <Text style={styles.infoValue}>{expense.tax_rate}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Tax Rate</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.tax_rate}</Text>
             </View>
           )}
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Date</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Date</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
               {format(new Date(expense.date), 'MMMM dd, yyyy')}
             </Text>
           </View>
 
           {expense.time && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Time</Text>
-              <Text style={styles.infoValue}>{expense.time}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Time</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.time}</Text>
             </View>
           )}
 
           {expense.category && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Category</Text>
-              <Text style={styles.infoValue}>{expense.category}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Category</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.category}</Text>
             </View>
           )}
 
           {expense.notes && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Notes</Text>
-              <Text style={styles.infoValue}>{expense.notes}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Notes</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.notes}</Text>
             </View>
           )}
 
           {expense.capture_method && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Capture Method</Text>
-              <Text style={styles.infoValue}>{expense.capture_method}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Capture Method</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.capture_method}</Text>
             </View>
           )}
 
           {expense.ai_service_used && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Ai Service Used</Text>
-              <Text style={styles.infoValue}>{expense.ai_service_used}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Ai Service Used</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.ai_service_used}</Text>
             </View>
           )}
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Verification Status</Text>
-            <Text style={styles.infoValue}>{expense.verification_status}</Text>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Verification Status</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.verification_status}</Text>
           </View>
 
         </View>
 
 
         {/* Metadata Card */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Created</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Created</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
               {format(new Date(expense.created_at), 'MMM dd, yyyy HH:mm')}
             </Text>
           </View>
           {expense.updated_at && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Last Updated</Text>
-              <Text style={styles.infoValue}>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Last Updated</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
                 {format(new Date(expense.updated_at), 'MMM dd, yyyy HH:mm')}
               </Text>
             </View>
@@ -228,15 +230,15 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
+            style={[styles.actionButton, styles.editButton, { backgroundColor: colors.primary, borderColor: colors.border }]}
             onPress={() => setIsEditing(true)}>
-            <Text style={styles.editButtonText}>Edit Expense</Text>
+            <Text style={[styles.editButtonText, { color: colors.textInverse }]}>Edit Expense</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
+            style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.background, borderColor: colors.errorDark }]}
             onPress={handleDelete}>
-            <Text style={styles.deleteButtonText}>Delete Expense</Text>
+            <Text style={[styles.deleteButtonText, { color: colors.errorDark }]}>Delete Expense</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -268,7 +270,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     ...textStyles.labelSmall,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
     marginBottom: spacing.xs,
   },
   infoValue: {
@@ -290,12 +292,12 @@ const styles = StyleSheet.create({
     ...textStyles.button,
   },
   deleteButton: {
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
     borderWidth: 2,
-    borderColor: colors.errorDark,
+    borderColor: staticColors.errorDark,
   },
   deleteButtonText: {
     ...textStyles.button,
-    color: colors.errorDark,
+    color: staticColors.errorDark,
   },
 });

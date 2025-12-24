@@ -8,8 +8,9 @@ import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native
 import Icon from 'react-native-vector-icons/Ionicons';
 import { Trip } from '../../types/database';
 import { format, differenceInDays } from 'date-fns';
-import { colors, spacing, borderRadius, textStyles, shadows } from '../../styles';
+import { colors as staticColors, spacing, borderRadius, textStyles, shadows } from '../../styles';
 import { cardEntrance } from '../../utils/animations';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface TripCardProps {
   trip: Trip | null;
@@ -17,6 +18,7 @@ interface TripCardProps {
 }
 
 export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
+  const { colors } = useTheme();
   // Entrance animation
   const [opacityAnim] = useState(new Animated.Value(0));
   const [translateAnim] = useState(new Animated.Value(30));
@@ -30,17 +32,17 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
 
   if (!trip) {
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
         {/* Decorative elements for empty state */}
-        <View style={styles.emptyDecorCircle} />
-        <View style={styles.emptyDecorSquare} />
+        <View style={[styles.emptyDecorCircle, { backgroundColor: colors.accent2 }]} />
+        <View style={[styles.emptyDecorSquare, { backgroundColor: colors.accent4 }]} />
 
         <View style={styles.emptyState}>
-          <View style={styles.emptyIcon}>
+          <View style={[styles.emptyIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
             <Icon name="airplane" size={40} color={colors.primary} />
           </View>
-          <Text style={styles.emptyTitle}>No Active Trip</Text>
-          <Text style={styles.emptySubtitle}>
+          <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No Active Trip</Text>
+          <Text style={[styles.emptySubtitle, { color: colors.textTertiary }]}>
             Create a trip to start tracking your expenses
           </Text>
         </View>
@@ -60,23 +62,23 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
   const getStatusBadge = () => {
     if (isActive) {
       return (
-        <View style={[styles.badge, styles.badgeActive]}>
-          <View style={styles.badgeDot} />
-          <Text style={styles.badgeText}>ACTIVE</Text>
+        <View style={[styles.badge, styles.badgeActive, { backgroundColor: colors.successLight, borderColor: colors.success }]}>
+          <View style={[styles.badgeDot, { backgroundColor: colors.success }]} />
+          <Text style={[styles.badgeText, { color: colors.success }]}>ACTIVE</Text>
         </View>
       );
     } else if (isUpcoming) {
       return (
-        <View style={[styles.badge, styles.badgeUpcoming]}>
-          <View style={[styles.badgeDot, styles.badgeDotUpcoming]} />
-          <Text style={[styles.badgeText, styles.badgeTextUpcoming]}>UPCOMING</Text>
+        <View style={[styles.badge, styles.badgeUpcoming, { backgroundColor: colors.infoLight, borderColor: colors.info }]}>
+          <View style={[styles.badgeDot, styles.badgeDotUpcoming, { backgroundColor: colors.info }]} />
+          <Text style={[styles.badgeText, styles.badgeTextUpcoming, { color: colors.info }]}>UPCOMING</Text>
         </View>
       );
     } else {
       return (
-        <View style={[styles.badge, styles.badgePast]}>
+        <View style={[styles.badge, styles.badgePast, { backgroundColor: colors.backgroundTertiary, borderColor: colors.borderLight }]}>
           <Icon name="checkmark-circle" size={14} color={colors.textSecondary} />
-          <Text style={[styles.badgeText, styles.badgeTextPast]}>COMPLETED</Text>
+          <Text style={[styles.badgeText, styles.badgeTextPast, { color: colors.textSecondary }]}>COMPLETED</Text>
         </View>
       );
     }
@@ -99,22 +101,24 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
       style={[
         styles.card,
         {
+          backgroundColor: colors.backgroundElevated,
+          borderColor: colors.border,
           opacity: opacityAnim,
           transform: [{ translateY: translateAnim }],
         },
       ]}>
       {/* Geometric decorations */}
-      <View style={styles.cardDecor1} />
-      <View style={styles.cardDecor2} />
+      <View style={[styles.cardDecor1, { backgroundColor: colors.accent1 }]} />
+      <View style={[styles.cardDecor2, { backgroundColor: colors.secondary }]} />
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={styles.headerIcon}>
+        <View style={[styles.headerIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
           <Icon name="airplane" size={24} color={colors.primary} />
         </View>
         <View style={styles.headerContent}>
-          <Text style={styles.label}>CURRENT TRIP</Text>
-          <Text style={styles.tripName} numberOfLines={2}>
+          <Text style={[styles.label, { color: colors.textSecondary }]}>CURRENT TRIP</Text>
+          <Text style={[styles.tripName, { color: colors.textPrimary }]} numberOfLines={2}>
             {trip.name}
           </Text>
         </View>
@@ -124,44 +128,44 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
       {/* Destination */}
       {trip.destination && (
         <View style={styles.destinationContainer}>
-          <View style={styles.destinationIcon}>
+          <View style={[styles.destinationIcon, { backgroundColor: colors.secondaryLight, borderColor: colors.border }]}>
             <Icon name="location" size={18} color={colors.secondary} />
           </View>
-          <Text style={styles.destination}>{trip.destination}</Text>
+          <Text style={[styles.destination, { color: colors.textPrimary }]}>{trip.destination}</Text>
         </View>
       )}
 
       {/* Date Section */}
-      <View style={styles.dateSection}>
-        <View style={styles.dateCard}>
-          <View style={styles.dateIconContainer}>
+      <View style={[styles.dateSection, { borderColor: colors.border }]}>
+        <View style={[styles.dateCard, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
+          <View style={[styles.dateIconContainer, { backgroundColor: colors.accent1Light, borderColor: colors.border }]}>
             <Icon name="calendar-outline" size={20} color={colors.accent1Dark} />
           </View>
           <View style={styles.dateContent}>
-            <Text style={styles.dateLabel}>START</Text>
-            <Text style={styles.dateValue}>
+            <Text style={[styles.dateLabel, { color: colors.textSecondary }]}>START</Text>
+            <Text style={[styles.dateValue, { color: colors.textPrimary }]}>
               {format(startDate, 'MMM dd')}
             </Text>
-            <Text style={styles.dateYear}>
+            <Text style={[styles.dateYear, { color: colors.textTertiary }]}>
               {format(startDate, 'yyyy')}
             </Text>
           </View>
         </View>
 
-        <View style={styles.dateSeparator}>
+        <View style={[styles.dateSeparator, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
           <Icon name="arrow-forward" size={20} color={colors.primary} />
         </View>
 
-        <View style={styles.dateCard}>
-          <View style={styles.dateIconContainer}>
+        <View style={[styles.dateCard, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
+          <View style={[styles.dateIconContainer, { backgroundColor: colors.accent1Light, borderColor: colors.border }]}>
             <Icon name="calendar" size={20} color={colors.accent1Dark} />
           </View>
           <View style={styles.dateContent}>
-            <Text style={styles.dateLabel}>END</Text>
-            <Text style={styles.dateValue}>
+            <Text style={[styles.dateLabel, { color: colors.textSecondary }]}>END</Text>
+            <Text style={[styles.dateValue, { color: colors.textPrimary }]}>
               {format(endDate, 'MMM dd')}
             </Text>
-            <Text style={styles.dateYear}>
+            <Text style={[styles.dateYear, { color: colors.textTertiary }]}>
               {format(endDate, 'yyyy')}
             </Text>
           </View>
@@ -178,16 +182,17 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
           />
           <Text style={[
             styles.daysInfo,
-            isActive && styles.daysInfoActive,
-            isUpcoming && styles.daysInfoUpcoming,
+            { color: colors.textSecondary },
+            isActive && { color: colors.success },
+            isUpcoming && { color: colors.secondary },
           ]}>
             {getDaysInfo()}
           </Text>
         </View>
 
         {onPress && (
-          <View style={styles.viewMoreContainer}>
-            <Text style={styles.viewMoreText}>View Details</Text>
+          <View style={[styles.viewMoreContainer, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+            <Text style={[styles.viewMoreText, { color: colors.primary }]}>View Details</Text>
             <Icon name="arrow-forward" size={16} color={colors.primary} />
           </View>
         )}
@@ -208,12 +213,12 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: colors.backgroundElevated,
+    backgroundColor: staticColors.backgroundElevated,
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
     marginVertical: spacing.sm,
     borderWidth: 3,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     position: 'relative',
     overflow: 'hidden',
     ...shadows.large,
@@ -227,7 +232,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.accent1,
+    backgroundColor: staticColors.accent1,
     opacity: 0.15,
   },
   cardDecor2: {
@@ -236,7 +241,7 @@ const styles = StyleSheet.create({
     left: -15,
     width: 60,
     height: 60,
-    backgroundColor: colors.secondary,
+    backgroundColor: staticColors.secondary,
     opacity: 0.15,
     transform: [{ rotate: '25deg' }],
   },
@@ -252,11 +257,11 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: staticColors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
   headerContent: {
     flex: 1,
@@ -264,7 +269,7 @@ const styles = StyleSheet.create({
   label: {
     ...textStyles.labelSmall,
     fontSize: 10,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginBottom: spacing.xs,
   },
   tripName: {
@@ -283,36 +288,36 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   badgeActive: {
-    backgroundColor: colors.successLight,
-    borderColor: colors.success,
+    backgroundColor: staticColors.successLight,
+    borderColor: staticColors.success,
   },
   badgeUpcoming: {
-    backgroundColor: colors.infoLight,
-    borderColor: colors.info,
+    backgroundColor: staticColors.infoLight,
+    borderColor: staticColors.info,
   },
   badgePast: {
-    backgroundColor: colors.backgroundTertiary,
-    borderColor: colors.borderLight,
+    backgroundColor: staticColors.backgroundTertiary,
+    borderColor: staticColors.borderLight,
   },
   badgeDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: colors.success,
+    backgroundColor: staticColors.success,
   },
   badgeDotUpcoming: {
-    backgroundColor: colors.info,
+    backgroundColor: staticColors.info,
   },
   badgeText: {
     ...textStyles.badge,
     fontSize: 9,
-    color: colors.success,
+    color: staticColors.success,
   },
   badgeTextUpcoming: {
-    color: colors.info,
+    color: staticColors.info,
   },
   badgeTextPast: {
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
 
   // Destination
@@ -326,16 +331,16 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.secondaryLight,
+    backgroundColor: staticColors.secondaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
   destination: {
     ...textStyles.bodyBold,
     fontSize: 16,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
   },
 
   // Date Section
@@ -346,29 +351,29 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderTopWidth: 3,
     borderBottomWidth: 3,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     gap: spacing.sm,
   },
   dateCard: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
     padding: spacing.sm,
     borderRadius: borderRadius.md,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     gap: spacing.sm,
   },
   dateIconContainer: {
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: colors.accent1Light,
+    backgroundColor: staticColors.accent1Light,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
   dateContent: {
     flex: 1,
@@ -376,28 +381,28 @@ const styles = StyleSheet.create({
   dateLabel: {
     ...textStyles.labelSmall,
     fontSize: 9,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginBottom: 2,
   },
   dateValue: {
     ...textStyles.bodyBold,
     fontSize: 15,
-    color: colors.textPrimary,
+    color: staticColors.textPrimary,
   },
   dateYear: {
     ...textStyles.caption,
     fontSize: 11,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
   },
   dateSeparator: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: staticColors.backgroundSecondary,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
 
   // Footer
@@ -414,13 +419,13 @@ const styles = StyleSheet.create({
   daysInfo: {
     ...textStyles.bodyBold,
     fontSize: 14,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
   daysInfoActive: {
-    color: colors.success,
+    color: staticColors.success,
   },
   daysInfoUpcoming: {
-    color: colors.secondary,
+    color: staticColors.secondary,
   },
   viewMoreContainer: {
     flexDirection: 'row',
@@ -428,15 +433,15 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xs,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: staticColors.primaryLight,
     borderRadius: borderRadius.sm,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
   viewMoreText: {
     ...textStyles.bodyBold,
     fontSize: 12,
-    color: colors.primary,
+    color: staticColors.primary,
   },
 
   // Empty State
@@ -452,7 +457,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: colors.accent2,
+    backgroundColor: staticColors.accent2,
     opacity: 0.2,
   },
   emptyDecorSquare: {
@@ -461,7 +466,7 @@ const styles = StyleSheet.create({
     left: 20,
     width: 50,
     height: 50,
-    backgroundColor: colors.accent4,
+    backgroundColor: staticColors.accent4,
     opacity: 0.2,
     transform: [{ rotate: '20deg' }],
   },
@@ -469,21 +474,21 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: colors.primaryLight,
+    backgroundColor: staticColors.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.md,
     borderWidth: 3,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
   },
   emptyTitle: {
     ...textStyles.h5,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginBottom: spacing.xs,
   },
   emptySubtitle: {
     ...textStyles.body,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
     textAlign: 'center',
     lineHeight: 22,
   },

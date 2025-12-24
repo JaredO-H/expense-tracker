@@ -174,3 +174,33 @@ export const isDarkModeEnabled = async (): Promise<boolean> => {
 export const shouldUseSystemTheme = async (): Promise<boolean> => {
   return getSetting('useSystemTheme');
 };
+
+/**
+ * Update general settings
+ */
+export const updateGeneralSettings = async (
+  updates: Partial<GeneralSettings>
+): Promise<void> => {
+  try {
+    const currentSettings = await getGeneralSettings();
+    const newSettings = { ...currentSettings, ...updates };
+    await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+  } catch (error) {
+    console.error('Failed to update general settings:', error);
+    throw error;
+  }
+};
+
+/**
+ * Update dark mode setting
+ */
+export const setDarkMode = async (enabled: boolean): Promise<void> => {
+  await updateGeneralSettings({ darkMode: enabled, useSystemTheme: false });
+};
+
+/**
+ * Update use system theme setting
+ */
+export const setUseSystemTheme = async (enabled: boolean): Promise<void> => {
+  await updateGeneralSettings({ useSystemTheme: enabled });
+};

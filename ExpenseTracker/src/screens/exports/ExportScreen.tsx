@@ -28,6 +28,8 @@ import {
   deleteReceiptImages,
 } from '../../services/export/fileManager';
 import databaseService from '../../services/database/databaseService';
+import { colors as staticColors } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 type RootStackParamList = {
   ExportScreen: { tripId: number };
@@ -37,6 +39,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ExportScreen'>;
 
 export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
   const { tripId } = route.params;
+  const { colors } = useTheme();
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -235,22 +238,22 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
   if (loading && !trip) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Loading trip data...</Text>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading trip data...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.backgroundSecondary }]}>
       <View style={styles.content}>
         {/* Trip Info */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Trip Details</Text>
-          <View style={styles.tripInfo}>
-            <Text style={styles.tripName}>{trip?.name}</Text>
-            <Text style={styles.tripDetail}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Trip Details</Text>
+          <View style={[styles.tripInfo, { backgroundColor: colors.backgroundElevated }]}>
+            <Text style={[styles.tripName, { color: colors.textPrimary }]}>{trip?.name}</Text>
+            <Text style={[styles.tripDetail, { color: colors.textSecondary }]}>
               {expenses.length} expense{expenses.length !== 1 ? 's' : ''}
             </Text>
           </View>
@@ -258,7 +261,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {/* Format Selection */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Export Format</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Export Format</Text>
           <View style={styles.formatOptions}>
             <FormatOption
               format={ExportFormat.EXCEL}
@@ -267,6 +270,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
               description="Formatted workbook with formulas"
               selected={selectedFormat === ExportFormat.EXCEL}
               onSelect={() => setSelectedFormat(ExportFormat.EXCEL)}
+              colors={colors}
             />
             <FormatOption
               format={ExportFormat.CSV}
@@ -275,6 +279,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
               description="Spreadsheet format for Excel, Google Sheets"
               selected={selectedFormat === ExportFormat.CSV}
               onSelect={() => setSelectedFormat(ExportFormat.CSV)}
+              colors={colors}
             />
 
           </View>
@@ -282,9 +287,9 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {/* Options */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Options</Text>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Options</Text>
           <TouchableOpacity
-            style={styles.checkboxRow}
+            style={[styles.checkboxRow, { backgroundColor: colors.backgroundElevated }]}
             onPress={() => setIncludeReceipts(!includeReceipts)}
           >
             <Icon
@@ -292,11 +297,11 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
                 includeReceipts ? 'checkbox-marked' : 'checkbox-blank-outline'
               }
               size={24}
-              color={includeReceipts ? '#007AFF' : '#999'}
+              color={includeReceipts ? colors.primary : colors.textDisabled}
             />
-            <Text style={styles.checkboxLabel}>Generate PDF with receipt images</Text>
+            <Text style={[styles.checkboxLabel, { color: colors.textPrimary }]}>Generate PDF with receipt images</Text>
           </TouchableOpacity>
-          <Text style={styles.note}>
+          <Text style={[styles.note, { color: colors.textSecondary }]}>
             {selectedFormat === ExportFormat.CSV && includeReceipts
               ? 'Receipt filenames will be included in the CSV'
               : selectedFormat === ExportFormat.PDF && includeReceipts
@@ -309,21 +314,21 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {/* Export Preview */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Export Preview</Text>
-          <View style={styles.previewCard}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Export Preview</Text>
+          <View style={[styles.previewCard, { backgroundColor: colors.backgroundElevated }]}>
             <View style={styles.previewRow}>
-              <Text style={styles.previewLabel}>Format:</Text>
-              <Text style={styles.previewValue}>
+              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Format:</Text>
+              <Text style={[styles.previewValue, { color: colors.textPrimary }]}>
                 {selectedFormat.toUpperCase()}
               </Text>
             </View>
             <View style={styles.previewRow}>
-              <Text style={styles.previewLabel}>Expenses:</Text>
-              <Text style={styles.previewValue}>{expenses.length}</Text>
+              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Expenses:</Text>
+              <Text style={[styles.previewValue, { color: colors.textPrimary }]}>{expenses.length}</Text>
             </View>
             <View style={styles.previewRow}>
-              <Text style={styles.previewLabel}>Estimated size:</Text>
-              <Text style={styles.previewValue}>
+              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Estimated size:</Text>
+              <Text style={[styles.previewValue, { color: colors.textPrimary }]}>
                 {formatFileSize(estimatedSize)}
               </Text>
             </View>
@@ -332,16 +337,16 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {/* Export Button */}
         <TouchableOpacity
-          style={[styles.exportButton, loading && styles.exportButtonDisabled]}
+          style={[styles.exportButton, { backgroundColor: colors.primary }, loading && styles.exportButtonDisabled]}
           onPress={handleExport}
           disabled={loading || expenses.length === 0}
         >
           {loading ? (
-            <ActivityIndicator color="#FFF" />
+            <ActivityIndicator color={colors.textInverse} />
           ) : (
             <>
-              <Icon name="export" size={20} color="#FFF" />
-              <Text style={styles.exportButtonText}>Export</Text>
+              <Icon name="export" size={20} color={colors.textInverse} />
+              <Text style={[styles.exportButtonText, { color: colors.textInverse }]}>Export</Text>
             </>
           )}
         </TouchableOpacity>
@@ -357,6 +362,7 @@ interface FormatOptionProps {
   description: string;
   selected: boolean;
   onSelect: () => void;
+  colors: ReturnType<typeof useTheme>['colors'];
 }
 
 const FormatOption: React.FC<FormatOptionProps> = ({
@@ -365,28 +371,33 @@ const FormatOption: React.FC<FormatOptionProps> = ({
   description,
   selected,
   onSelect,
+  colors,
 }) => {
   return (
     <TouchableOpacity
-      style={[styles.formatOption, selected && styles.formatOptionSelected]}
+      style={[
+        styles.formatOption,
+        { backgroundColor: colors.backgroundElevated, borderColor: selected ? colors.primary : colors.border },
+        selected && { backgroundColor: colors.primaryLight }
+      ]}
       onPress={onSelect}
     >
       <Icon
         name={icon}
         size={32}
-        color={selected ? '#007AFF' : '#666'}
+        color={selected ? colors.primary : colors.textSecondary}
         style={styles.formatIcon}
       />
       <View style={styles.formatText}>
-        <Text style={[styles.formatTitle, selected && styles.formatTitleSelected]}>
+        <Text style={[styles.formatTitle, { color: selected ? colors.primary : colors.textPrimary }]}>
           {title}
         </Text>
-        <Text style={styles.formatDescription}>{description}</Text>
+        <Text style={[styles.formatDescription, { color: colors.textSecondary }]}>{description}</Text>
       </View>
       <Icon
         name={selected ? 'radiobox-marked' : 'radiobox-blank'}
         size={24}
-        color={selected ? '#007AFF' : '#999'}
+        color={selected ? colors.primary : colors.textDisabled}
       />
     </TouchableOpacity>
   );

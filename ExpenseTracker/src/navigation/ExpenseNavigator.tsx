@@ -9,7 +9,7 @@ import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { ExpenseDetailScreen } from '../screens/expenses/ExpenseDetailScreen';
 import { CreateExpenseScreen } from '../screens/expenses/CreateExpenseScreen';
 import { CameraScreen } from '../screens/CameraScreen';
-import { colors } from '../styles';
+import { useTheme } from '../contexts/ThemeContext';
 
 export type ExpenseStackParamList = {
   ExpensesList: undefined;
@@ -21,6 +21,8 @@ export type ExpenseStackParamList = {
 const Stack = createNativeStackNavigator<ExpenseStackParamList>();
 
 export const ExpenseNavigator: React.FC = () => {
+  const { colors } = useTheme();
+
   return (
     <Stack.Navigator
       screenOptions={{

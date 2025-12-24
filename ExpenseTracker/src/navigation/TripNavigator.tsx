@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TripsScreen } from '../screens/trips/TripsScreen';
 import { TripDetailScreen } from '../screens/trips/TripDetailScreen';
 import { CreateTripScreen } from '../screens/trips/CreateTripScreen';
-import { colors } from '../styles';
+import { useTheme } from '../contexts/ThemeContext';
 
 export type TripStackParamList = {
   TripsList: undefined;
@@ -19,6 +19,8 @@ export type TripStackParamList = {
 const Stack = createNativeStackNavigator<TripStackParamList>();
 
 export const TripNavigator: React.FC = () => {
+  const { colors } = useTheme();
+
   return (
     <Stack.Navigator
       screenOptions={{

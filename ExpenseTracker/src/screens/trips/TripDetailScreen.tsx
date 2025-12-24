@@ -19,8 +19,9 @@ import { useTripStore } from '../../stores/tripStore';
 import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
 import { format } from 'date-fns';
-import { colors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
+import { colors as staticColors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
 import databaseService from '../../services/database/databaseService';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface TripDetailScreenProps {
   route: any;
@@ -30,6 +31,7 @@ interface TripDetailScreenProps {
 export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navigation }) => {
   const { tripId } = route.params;
   const { trips, updateTrip, deleteTrip, isLoading } = useTripStore();
+  const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [tripStats, setTripStats] = useState({ expenseCount: 0, totalAmount: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
@@ -120,7 +122,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
   if (!trip) {
     return (
-      <View style={screenStyles.loadingContainer}>
+      <View style={[screenStyles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
       </View>
     );
@@ -128,7 +130,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
 
   if (isEditing) {
     return (
-      <View style={screenStyles.screenContainer}>
+      <View style={[screenStyles.screenContainer, { backgroundColor: colors.background }]}>
         <TripForm
           trip={trip}
           onSubmit={handleUpdate}
@@ -140,53 +142,53 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
   }
 
   return (
-    <ScrollView style={styles.containerGray}>
+    <ScrollView style={[styles.containerGray, { backgroundColor: colors.backgroundSecondary }]}>
       <View style={styles.content}>
         {/* Trip Information Card */}
-        <View style={styles.card}>
-          <Text style={screenStyles.sectionTitle}>Trip Information</Text>
+        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+          <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>Trip Information</Text>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Name</Text>
-            <Text style={styles.infoValue}>{trip.name}</Text>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Name</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{trip.name}</Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Start Date</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Start Date</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
               {format(new Date(trip.start_date), 'MMMM dd, yyyy')}
             </Text>
           </View>
 
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>End Date</Text>
-            <Text style={styles.infoValue}>{format(new Date(trip.end_date), 'MMMM dd, yyyy')}</Text>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>End Date</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{format(new Date(trip.end_date), 'MMMM dd, yyyy')}</Text>
           </View>
 
           {trip.destination && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Destination</Text>
-              <Text style={styles.infoValue}>{trip.destination}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Destination</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{trip.destination}</Text>
             </View>
           )}
 
           {trip.purpose && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Purpose</Text>
-              <Text style={styles.infoValue}>{trip.purpose}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Purpose</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{trip.purpose}</Text>
             </View>
           )}
         </View>
 
         {/* Expense Summary Card */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
           <View style={styles.summaryHeader}>
-            <Text style={screenStyles.sectionTitle}>Expense Summary</Text>
+            <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>Expense Summary</Text>
             {tripStats.expenseCount > 0 && (
               <TouchableOpacity
                 style={styles.viewExpensesButton}
                 onPress={() => navigation.navigate('ExpensesTab', { tripId: trip.id })}>
-                <Text style={styles.viewExpensesButtonText}>View Expenses →</Text>
+                <Text style={[styles.viewExpensesButtonText, { color: colors.primary }]}>View Expenses →</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -196,40 +198,40 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
           ) : (
             <View style={styles.statsContainer}>
               <View style={styles.statBox}>
-                <Text style={styles.statValue}>{tripStats.expenseCount}</Text>
-                <Text style={styles.statLabel}>
+                <Text style={[styles.statValue, { color: colors.primary }]}>{tripStats.expenseCount}</Text>
+                <Text style={[styles.statLabel, { color: colors.textTertiary }]}>
                   {tripStats.expenseCount === 1 ? 'expense' : 'expenses'}
                 </Text>
               </View>
-              <View style={styles.statDivider} />
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statBox}>
-                <Text style={styles.statValue}>${tripStats.totalAmount.toFixed(2)}</Text>
-                <Text style={styles.statLabel}>total amount</Text>
+                <Text style={[styles.statValue, { color: colors.primary }]}>${tripStats.totalAmount.toFixed(2)}</Text>
+                <Text style={[styles.statLabel, { color: colors.textTertiary }]}>total amount</Text>
               </View>
             </View>
           )}
 
           {!loadingStats && tripStats.expenseCount === 0 && (
             <TouchableOpacity
-              style={styles.addExpensePrompt}
+              style={[styles.addExpensePrompt, { backgroundColor: colors.backgroundTertiary }]}
               onPress={() => navigation.navigate('CreateExpense')}>
-              <Text style={styles.addExpenseText}>No expenses yet. Tap to add one.</Text>
+              <Text style={[styles.addExpenseText, { color: colors.textSecondary }]}>No expenses yet. Tap to add one.</Text>
             </TouchableOpacity>
           )}
         </View>
 
         {/* Metadata Card */}
-        <View style={styles.card}>
+        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>Created</Text>
-            <Text style={styles.infoValue}>
+            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Created</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
               {format(new Date(trip.created_at), 'MMM dd, yyyy HH:mm')}
             </Text>
           </View>
           {trip.updated_at && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>Last Updated</Text>
-              <Text style={styles.infoValue}>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Last Updated</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
                 {format(new Date(trip.updated_at), 'MMM dd, yyyy HH:mm')}
               </Text>
             </View>
@@ -240,22 +242,22 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
         <View style={styles.actionButtons}>
           {tripStats.expenseCount > 0 && (
             <TouchableOpacity
-              style={[styles.actionButton, styles.exportButton]}
+              style={[styles.actionButton, styles.exportButton, { borderColor: colors.border }]}
               onPress={() => navigation.navigate('ExportScreen', { tripId: trip.id })}>
-              <Text style={styles.exportButtonText}>Export Trip</Text>
+              <Text style={[styles.exportButtonText, { color: colors.textInverse }]}>Export Trip</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.editButton]}
+            style={[styles.actionButton, styles.editButton, { backgroundColor: colors.primary, borderColor: colors.border }]}
             onPress={() => setIsEditing(true)}>
-            <Text style={styles.editButtonText}>Edit Trip</Text>
+            <Text style={[styles.editButtonText, { color: colors.textInverse }]}>Edit Trip</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton]}
+            style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.background, borderColor: colors.errorDark }]}
             onPress={handleDelete}>
-            <Text style={styles.deleteButtonText}>Delete Trip</Text>
+            <Text style={[styles.deleteButtonText, { color: colors.errorDark }]}>Delete Trip</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -287,7 +289,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     ...textStyles.labelSmall,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
     marginBottom: spacing.xs,
   },
   infoValue: {
@@ -307,7 +309,7 @@ const styles = StyleSheet.create({
   },
   viewExpensesButtonText: {
     ...textStyles.caption,
-    color: colors.primary,
+    color: staticColors.primary,
     fontWeight: '600',
   },
 
@@ -324,18 +326,18 @@ const styles = StyleSheet.create({
   },
   statValue: {
     ...textStyles.h3,
-    color: colors.primary,
+    color: staticColors.primary,
     fontWeight: '600',
     marginBottom: spacing.xs,
   },
   statLabel: {
     ...textStyles.caption,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
   },
   statDivider: {
     width: 1,
     height: 40,
-    backgroundColor: colors.border,
+    backgroundColor: staticColors.border,
     marginHorizontal: spacing.lg,
   },
 
@@ -343,13 +345,13 @@ const styles = StyleSheet.create({
   addExpensePrompt: {
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.md,
-    backgroundColor: colors.backgroundTertiary,
+    backgroundColor: staticColors.backgroundTertiary,
     borderRadius: spacing.sm,
     alignItems: 'center',
   },
   addExpenseText: {
     ...textStyles.body,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
   },
 
   // Action Buttons
@@ -373,12 +375,12 @@ const styles = StyleSheet.create({
     ...textStyles.button,
   },
   deleteButton: {
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
     borderWidth: 2,
-    borderColor: colors.errorDark,
+    borderColor: staticColors.errorDark,
   },
   deleteButtonText: {
     ...textStyles.button,
-    color: colors.errorDark,
+    color: staticColors.errorDark,
   },
 });

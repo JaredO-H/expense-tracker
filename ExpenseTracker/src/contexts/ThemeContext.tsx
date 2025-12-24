@@ -1,16 +1,20 @@
 /**
  * Theme Context
  * Manages dark mode state throughout the app
+ * Integrates with color system for theme-aware styling
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Appearance, useColorScheme } from 'react-native';
-import { getGeneralSettings } from '../utils/generalSettings';
+import { getGeneralSettings, setDarkMode } from '../utils/generalSettings';
+import { getColors, getActiveColors } from '../styles/colors';
 
 interface ThemeContextType {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
   refreshTheme: () => Promise<void>;
+  colors: ReturnType<typeof getActiveColors>;
+  themeVersion: number; // Force re-renders when theme changes
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -31,9 +35,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const systemColorScheme = useColorScheme();
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [useSystemTheme, setUseSystemTheme] = useState(true);
+  const [themeVersion, setThemeVersion] = useState(0);
 
   useEffect(() => {
     loadThemeSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -41,6 +47,14 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       setIsDarkMode(systemColorScheme === 'dark');
     }
   }, [systemColorScheme, useSystemTheme]);
+
+  // Update colors when theme changes
+  useEffect(() => {
+    console.log('Theme changing to:', isDarkMode ? 'dark' : 'light');
+    getColors(isDarkMode ? 'dark' : 'light');
+    // Increment version to force all consumers to re-render
+    setThemeVersion(prev => prev + 1);
+  }, [isDarkMode]);
 
   const loadThemeSettings = async () => {
     try {
@@ -60,8 +74,18 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }
   };
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(prev => !prev);
+  const toggleDarkMode = async () => {
+    const newMode = !isDarkMode;
+    console.log('Toggling dark mode to:', newMode);
+    setIsDarkMode(newMode);
+    setUseSystemTheme(false);
+
+    // Save to persistent storage
+    try {
+      await setDarkMode(newMode);
+    } catch (error) {
+      console.error('Failed to save dark mode preference:', error);
+    }
   };
 
   const refreshTheme = async () => {
@@ -69,7 +93,15 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode, refreshTheme }}>
+    <ThemeContext.Provider
+      value={{
+        isDarkMode,
+        toggleDarkMode,
+        refreshTheme,
+        colors: getActiveColors(), // Get fresh colors object
+        themeVersion // Force re-renders when this changes
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );

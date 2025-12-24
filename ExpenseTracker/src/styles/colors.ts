@@ -1,10 +1,13 @@
 /**
- * Neo-Memphis Color Palette
+ * Neo-Memphis Color Palette - with Light & Dark Mode Support
  * Bold, playful colors inspired by 1980s Memphis Design movement
  * Makes finance exciting, not boring!
  */
 
-export const colors = {
+import { ThemeMode } from '../stores/themeStore';
+
+// Light Mode Colors - Original Neo-Memphis Palette
+const lightColors = {
   // Primary Colors - Bold and Energetic
   primary: '#FF6B6B', // Coral Red - main brand color
   primaryDark: '#E63946', // Deep Coral
@@ -36,11 +39,6 @@ export const colors = {
   backgroundSecondary: '#FFF0DB', // Soft peach background
   backgroundTertiary: '#FFE4C4', // Bisque
   backgroundElevated: '#FFFFFF', // Pure white for cards
-
-  // Dark Mode Backgrounds
-  backgroundDark: '#1A1B26', // Deep navy/charcoal
-  backgroundDarkSecondary: '#24283B', // Slate
-  backgroundDarkTertiary: '#2C3043', // Dark slate
 
   // Text Colors - Strong contrast
   textPrimary: '#2D3436', // Dark charcoal
@@ -78,7 +76,7 @@ export const colors = {
   pattern7: '#FA8BFF', // Pink
   pattern8: '#2EC4B6', // Deep teal
 
-  // Neutral Grays - Less used, but available
+  // Neutral Grays
   gray50: '#FAFAFA',
   gray100: '#F5F5F5',
   gray200: '#EEEEEE',
@@ -121,4 +119,175 @@ export const colors = {
   blackOverlay80: 'rgba(0, 0, 0, 0.8)',
 } as const;
 
-export type ColorName = keyof typeof colors;
+// Dark Mode Colors - Neo-Memphis adapted for dark backgrounds
+const darkColors = {
+  // Primary Colors - Slightly brighter for dark mode
+  primary: '#FF8585', // Brighter Coral for visibility
+  primaryDark: '#FF6B6B', // Original Coral
+  primaryLight: '#FFB3B3', // Very Light Coral
+
+  secondary: '#5EDDD4', // Brighter Teal
+  secondaryDark: '#4ECDC4', // Original Teal
+  secondaryLight: '#8EE7E0', // Pale Teal
+
+  // Accent Colors - Vibrant on dark
+  accent1: '#FFF087', // Brighter Mustard Yellow
+  accent1Dark: '#FFE66D', // Original Yellow
+  accent1Light: '#FFFADB', // Very Pale Yellow
+
+  accent2: '#A8F5E9', // Brighter Mint
+  accent2Dark: '#95E1D3', // Original Mint
+  accent2Light: '#D0FCF4', // Very Pale Mint
+
+  accent3: '#D5C4FF', // Brighter Lavender
+  accent3Dark: '#C8B6FF', // Original Lavender
+  accent3Light: '#EDE5FF', // Very Pale Lavender
+
+  accent4: '#FFA15C', // Brighter Tangerine
+  accent4Dark: '#FF8E3C', // Original Tangerine
+  accent4Light: '#FFC490', // Pale Orange
+
+  // Background Colors - Dark Memphis
+  background: '#1A1B26', // Deep navy/charcoal - main background
+  backgroundSecondary: '#24283B', // Slate - elevated background
+  backgroundTertiary: '#2C3043', // Dark slate - more elevated
+  backgroundElevated: '#33354A', // Lighter slate for cards
+
+  // Text Colors - Light on dark
+  textPrimary: '#E8E8E8', // Light gray - main text
+  textSecondary: '#A0A0B0', // Medium gray
+  textTertiary: '#6B6B80', // Darker gray
+  textDisabled: '#4A4A5A', // Very dark gray
+  textInverse: '#1A1B26', // Dark (for light backgrounds)
+  textOnPrimary: '#FFFFFF', // White on coral
+  textOnSecondary: '#1A1B26', // Dark on teal
+
+  // Status Colors - Bright for dark mode
+  success: '#5FD97A', // Bright green
+  successLight: 'rgba(95, 217, 122, 0.2)', // Transparent mint
+  successDark: '#51CF66', // Original green
+
+  error: '#FF8585', // Bright coral
+  errorLight: 'rgba(255, 133, 133, 0.2)', // Transparent coral
+  errorDark: '#FF6B6B', // Original coral
+
+  warning: '#FFD93D', // Bright yellow
+  warningLight: 'rgba(255, 217, 61, 0.2)', // Transparent yellow
+  warningDark: '#FCC419', // Original yellow
+
+  info: '#5EDDD4', // Bright teal
+  infoLight: 'rgba(94, 221, 212, 0.2)', // Transparent teal
+  infoDark: '#4ECDC4', // Original teal
+
+  // Geometric Pattern Colors - Same vibrant colors work on dark
+  pattern1: '#FF8585', // Bright Coral
+  pattern2: '#5EDDD4', // Bright Teal
+  pattern3: '#FFF087', // Bright Yellow
+  pattern4: '#A8F5E9', // Bright Mint
+  pattern5: '#D5C4FF', // Bright Lavender
+  pattern6: '#FFA15C', // Bright Orange
+  pattern7: '#FF9FFF', // Bright Pink
+  pattern8: '#4ECDC4', // Teal
+
+  // Neutral Grays - Inverted for dark
+  gray50: '#212121',
+  gray100: '#2A2A2A',
+  gray200: '#363636',
+  gray300: '#424242',
+  gray400: '#616161',
+  gray500: '#757575',
+  gray600: '#9E9E9E',
+  gray700: '#BDBDBD',
+  gray800: '#E0E0E0',
+  gray900: '#F5F5F5',
+
+  // Border Colors - Lighter for dark mode
+  border: '#E8E8E8', // Light borders for dark mode
+  borderLight: '#6B6B80', // Medium borders
+  borderSubtle: '#33354A', // Subtle borders
+  borderAccent: '#FF8585', // Accent borders
+
+  // Shadow Colors - Deeper shadows on dark
+  shadow: '#000000',
+  shadowColored: 'rgba(255, 133, 133, 0.4)', // Colored shadow
+
+  // Overlays
+  overlay: 'rgba(0, 0, 0, 0.85)', // Darker overlay
+  overlayLight: 'rgba(0, 0, 0, 0.5)', // Medium overlay
+
+  // Transparent
+  transparent: 'transparent',
+
+  // Semi-transparent overlays - adjusted for dark
+  whiteOverlay10: 'rgba(255, 255, 255, 0.08)',
+  whiteOverlay20: 'rgba(255, 255, 255, 0.15)',
+  whiteOverlay30: 'rgba(255, 255, 255, 0.25)',
+  whiteOverlay60: 'rgba(255, 255, 255, 0.5)',
+  whiteOverlay80: 'rgba(255, 255, 255, 0.7)',
+
+  blackOverlay10: 'rgba(0, 0, 0, 0.15)',
+  blackOverlay20: 'rgba(0, 0, 0, 0.3)',
+  blackOverlay30: 'rgba(0, 0, 0, 0.45)',
+  blackOverlay50: 'rgba(0, 0, 0, 0.6)',
+  blackOverlay80: 'rgba(0, 0, 0, 0.85)',
+} as const;
+
+// Current theme colors - will be updated by getColors function
+let currentColors: typeof lightColors | typeof darkColors = lightColors;
+let currentTheme: ThemeMode = 'light';
+
+// Listeners for theme changes
+const themeChangeListeners: Set<() => void> = new Set();
+
+/**
+ * Subscribe to theme changes
+ */
+export const subscribeToThemeChanges = (listener: () => void) => {
+  themeChangeListeners.add(listener);
+  return () => themeChangeListeners.delete(listener);
+};
+
+/**
+ * Get colors for the specified theme
+ * Call this when theme changes to update the color palette
+ */
+export const getColors = (theme: ThemeMode) => {
+  const previousTheme = currentTheme;
+  currentTheme = theme;
+  currentColors = theme === 'dark' ? darkColors : lightColors;
+
+  // Notify all listeners if theme actually changed
+  if (previousTheme !== theme) {
+    themeChangeListeners.forEach(listener => listener());
+  }
+
+  return currentColors;
+};
+
+/**
+ * Get current theme mode
+ */
+export const getCurrentTheme = () => currentTheme;
+
+/**
+ * Get current colors - always returns the active color palette
+ * This function should be called fresh each render to get updated colors
+ */
+export const getActiveColors = () => currentColors;
+
+/**
+ * Export colors proxy that always returns current theme colors
+ * This allows existing code to continue using `colors.primary` etc.
+ * Note: Components won't auto-update unless they use useTheme hook
+ */
+export const colors = new Proxy(currentColors, {
+  get(_target, prop) {
+    return currentColors[prop as keyof typeof currentColors];
+  },
+}) as typeof lightColors;
+
+// Export the color palettes for direct access if needed
+export const lightPalette = lightColors;
+export const darkPalette = darkColors;
+
+export type ColorName = keyof typeof lightColors;
