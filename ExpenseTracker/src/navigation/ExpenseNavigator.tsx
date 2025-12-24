@@ -9,6 +9,7 @@ import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { ExpenseDetailScreen } from '../screens/expenses/ExpenseDetailScreen';
 import { CreateExpenseScreen } from '../screens/expenses/CreateExpenseScreen';
 import { CameraScreen } from '../screens/CameraScreen';
+import { colors } from '../styles';
 
 export type ExpenseStackParamList = {
   ExpensesList: undefined;
@@ -24,11 +25,11 @@ export const ExpenseNavigator: React.FC = () => {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#3b82f6',
+          backgroundColor: colors.primary,
         },
-        headerTintColor: '#fff',
+        headerTintColor: colors.textInverse,
         headerTitleStyle: {
-          fontWeight: '600',
+          fontWeight: '800',
         },
       }}>
       <Stack.Screen

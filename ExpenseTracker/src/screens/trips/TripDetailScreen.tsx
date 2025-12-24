@@ -3,7 +3,7 @@
  * Displays trip details with edit and delete capabilities
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import { useTripStore } from '../../stores/tripStore';
 import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
@@ -45,21 +46,28 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
       navigation.setOptions({
         title: trip.name,
       });
-
-      // Fetch trip statistics
-      const loadStats = async () => {
-        try {
-          const stats = await databaseService.getTripStatistics(trip.id);
-          setTripStats(stats);
-        } catch (error) {
-          console.error('Failed to load trip statistics:', error);
-        } finally {
-          setLoadingStats(false);
-        }
-      };
-      loadStats();
     }
   }, [trip, navigation]);
+
+  // Reload stats whenever screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      if (trip) {
+        const loadStats = async () => {
+          setLoadingStats(true);
+          try {
+            const stats = await databaseService.getTripStatistics(trip.id);
+            setTripStats(stats);
+          } catch (error) {
+            console.error('Failed to load trip statistics:', error);
+          } finally {
+            setLoadingStats(false);
+          }
+        };
+        loadStats();
+      }
+    }, [trip])
+  );
 
   const handleUpdate = async (data: CreateTripModel) => {
     if (!trip) {

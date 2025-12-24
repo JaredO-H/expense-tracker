@@ -9,6 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ExpenseNavigator } from './ExpenseNavigator';
 import { TripNavigator } from './TripNavigator';
 import { HomeScreen } from '../screens/HomeScreen';
+import { colors } from '../styles';
 
 
 export type AppTabParamList = {
@@ -61,11 +62,11 @@ export const AppNavigator: React.FC = () => {
             tabBarLabel: 'Expenses',
             headerShown: true,
             headerStyle: {
-              backgroundColor: '#3b82f6',
+              backgroundColor: colors.primary,
             },
-            headerTintColor: '#fff',
+            headerTintColor: colors.textInverse,
             headerTitleStyle: {
-              fontWeight: '600',
+              fontWeight: '800',
             },
           }}
         />

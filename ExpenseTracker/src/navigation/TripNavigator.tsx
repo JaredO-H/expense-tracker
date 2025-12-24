@@ -8,6 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { TripsScreen } from '../screens/trips/TripsScreen';
 import { TripDetailScreen } from '../screens/trips/TripDetailScreen';
 import { CreateTripScreen } from '../screens/trips/CreateTripScreen';
+import { colors } from '../styles';
 
 export type TripStackParamList = {
   TripsList: undefined;
@@ -22,11 +23,11 @@ export const TripNavigator: React.FC = () => {
     <Stack.Navigator
       screenOptions={{
         headerStyle: {
-          backgroundColor: '#3b82f6',
+          backgroundColor: colors.primary,
         },
-        headerTintColor: '#fff',
+        headerTintColor: colors.textInverse,
         headerTitleStyle: {
-          fontWeight: '600',
+          fontWeight: '800',
         },
       }}>
       <Stack.Screen

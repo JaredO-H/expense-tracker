@@ -1,10 +1,10 @@
 /**
- * Spacing & Sizing Constants
- * Consistent spacing, sizing, and layout values
+ * Neo-Memphis Spacing & Sizing
+ * Bold spacing and geometric border radii
  */
 
 export const spacing = {
-  // Base spacing scale (multiples of 4)
+  // Base spacing scale (multiples of 4, generous for breathing room)
   xs: 4,
   sm: 8,
   md: 12,
@@ -15,17 +15,20 @@ export const spacing = {
   xxxl: 40,
   huge: 48,
   massive: 64,
+  ultra: 80,
 } as const;
 
 export const borderRadius = {
+  none: 0, // Sharp corners for geometric look
   xs: 4,
-  sm: 6,
-  md: 8,
-  lg: 12,
-  xl: 16,
-  xxl: 20,
-  xxxl: 24,
-  round: 999,
+  sm: 8,
+  md: 12,
+  lg: 16, // Slightly more rounded
+  xl: 20,
+  xxl: 28,
+  xxxl: 36,
+  round: 999, // Full circles
+  blob: 50, // Organic shapes
 } as const;
 
 export const iconSizes = {
@@ -59,33 +62,57 @@ export const containerPadding = {
 export const tabBarHeight = 60;
 export const headerHeight = 56;
 
+// Memphis-inspired bold shadows
 export const shadows = {
+  none: {
+    shadowColor: 'transparent',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+  },
   small: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    elevation: 2,
   },
   medium: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
+    elevation: 4,
   },
   large: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.24,
+    shadowRadius: 12,
+    elevation: 6,
   },
   xl: {
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.2,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.3,
+    shadowRadius: 20,
+    elevation: 10,
+  },
+  // Colored shadows for extra flair
+  colored: {
+    shadowColor: '#FF6B6B',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
+  },
+  // Offset shadow (Memphis-style)
+  offset: {
+    shadowColor: '#2D3436',
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 1,
+    shadowRadius: 0,
+    elevation: 0,
   },
 } as const;

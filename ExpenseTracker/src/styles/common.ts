@@ -1,6 +1,6 @@
 /**
- * Common Component Styles
- * Reusable styles for common UI patterns
+ * Neo-Memphis Common Styles
+ * Bold, playful, and geometric component styles
  */
 
 import { StyleSheet } from 'react-native';
@@ -42,7 +42,7 @@ export const commonStyles = StyleSheet.create({
     alignItems: 'flex-end',
   },
 
-  // Containers
+  // Containers - Warm and inviting
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -51,91 +51,134 @@ export const commonStyles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.backgroundSecondary,
   },
+  containerPrimary: {
+    flex: 1,
+    backgroundColor: colors.primary,
+  },
   screenPadding: {
-    padding: spacing.base,
+    padding: spacing.lg,
   },
   screenPaddingHorizontal: {
-    paddingHorizontal: spacing.base,
+    paddingHorizontal: spacing.lg,
   },
   screenPaddingVertical: {
-    paddingVertical: spacing.base,
+    paddingVertical: spacing.lg,
   },
 
-  // Cards
+  // Cards - Bold borders and shadows
   card: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.backgroundElevated,
     borderRadius: borderRadius.lg,
     padding: spacing.base,
+    borderWidth: 3,
+    borderColor: colors.border,
     ...shadows.medium,
   },
   cardFlat: {
-    backgroundColor: colors.background,
-    borderRadius: borderRadius.lg,
+    backgroundColor: colors.backgroundElevated,
+    borderRadius: borderRadius.md,
     padding: spacing.base,
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: colors.border,
   },
+  cardColored: {
+    backgroundColor: colors.primary,
+    borderRadius: borderRadius.lg,
+    padding: spacing.base,
+    borderWidth: 3,
+    borderColor: colors.border,
+    ...shadows.colored,
+  },
+  cardElevated: {
+    backgroundColor: colors.backgroundElevated,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    borderWidth: 3,
+    borderColor: colors.border,
+    ...shadows.large,
+  },
 
-  // Buttons
+  // Buttons - Bold and geometric
   button: {
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.xl,
     borderRadius: borderRadius.md,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 3,
+    borderColor: colors.border,
+    ...shadows.medium,
   },
   buttonPrimary: {
     backgroundColor: colors.primary,
+    borderColor: colors.border,
   },
   buttonSecondary: {
-    backgroundColor: colors.background,
-    borderWidth: 1,
+    backgroundColor: colors.secondary,
     borderColor: colors.border,
+  },
+  buttonAccent: {
+    backgroundColor: colors.accent1,
+    borderColor: colors.border,
+  },
+  buttonOutline: {
+    backgroundColor: colors.backgroundElevated,
+    borderWidth: 3,
+    borderColor: colors.primary,
   },
   buttonSuccess: {
     backgroundColor: colors.success,
+    borderColor: colors.border,
   },
   buttonError: {
     backgroundColor: colors.error,
+    borderColor: colors.border,
   },
   buttonDisabled: {
-    backgroundColor: colors.backgroundDisabled,
+    backgroundColor: colors.backgroundTertiary,
+    borderColor: colors.borderSubtle,
     opacity: 0.6,
   },
   buttonSmall: {
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.base,
     borderRadius: borderRadius.sm,
+    borderWidth: 2,
   },
   buttonLarge: {
     paddingVertical: spacing.base,
     paddingHorizontal: spacing.xxl,
     borderRadius: borderRadius.lg,
+    borderWidth: 3,
   },
 
-  // Inputs
+  // Inputs - Clear borders
   input: {
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: colors.border,
     borderRadius: borderRadius.md,
     padding: spacing.md,
     fontSize: textStyles.body.fontSize,
     color: colors.textPrimary,
-    backgroundColor: colors.background,
+    backgroundColor: colors.backgroundElevated,
+    fontWeight: '500',
   },
   inputError: {
     borderColor: colors.error,
+    borderWidth: 3,
   },
   inputFocused: {
-    borderColor: colors.primary,
-    borderWidth: 2,
+    borderColor: colors.secondary,
+    borderWidth: 4,
+    ...shadows.medium,
   },
   inputDisabled: {
-    backgroundColor: colors.backgroundDisabled,
+    backgroundColor: colors.backgroundTertiary,
     color: colors.textDisabled,
+    borderColor: colors.borderSubtle,
   },
 
-  // Text
+  // Text styles
   textCenter: {
     textAlign: 'center',
   },
@@ -163,19 +206,30 @@ export const commonStyles = StyleSheet.create({
   textSuccess: {
     color: colors.success,
   },
+  textBrand: {
+    color: colors.primary,
+  },
 
-  // Dividers
+  // Dividers - Bold and visible
   divider: {
-    height: 1,
+    height: 3,
     backgroundColor: colors.border,
+    marginVertical: spacing.base,
+  },
+  dividerLight: {
+    height: 2,
+    backgroundColor: colors.borderLight,
+    marginVertical: spacing.sm,
   },
   dividerThick: {
-    height: 2,
+    height: 4,
     backgroundColor: colors.border,
+    marginVertical: spacing.lg,
   },
   dividerVertical: {
-    width: 1,
+    width: 3,
     backgroundColor: colors.border,
+    marginHorizontal: spacing.base,
   },
 
   // Spacing utilities
@@ -185,6 +239,7 @@ export const commonStyles = StyleSheet.create({
   mt16: { marginTop: spacing.base },
   mt20: { marginTop: spacing.lg },
   mt24: { marginTop: spacing.xl },
+  mt32: { marginTop: spacing.xxl },
 
   mb4: { marginBottom: spacing.xs },
   mb8: { marginBottom: spacing.sm },
@@ -192,16 +247,19 @@ export const commonStyles = StyleSheet.create({
   mb16: { marginBottom: spacing.base },
   mb20: { marginBottom: spacing.lg },
   mb24: { marginBottom: spacing.xl },
+  mb32: { marginBottom: spacing.xxl },
 
   ml4: { marginLeft: spacing.xs },
   ml8: { marginLeft: spacing.sm },
   ml12: { marginLeft: spacing.md },
   ml16: { marginLeft: spacing.base },
+  ml20: { marginLeft: spacing.lg },
 
   mr4: { marginRight: spacing.xs },
   mr8: { marginRight: spacing.sm },
   mr12: { marginRight: spacing.md },
   mr16: { marginRight: spacing.base },
+  mr20: { marginRight: spacing.lg },
 
   p4: { padding: spacing.xs },
   p8: { padding: spacing.sm },
@@ -210,27 +268,46 @@ export const commonStyles = StyleSheet.create({
   p20: { padding: spacing.lg },
   p24: { padding: spacing.xl },
 
-  // Badges
+  // Badges - Geometric and bold
   badge: {
-    paddingHorizontal: spacing.sm,
+    paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
-    borderRadius: borderRadius.xl,
+    borderRadius: borderRadius.sm,
     alignSelf: 'flex-start',
+    borderWidth: 2,
+    borderColor: colors.border,
+  },
+  badgeRound: {
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.round,
+    alignSelf: 'flex-start',
+    borderWidth: 2,
+    borderColor: colors.border,
   },
   badgeSuccess: {
     backgroundColor: colors.successLight,
+    borderColor: colors.success,
   },
   badgeError: {
     backgroundColor: colors.errorLight,
+    borderColor: colors.error,
   },
   badgeWarning: {
     backgroundColor: colors.warningLight,
+    borderColor: colors.warning,
   },
   badgeInfo: {
     backgroundColor: colors.infoLight,
+    borderColor: colors.info,
   },
-  badgeGray: {
-    backgroundColor: colors.gray100,
+  badgePrimary: {
+    backgroundColor: colors.primaryLight,
+    borderColor: colors.primary,
+  },
+  badgeSecondary: {
+    backgroundColor: colors.secondaryLight,
+    borderColor: colors.secondary,
   },
 
   // Loading states
@@ -238,12 +315,13 @@ export const commonStyles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: spacing.md,
     fontSize: textStyles.body.fontSize,
-    color: colors.textTertiary,
+    fontWeight: textStyles.bodyBold.fontWeight,
+    color: colors.textSecondary,
   },
 
   // Empty states
@@ -254,43 +332,56 @@ export const commonStyles = StyleSheet.create({
     padding: spacing.xxl,
   },
   emptyTitle: {
-    fontSize: textStyles.h4.fontSize,
-    fontWeight: textStyles.h4.fontWeight,
-    color: colors.textSecondary,
-    marginBottom: spacing.sm,
+    fontSize: textStyles.h3.fontSize,
+    fontWeight: textStyles.h3.fontWeight,
+    color: colors.textPrimary,
+    marginBottom: spacing.md,
+    textAlign: 'center',
   },
   emptySubtitle: {
     fontSize: textStyles.body.fontSize,
-    color: colors.textTertiary,
+    color: colors.textSecondary,
     textAlign: 'center',
+    lineHeight: textStyles.body.lineHeight,
   },
 
   // Shadows
+  shadowNone: shadows.none,
   shadowSmall: shadows.small,
   shadowMedium: shadows.medium,
   shadowLarge: shadows.large,
   shadowXl: shadows.xl,
+  shadowColored: shadows.colored,
+  shadowOffset: shadows.offset,
 
-  // Borders
+  // Borders - Memphis style
   borderTop: {
-    borderTopWidth: 1,
+    borderTopWidth: 3,
     borderTopColor: colors.border,
   },
   borderBottom: {
-    borderBottomWidth: 1,
+    borderBottomWidth: 3,
     borderBottomColor: colors.border,
   },
   borderLeft: {
-    borderLeftWidth: 1,
+    borderLeftWidth: 3,
     borderLeftColor: colors.border,
   },
   borderRight: {
-    borderRightWidth: 1,
+    borderRightWidth: 3,
     borderRightColor: colors.border,
   },
   borderAll: {
-    borderWidth: 1,
+    borderWidth: 3,
     borderColor: colors.border,
+  },
+  borderPrimary: {
+    borderWidth: 3,
+    borderColor: colors.primary,
+  },
+  borderSecondary: {
+    borderWidth: 3,
+    borderColor: colors.secondary,
   },
 
   // Absolute positioning
@@ -312,5 +403,23 @@ export const commonStyles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
+  },
+
+  // Geometric decorative elements
+  decorativeCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.accent1,
+    borderWidth: 3,
+    borderColor: colors.border,
+  },
+  decorativeSquare: {
+    width: 40,
+    height: 40,
+    backgroundColor: colors.accent2,
+    borderWidth: 3,
+    borderColor: colors.border,
+    transform: [{ rotate: '15deg' }],
   },
 });

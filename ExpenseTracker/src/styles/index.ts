@@ -22,11 +22,21 @@ export {
   fontSizes,
   fontWeights,
   lineHeights,
+  letterSpacing,
   textStyles,
 } from './typography';
 export type { TextStyleName } from './typography';
 
 export { commonStyles } from './common';
+
+export {
+  geometricShapes,
+  categoryPatterns,
+  getPatternByIndex,
+  getPatternByName,
+  cornerDecorations,
+  decorativeLines,
+} from './geometrics';
 
 // Re-export everything as a theme object for convenience
 import { colors } from './colors';
