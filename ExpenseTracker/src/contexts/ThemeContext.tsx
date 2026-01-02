@@ -36,6 +36,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [useSystemTheme, setUseSystemTheme] = useState(true);
   const [themeVersion, setThemeVersion] = useState(0);
+  const [colors, setColors] = useState(() => getActiveColors());
 
   useEffect(() => {
     loadThemeSettings();
@@ -51,7 +52,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   // Update colors when theme changes
   useEffect(() => {
     console.log('Theme changing to:', isDarkMode ? 'dark' : 'light');
-    getColors(isDarkMode ? 'dark' : 'light');
+    const newColors = getColors(isDarkMode ? 'dark' : 'light');
+    setColors(newColors);
     // Increment version to force all consumers to re-render
     setThemeVersion(prev => prev + 1);
   }, [isDarkMode]);
@@ -103,7 +105,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         isDarkMode,
         toggleDarkMode,
         refreshTheme,
-        colors: getActiveColors(), // Get fresh colors object
+        colors, // Use state that updates with theme changes
         themeVersion // Force re-renders when this changes
       }}
     >

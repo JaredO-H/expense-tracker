@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
   },
   headerSubtitle: {
     ...textStyles.body,
-    color: colors.textTertiary,
+    color: staticColors.textTertiary,
   },
   serviceCard: {
     ...commonStyles.card,
@@ -377,7 +377,7 @@ const styles = StyleSheet.create({
   },
   serviceHeaderSelected: {
     borderBottomWidth: 1,
-    borderBottomColor: colors.border,
+    borderBottomColor: staticColors.border,
   },
   serviceHeaderLeft: {
     ...commonStyles.flexRow,
@@ -389,18 +389,18 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: staticColors.border,
     ...commonStyles.flexCenter,
     marginRight: spacing.md,
   },
   radioButtonSelected: {
-    borderColor: colors.primary,
+    borderColor: staticColors.primary,
   },
   radioButtonInner: {
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: colors.primary,
+    backgroundColor: staticColors.primary,
   },
   serviceInfo: {
     flex: 1,
@@ -429,7 +429,7 @@ const styles = StyleSheet.create({
   },
   serviceDescription: {
     ...textStyles.body,
-    color: colors.textSecondary,
+    color: staticColors.textSecondary,
     marginBottom: spacing.md,
   },
   apiKeyLabel: {
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
   },
   showButtonText: {
     ...textStyles.button,
-    color: colors.primary,
+    color: staticColors.primary,
     fontSize: textStyles.bodySmall.fontSize,
   },
   setupInstructions: {
@@ -474,34 +474,34 @@ const styles = StyleSheet.create({
     ...textStyles.button,
   },
   testButton: {
-    backgroundColor: colors.info,
+    backgroundColor: staticColors.info,
   },
   testButtonText: {
     ...textStyles.button,
   },
   deleteButton: {
-    backgroundColor: colors.background,
+    backgroundColor: staticColors.background,
     borderWidth: 1,
-    borderColor: colors.error,
+    borderColor: staticColors.error,
   },
   deleteButtonText: {
     ...textStyles.button,
-    color: colors.error,
+    color: staticColors.error,
   },
   helpSection: {
     ...commonStyles.card,
     marginTop: spacing.lg,
-    backgroundColor: colors.infoBg,
+    backgroundColor: staticColors.infoLight,
     borderLeftWidth: 4,
-    borderLeftColor: colors.primary,
+    borderLeftColor: staticColors.primary,
   },
   helpTitle: {
     ...textStyles.h6,
-    color: colors.info,
+    color: staticColors.info,
     marginBottom: spacing.sm,
   },
   helpText: {
     ...textStyles.body,
-    color: colors.info,
+    color: staticColors.info,
   },
 });
