@@ -24,7 +24,7 @@ interface CreateExpenseScreenProps {
 
 export const CreateExpenseScreen: React.FC<CreateExpenseScreenProps> = ({navigation, route}) => {
   const { createExpense, isLoading } = useExpenseStore();
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
   const initialTripId = route?.params?.tripId;
 
   const handleCreate = async (model: CreateExpenseModel) => {

@@ -23,7 +23,7 @@ import { useTheme } from '../contexts/ThemeContext';
 
 export const ProcessingStatusScreen: React.FC = () => {
   const navigation = useNavigation();
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -191,9 +191,9 @@ export const ProcessingStatusScreen: React.FC = () => {
     const methodBadge = getProcessingMethodBadge(item.serviceId);
 
     const cardContent = (
-      <View style={styles.itemCard}>
+      <View style={[styles.itemCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
         <View style={styles.itemHeader}>
-          <View style={styles.statusBadge}>
+          <View style={[styles.statusBadge, { backgroundColor: colors.backgroundSecondary }]}>
             <Icon name={statusIconName} size={16} color={statusColor} style={styles.statusIcon} />
             <Text style={[styles.statusText, { color: statusColor }]}>
               {item.status.toUpperCase()}
@@ -209,7 +209,7 @@ export const ProcessingStatusScreen: React.FC = () => {
 
         <View style={styles.itemBody}>
           <View style={styles.serviceRow}>
-            <Text style={styles.serviceText}>Service: {serviceName}</Text>
+            <Text style={[styles.serviceText, { color: colors.textPrimary }]}>Service: {serviceName}</Text>
             <View style={[styles.methodBadge, { backgroundColor: methodBadge.color + '20', borderColor: methodBadge.color }]}>
               <Icon name={methodBadge.iconName} size={12} color={methodBadge.color} style={styles.methodIcon} />
               <Text style={[styles.methodText, { color: methodBadge.color }]}>
@@ -217,37 +217,37 @@ export const ProcessingStatusScreen: React.FC = () => {
               </Text>
             </View>
           </View>
-          <Text style={styles.dateText}>
+          <Text style={[styles.dateText, { color: colors.textSecondary }]}>
             Created: {new Date(item.createdAt).toLocaleString()}
           </Text>
 
           {item.status === 'processing' && (
             <View style={styles.processingIndicator}>
               <ActivityIndicator size="small" color={colors.primary} />
-              <Text style={styles.processingText}>Processing...</Text>
+              <Text style={[styles.processingText, { color: colors.primary }]}>Processing...</Text>
             </View>
           )}
 
           {item.status === 'completed' && item.result && (
-            <View style={styles.resultContainer}>
-              <Text style={styles.resultLabel}>Result:</Text>
-              <Text style={styles.resultText}>
+            <View style={[styles.resultContainer, { backgroundColor: colors.backgroundSecondary, borderLeftColor: colors.success }]}>
+              <Text style={[styles.resultLabel, { color: colors.textSecondary }]}>Result:</Text>
+              <Text style={[styles.resultText, { color: colors.textPrimary }]}>
                 {item.result.merchant} - ${(item.result.amount || 0).toFixed(2)}
               </Text>
-              <Text style={styles.resultDate}>
+              <Text style={[styles.resultDate, { color: colors.textSecondary }]}>
                 {item.result.date}
               </Text>
-              <Text style={styles.confidenceText}>
+              <Text style={[styles.confidenceText, { color: colors.textSecondary }]}>
                 Confidence: {(item.result.confidence * 100).toFixed(0)}%
               </Text>
               {item.processedAt && (
-                <Text style={styles.processedAtText}>
+                <Text style={[styles.processedAtText, { color: colors.textSecondary }]}>
                   Processed: {new Date(item.processedAt).toLocaleString()}
                 </Text>
               )}
               <View style={styles.tapToVerifyContainer}>
                 <Icon name="hand-left-outline" size={16} color={colors.primary} style={styles.tapIcon} />
-                <Text style={styles.tapToVerifyText}>
+                <Text style={[styles.tapToVerifyText, { color: colors.primary }]}>
                   Tap to verify and create expense
                 </Text>
               </View>
@@ -255,30 +255,30 @@ export const ProcessingStatusScreen: React.FC = () => {
           )}
 
           {item.status === 'failed' && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorLabel}>Error:</Text>
-              <Text style={styles.errorText}>{item.error || 'Unknown error'}</Text>
-              <Text style={styles.retryText}>
+            <View style={[styles.errorContainer, { backgroundColor: colors.backgroundSecondary, borderLeftColor: colors.error }]}>
+              <Text style={[styles.errorLabel, { color: colors.error }]}>Error:</Text>
+              <Text style={[styles.errorText, { color: colors.textSecondary }]}>{item.error || 'Unknown error'}</Text>
+              <Text style={[styles.retryText, { color: colors.textSecondary }]}>
                 Retry {item.retryCount}/{item.maxRetries}
               </Text>
               {item.retryCount < item.maxRetries && (
                 <TouchableOpacity
-                  style={styles.retryButton}
+                  style={[styles.retryButton, { backgroundColor: colors.primary }]}
                   onPress={() => handleRetry(item)}
                 >
-                  <Text style={styles.retryButtonText}>Retry Now</Text>
+                  <Text style={[styles.retryButtonText, { color: colors.textInverse }]}>Retry Now</Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
 
           {item.status === 'pending' && (
-            <View style={styles.pendingContainer}>
-              <Text style={styles.pendingText}>
+            <View style={[styles.pendingContainer, { backgroundColor: colors.backgroundSecondary }]}>
+              <Text style={[styles.pendingText, { color: colors.textSecondary }]}>
                 Priority: {item.priority}
               </Text>
               {item.retryCount > 0 && (
-                <Text style={styles.retryText}>
+                <Text style={[styles.retryText, { color: colors.textSecondary }]}>
                   Retry attempt {item.retryCount}/{item.maxRetries}
                 </Text>
               )}
@@ -309,8 +309,8 @@ export const ProcessingStatusScreen: React.FC = () => {
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
       <Icon name="clipboard-outline" size={64} color={colors.textDisabled} style={styles.emptyIcon} />
-      <Text style={styles.emptyTitle}>No Processing Items</Text>
-      <Text style={styles.emptyText}>
+      <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No Processing Items</Text>
+      <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
         Capture a receipt to see it appear here for processing.
       </Text>
     </View>
@@ -332,40 +332,40 @@ export const ProcessingStatusScreen: React.FC = () => {
   const hasCompleted = stats.completed > 0;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: colors.background }]} key={themeVersion}>
       {/* Header Stats */}
-      <View style={styles.statsContainer}>
+      <View style={[styles.statsContainer, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
         <View style={styles.statItem}>
-          <Text style={styles.statValue}>{stats.pending}</Text>
-          <Text style={styles.statLabel}>Pending</Text>
+          <Text style={[styles.statValue, { color: colors.textPrimary }]}>{stats.pending}</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Pending</Text>
         </View>
         <View style={styles.statItem}>
           <Text style={[styles.statValue, { color: colors.primary }]}>
             {stats.processing}
           </Text>
-          <Text style={styles.statLabel}>Processing</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Processing</Text>
         </View>
         <View style={styles.statItem}>
           <Text style={[styles.statValue, { color: colors.success }]}>
             {stats.completed}
           </Text>
-          <Text style={styles.statLabel}>Completed</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Completed</Text>
         </View>
         <View style={styles.statItem}>
           <Text style={[styles.statValue, { color: colors.error }]}>
             {stats.failed}
           </Text>
-          <Text style={styles.statLabel}>Failed</Text>
+          <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Failed</Text>
         </View>
       </View>
 
       {/* Clear Completed Button */}
       {hasCompleted && (
         <TouchableOpacity
-          style={styles.clearButton}
+          style={[styles.clearButton, { backgroundColor: colors.error }]}
           onPress={handleClearCompleted}
         >
-          <Text style={styles.clearButtonText}>Clear Completed</Text>
+          <Text style={[styles.clearButtonText, { color: colors.textInverse }]}>Clear Completed</Text>
         </TouchableOpacity>
       )}
 

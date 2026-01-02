@@ -39,7 +39,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ExportScreen'>;
 
 export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
   const { tripId } = route.params;
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);

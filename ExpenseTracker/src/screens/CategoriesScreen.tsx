@@ -36,7 +36,7 @@ interface CategoriesScreenProps {
 export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }) => {
   const { categories, fetchCategories } = useCategoryStore();
   const { expenses, fetchExpenses } = useExpenseStore();
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
   const [scaleAnims] = useState(() => categories.map(() => new Animated.Value(1)));
 
@@ -110,7 +110,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
   const totalAmount = (expenses || []).reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   return (
-    <View style={[screenStyles.screenWithDecorations, { backgroundColor: colors.background }]}>
+    <View style={[screenStyles.screenWithDecorations, { backgroundColor: colors.background }]} key={themeVersion}>
       {/* Background decorations */}
       <View style={[screenStyles.bgDecorCircleLarge, { backgroundColor: colors.accent1 }]} />
       <View style={[screenStyles.bgDecorSquare, { backgroundColor: colors.accent3 }]} />
@@ -210,15 +210,15 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
                   activeOpacity={0.9}>
                   {/* Geometric decoration unique to each category */}
                   <View style={styles.categoryDecorContainer}>
-                    {index % 4 === 0 && <View style={styles.decorCircle} />}
-                    {index % 4 === 1 && <View style={styles.decorSquare} />}
-                    {index % 4 === 2 && <View style={styles.decorTriangle} />}
-                    {index % 4 === 3 && <View style={styles.decorPill} />}
+                    {index % 4 === 0 && <View style={[styles.decorCircle, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]} />}
+                    {index % 4 === 1 && <View style={[styles.decorSquare, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]} />}
+                    {index % 4 === 2 && <View style={[styles.decorTriangle, { borderBottomColor: colors.whiteOverlay30 }]} />}
+                    {index % 4 === 3 && <View style={[styles.decorPill, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]} />}
                   </View>
 
                   {/* Category Name */}
                   <View style={styles.categoryHeader}>
-                    <Text style={styles.categoryName} numberOfLines={2}>
+                    <Text style={[styles.categoryName, { color: colors.textOnSecondary }]} numberOfLines={2}>
                       {category.name.toUpperCase()}
                     </Text>
                   </View>
@@ -228,16 +228,16 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
                     <View style={styles.categoryStats}>
                       <View style={styles.statRow}>
                         <Icon name="receipt-outline" size={16} color={colors.textOnSecondary} />
-                        <Text style={styles.categoryStatText}>{stats.count}</Text>
+                        <Text style={[styles.categoryStatText, { color: colors.textOnSecondary }]}>{stats.count}</Text>
                       </View>
                       <View style={styles.statRow}>
                         <Icon name="cash-outline" size={16} color={colors.textOnSecondary} />
-                        <Text style={styles.categoryStatText}>${stats.total.toFixed(0)}</Text>
+                        <Text style={[styles.categoryStatText, { color: colors.textOnSecondary }]}>${stats.total.toFixed(0)}</Text>
                       </View>
                     </View>
                   ) : (
                     <View style={styles.categoryEmpty}>
-                      <Text style={styles.categoryEmptyText}>No expenses yet</Text>
+                      <Text style={[styles.categoryEmptyText, { color: colors.textOnSecondary }]}>No expenses yet</Text>
                     </View>
                   )}
 

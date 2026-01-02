@@ -29,7 +29,7 @@ interface ExpenseDetailScreenProps {
 export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route, navigation }) => {
   const { expenseId } = route.params;
   const { expenses, updateExpense, deleteExpense, isLoading } = useExpenseStore();
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
 
   const expense = expenses.find(t => t.id === expenseId);

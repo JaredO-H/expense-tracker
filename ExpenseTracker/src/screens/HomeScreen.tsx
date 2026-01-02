@@ -235,7 +235,7 @@ export const HomeScreen: React.FC = () => {
                 <Icon name="arrow-forward" size={28} color={colors.textOnSecondary} />
 
                 {/* Decorative element */}
-                <View style={[screenStyles.buttonGeometricDecor, { backgroundColor: colors.accent1Dark }]} />
+                <View style={[screenStyles.buttonGeometricDecor, { backgroundColor: colors.accent1, opacity: 0.3 }]} />
               </TouchableOpacity>
             </Animated.View>
           </View>

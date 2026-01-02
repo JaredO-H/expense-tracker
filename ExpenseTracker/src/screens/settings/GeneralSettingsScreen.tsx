@@ -25,8 +25,6 @@ interface GeneralSettings {
   useSystemLocale: boolean;
   showCents: boolean;
   defaultTaxType: string;
-  darkMode: boolean;
-  useSystemTheme: boolean;
 }
 
 const CURRENCIES = [
@@ -65,12 +63,10 @@ const defaultSettings: GeneralSettings = {
   useSystemLocale: true,
   showCents: true,
   defaultTaxType: 'none',
-  darkMode: false,
-  useSystemTheme: true,
 };
 
 export const GeneralSettingsScreen: React.FC = () => {
-  const { colors, refreshTheme } = useTheme();
+  const { colors, themeVersion } = useTheme();
   const [settings, setSettings] = useState<GeneralSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
@@ -96,9 +92,6 @@ export const GeneralSettingsScreen: React.FC = () => {
     try {
       await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
       setHasChanges(false);
-
-      // Refresh theme if appearance settings changed
-      await refreshTheme();
 
       Alert.alert('Success', 'Settings saved successfully');
     } catch (error) {
@@ -132,9 +125,6 @@ export const GeneralSettingsScreen: React.FC = () => {
                 SETTINGS_KEY,
                 JSON.stringify(defaultSettings)
               );
-
-              // Refresh theme after reset
-              await refreshTheme();
 
               Alert.alert('Success', 'Settings reset to defaults');
               setHasChanges(false);
@@ -242,46 +232,6 @@ export const GeneralSettingsScreen: React.FC = () => {
           </View>
         </View>
 
-        {/* Appearance Settings */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Appearance</Text>
-          <View style={styles.settingCard}>
-            <View style={styles.settingRow}>
-              <View style={styles.settingTextContainer}>
-                <Text style={styles.settingLabel}>Use System Theme</Text>
-                <Text style={styles.settingDescription}>
-                  Follow device dark mode preference
-                </Text>
-              </View>
-              <Switch
-                value={settings.useSystemTheme}
-                onValueChange={value => updateSetting('useSystemTheme', value)}
-                trackColor={{ false: colors.border, true: colors.primary }}
-                thumbColor={colors.background}
-              />
-            </View>
-          </View>
-
-          {!settings.useSystemTheme && (
-            <View style={styles.settingCard}>
-              <View style={styles.settingRow}>
-                <View style={styles.settingTextContainer}>
-                  <Text style={styles.settingLabel}>Dark Mode</Text>
-                  <Text style={styles.settingDescription}>
-                    Use dark color scheme
-                  </Text>
-                </View>
-                <Switch
-                  value={settings.darkMode}
-                  onValueChange={value => updateSetting('darkMode', value)}
-                  trackColor={{ false: colors.border, true: colors.primary }}
-                  thumbColor={colors.background}
-                />
-              </View>
-            </View>
-          )}
-        </View>
-
         {/* Expense Defaults */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Expense Defaults</Text>
@@ -335,8 +285,7 @@ export const GeneralSettingsScreen: React.FC = () => {
           />
           <Text style={styles.infoText}>
             These settings affect how data is displayed and the default values
-            for new expenses. Theme changes take effect immediately after saving.
-            Changes do not affect existing expenses.
+            for new expenses. Changes do not affect existing expenses.
           </Text>
         </View>
       </View>

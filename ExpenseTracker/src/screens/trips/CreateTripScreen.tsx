@@ -17,7 +17,7 @@ interface CreateTripScreenProps {
 
 export const CreateTripScreen: React.FC<CreateTripScreenProps> = ({ navigation }) => {
   const { createTrip, isLoading } = useTripStore();
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
 
   const handleCreate = async (model: CreateTripModel) => {
     try {

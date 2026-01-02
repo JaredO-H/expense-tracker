@@ -31,7 +31,7 @@ interface TripDetailScreenProps {
 export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navigation }) => {
   const { tripId } = route.params;
   const { trips, updateTrip, deleteTrip, isLoading } = useTripStore();
-  const { colors } = useTheme();
+  const { colors, themeVersion } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [tripStats, setTripStats] = useState({ expenseCount: 0, totalAmount: 0 });
   const [loadingStats, setLoadingStats] = useState(true);
@@ -142,7 +142,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
   }
 
   return (
-    <ScrollView style={[styles.containerGray, { backgroundColor: colors.backgroundSecondary }]}>
+    <ScrollView style={[styles.containerGray, { backgroundColor: colors.backgroundSecondary }]} key={themeVersion}>
       <View style={styles.content}>
         {/* Trip Information Card */}
         <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
@@ -242,7 +242,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
         <View style={styles.actionButtons}>
           {tripStats.expenseCount > 0 && (
             <TouchableOpacity
-              style={[styles.actionButton, styles.exportButton, { borderColor: colors.border }]}
+              style={[styles.actionButton, styles.exportButton, { backgroundColor: colors.success, borderColor: colors.border }]}
               onPress={() => navigation.navigate('ExportScreen', { tripId: trip.id })}>
               <Text style={[styles.exportButtonText, { color: colors.textInverse }]}>Export Trip</Text>
             </TouchableOpacity>

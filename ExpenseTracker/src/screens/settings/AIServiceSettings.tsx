@@ -23,9 +23,11 @@ import {
   getServiceConfig,
 } from '../../services/ai/aiServiceFactory';
 import { AIServiceId } from '../../types/aiService';
-import { colors, spacing, textStyles, commonStyles } from '../../styles';
+import { colors as staticColors, spacing, textStyles, commonStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export const AIServiceSettings: React.FC = () => {
+  const { colors, themeVersion } = useTheme();
   const {
     selectedAIService,
     serviceStatuses,
@@ -210,20 +212,20 @@ export const AIServiceSettings: React.FC = () => {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={styles.loadingText}>Loading settings...</Text>
+        <Text style={[styles.loadingText, { color: colors.textPrimary }]}>Loading settings...</Text>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.backgroundSecondary }]} key={themeVersion}>
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>AI Service Configuration</Text>
-          <Text style={styles.headerSubtitle}>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>AI Service Configuration</Text>
+          <Text style={[styles.headerSubtitle, { color: colors.textTertiary }]}>
             Choose your preferred AI service for receipt processing
           </Text>
         </View>
@@ -234,18 +236,18 @@ export const AIServiceSettings: React.FC = () => {
           const status = serviceStatuses[service.id];
 
           return (
-            <View key={service.id} style={styles.serviceCard}>
+            <View key={service.id} style={[styles.serviceCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
               {/* Service Header */}
               <TouchableOpacity
-                style={[styles.serviceHeader, isSelected && styles.serviceHeaderSelected]}
+                style={[styles.serviceHeader, isSelected && [styles.serviceHeaderSelected, { borderBottomColor: colors.border }]]}
                 onPress={() => handleServiceSelect(service.id)}
                 activeOpacity={0.7}>
                 <View style={styles.serviceHeaderLeft}>
-                  <View style={[styles.radioButton, isSelected && styles.radioButtonSelected]}>
-                    {isSelected && <View style={styles.radioButtonInner} />}
+                  <View style={[styles.radioButton, { borderColor: isSelected ? colors.primary : colors.border }, isSelected && { borderColor: colors.primary }]}>
+                    {isSelected && <View style={[styles.radioButtonInner, { backgroundColor: colors.primary }]} />}
                   </View>
                   <View style={styles.serviceInfo}>
-                    <Text style={styles.serviceName}>{service.name}</Text>
+                    <Text style={[styles.serviceName, { color: colors.textPrimary }]}>{service.name}</Text>
                     <View style={styles.statusBadge}>
                       <View
                         style={[styles.statusDot, { backgroundColor: getStatusColor(status) }]}
@@ -261,13 +263,13 @@ export const AIServiceSettings: React.FC = () => {
               {/* Service Details (shown when selected) */}
               {isSelected && (
                 <View style={styles.serviceDetails}>
-                  <Text style={styles.serviceDescription}>{service.description}</Text>
+                  <Text style={[styles.serviceDescription, { color: colors.textSecondary }]}>{service.description}</Text>
 
                   {/* API Key Input */}
-                  <Text style={styles.apiKeyLabel}>API Key</Text>
+                  <Text style={[styles.apiKeyLabel, { color: colors.textPrimary }]}>API Key</Text>
                   <View style={styles.apiKeyContainer}>
                     <TextInput
-                      style={styles.apiKeyInput}
+                      style={[styles.apiKeyInput, { backgroundColor: colors.background, borderColor: colors.border, color: colors.textPrimary }]}
                       value={apiKeys[service.id]}
                       onChangeText={value => handleAPIKeyChange(service.id, value)}
                       placeholder={service.apiKeyPlaceholder}
@@ -279,41 +281,41 @@ export const AIServiceSettings: React.FC = () => {
                     <TouchableOpacity
                       style={styles.showButton}
                       onPress={() => toggleShowAPIKey(service.id)}>
-                      <Text style={styles.showButtonText}>
+                      <Text style={[styles.showButtonText, { color: colors.primary }]}>
                         {showAPIKey[service.id] ? 'Hide' : 'Show'}
                       </Text>
                     </TouchableOpacity>
                   </View>
 
                   {/* Setup Instructions */}
-                  <Text style={styles.setupInstructions}>{service.setupInstructions}</Text>
+                  <Text style={[styles.setupInstructions, { color: colors.textSecondary }]}>{service.setupInstructions}</Text>
 
                   {/* Action Buttons */}
                   <View style={styles.actionButtons}>
                     <TouchableOpacity
-                      style={[styles.actionButton, styles.saveButton]}
+                      style={[styles.actionButton, styles.saveButton, { backgroundColor: colors.primary, borderColor: colors.border }]}
                       onPress={() => handleSaveAPIKey(service.id)}
                       disabled={isLoading}>
-                      <Text style={styles.saveButtonText}>Save API Key</Text>
+                      <Text style={[styles.saveButtonText, { color: colors.textInverse }]}>Save API Key</Text>
                     </TouchableOpacity>
 
                     {status !== 'not_configured' && (
                       <>
                         <TouchableOpacity
-                          style={[styles.actionButton, styles.testButton]}
+                          style={[styles.actionButton, styles.testButton, { backgroundColor: colors.info, borderColor: colors.border }]}
                           onPress={() => handleTestConnection(service.id)}
                           disabled={isTesting === service.id}>
                           {isTesting === service.id ? (
                             <ActivityIndicator size="small" color={colors.textInverse} />
                           ) : (
-                            <Text style={styles.testButtonText}>Test Connection</Text>
+                            <Text style={[styles.testButtonText, { color: colors.textInverse }]}>Test Connection</Text>
                           )}
                         </TouchableOpacity>
 
                         <TouchableOpacity
-                          style={[styles.actionButton, styles.deleteButton]}
+                          style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.background, borderColor: colors.error }]}
                           onPress={() => handleDeleteAPIKey(service.id)}>
-                          <Text style={styles.deleteButtonText}>Delete Key</Text>
+                          <Text style={[styles.deleteButtonText, { color: colors.error }]}>Delete Key</Text>
                         </TouchableOpacity>
                       </>
                     )}
@@ -325,9 +327,9 @@ export const AIServiceSettings: React.FC = () => {
         })}
 
         {/* Help Section */}
-        <View style={styles.helpSection}>
-          <Text style={styles.helpTitle}>Need Help?</Text>
-          <Text style={styles.helpText}>
+        <View style={[styles.helpSection, { backgroundColor: colors.infoBg, borderLeftColor: colors.primary }]}>
+          <Text style={[styles.helpTitle, { color: colors.info }]}>Need Help?</Text>
+          <Text style={[styles.helpText, { color: colors.info }]}>
             Visit the documentation for each service to learn how to obtain an API key and configure
             your account.
           </Text>

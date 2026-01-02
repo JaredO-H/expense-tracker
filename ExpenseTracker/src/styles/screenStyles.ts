@@ -505,6 +505,7 @@ export const screenStyles = StyleSheet.create({
   fabButton: {
     width: '100%',
     height: '100%',
+    borderRadius: 28,
     justifyContent: 'center',
     alignItems: 'center',
   },
