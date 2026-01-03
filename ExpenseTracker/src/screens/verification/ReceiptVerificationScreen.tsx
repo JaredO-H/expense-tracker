@@ -156,7 +156,7 @@ export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps>
       {/* Foreground: Sliding Drawer with Form */}
       <SlidingDrawer
         snapPoints={[0.25, 0.5, 0.9]}
-        initialSnapPoint={1} // Start at 50%
+        initialSnapPoint={2} // Start at 90%
         onClose={handleCancel}>
         <VerificationForm
           queueItem={queueItem}
