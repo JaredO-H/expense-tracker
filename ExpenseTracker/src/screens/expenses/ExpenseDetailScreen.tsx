@@ -246,7 +246,7 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
   );
 };
 
-// Minimal local styles - most styles now use centralized screenStyles
+
 const styles = StyleSheet.create({
   // Gray container for detail view
   containerGray: {
@@ -258,13 +258,13 @@ const styles = StyleSheet.create({
     padding: spacing.base,
   },
 
-  // Card - uses common card style
+  // Card styling
   card: {
     ...commonStyles.card,
     marginBottom: spacing.base,
   },
 
-  // Info Row - Key-value pair display pattern
+  // Info Row styling
   infoRow: {
     marginBottom: spacing.md,
   },

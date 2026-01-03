@@ -327,9 +327,9 @@ export const AIServiceSettings: React.FC = () => {
         })}
 
         {/* Help Section */}
-        <View style={[styles.helpSection, { backgroundColor: colors.infoBg, borderLeftColor: colors.primary }]}>
+        <View style={[styles.helpSection, { backgroundColor: colors.infoLight, borderLeftColor: colors.primary }]}>
           <Text style={[styles.helpTitle, { color: colors.info }]}>Need Help?</Text>
-          <Text style={[styles.helpText, { color: colors.info }]}>
+          <Text style={[styles.helpText, { color: colors.textSecondary }]}>
             Visit the documentation for each service to learn how to obtain an API key and configure
             your account.
           </Text>

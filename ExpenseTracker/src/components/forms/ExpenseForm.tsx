@@ -23,6 +23,7 @@ import { isValidDateFormat } from '../../components/common/DateChecker';
 import { useTripStore } from '../../stores/tripStore';
 import { useCategoryStore } from '../../stores/categoryStore';
 import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface ExpenseFormProps {
@@ -57,6 +58,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   isLoading = false,
   initialTripId,
 }) => {
+  const { colors: themeColors } = useTheme();
+
   // Fetch trips for dropdown
   const { trips, fetchTrips } = useTripStore();
   const [tripsLoading, setTripsLoading] = useState(true);
@@ -146,10 +149,10 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   };
 
   return (
-    <View style={screenStyles.screenWithDecorations}>
+    <View style={[screenStyles.screenWithDecorations, { backgroundColor: themeColors.background }]}>
       {/* Background decorations */}
-      <View style={screenStyles.bgDecorSmall} />
-      <View style={screenStyles.bgDecorSquareLeft} />
+      <View style={[screenStyles.bgDecorSmall, { backgroundColor: themeColors.primaryLight }]} />
+      <View style={[screenStyles.bgDecorSquareLeft, { backgroundColor: themeColors.accent2Light }]} />
 
       <ScrollView
         style={styles.scrollView}
@@ -158,13 +161,13 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         showsVerticalScrollIndicator={false}>
         {/* Form Header */}
         <View style={styles.formHeader}>
-          <View style={styles.headerIcon}>
-            <Icon name="receipt" size={32} color={colors.primary} />
+          <View style={[styles.headerIcon, { backgroundColor: themeColors.primaryLight, borderColor: themeColors.border }]}>
+            <Icon name="receipt" size={32} color={themeColors.primary} />
           </View>
-          <Text style={styles.formTitle}>
+          <Text style={[styles.formTitle, { color: themeColors.textPrimary }]}>
             {expense ? 'Edit Expense' : 'New Expense'}
           </Text>
-          <Text style={styles.formSubtitle}>
+          <Text style={[styles.formSubtitle, { color: themeColors.textSecondary }]}>
             Fill in the details below
           </Text>
         </View>
@@ -173,22 +176,22 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         <View style={styles.section}>
           <Text style={screenStyles.sectionTitle}>TRIP INFO</Text>
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Trip (Optional)</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>Trip (Optional)</Text>
             {tripsLoading ? (
-              <View style={styles.loadingBox}>
-                <ActivityIndicator size="small" color={colors.primary} />
+              <View style={[styles.loadingBox, { borderColor: themeColors.borderSubtle, backgroundColor: themeColors.backgroundSecondary }]}>
+                <ActivityIndicator size="small" color={themeColors.primary} />
               </View>
             ) : (
               <Controller
                 control={control}
                 name="trip_id"
                 render={({ field: { onChange, value } }) => (
-                  <View style={styles.pickerContainer}>
+                  <View style={[styles.pickerContainer, { borderColor: themeColors.border, backgroundColor: themeColors.backgroundElevated }]}>
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
                       enabled={!isLoading}
-                      style={styles.picker}>
+                      style={[styles.picker, { color: themeColors.textPrimary }]}>
                       <Picker.Item label="No trip (unassigned)" value={undefined} />
                       {trips.map(trip => (
                         <Picker.Item key={trip.id} label={trip.name} value={trip.id} />
@@ -207,8 +210,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
           {/* Merchant Name */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>
-              Merchant <Text style={styles.required}>*</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+              Merchant <Text style={[styles.required, { color: themeColors.error }]}>*</Text>
             </Text>
             <Controller
               control={control}
@@ -220,9 +223,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, errors.merchant && styles.inputError]}
+                  style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.merchant && styles.inputError]}
                   placeholder="e.g., Starbucks"
-                  placeholderTextColor={colors.textDisabled}
+                  placeholderTextColor={themeColors.textDisabled}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -230,13 +233,13 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 />
               )}
             />
-            {errors.merchant && <Text style={styles.errorText}>{errors.merchant.message}</Text>}
+            {errors.merchant && <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.merchant.message}</Text>}
           </View>
 
           {/* Amount - Make it stand out! */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>
-              Amount <Text style={styles.required}>*</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+              Amount <Text style={[styles.required, { color: themeColors.error }]}>*</Text>
             </Text>
             <Controller
               control={control}
@@ -252,12 +255,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 }
 
                 return (
-                  <View style={styles.amountInputContainer}>
-                    <Text style={styles.currencySymbol}>$</Text>
+                  <View style={[styles.amountInputContainer, { borderColor: themeColors.border, backgroundColor: themeColors.accent1Light }]}>
+                    <Text style={[styles.currencySymbol, { color: themeColors.primary }]}>$</Text>
                     <TextInput
-                      style={styles.amountInput}
+                      style={[styles.amountInput, { color: themeColors.textPrimary }]}
                       placeholder="0.00"
-                      placeholderTextColor={colors.textDisabled}
+                      placeholderTextColor={themeColors.textDisabled}
                       value={amountText}
                       onChangeText={text => {
                         // Remove non-numeric characters except decimal point
@@ -290,13 +293,13 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 );
               }}
             />
-            {errors.amount && <Text style={styles.errorText}>{errors.amount.message}</Text>}
+            {errors.amount && <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.amount.message}</Text>}
           </View>
 
           {/* Date */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>
-              Date <Text style={styles.required}>*</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+              Date <Text style={[styles.required, { color: themeColors.error }]}>*</Text>
             </Text>
             <Controller
               control={control}
@@ -310,9 +313,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, errors.date && styles.inputError]}
+                  style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.date && styles.inputError]}
                   placeholder="YYYY-MM-DD"
-                  placeholderTextColor={colors.textDisabled}
+                  placeholderTextColor={themeColors.textDisabled}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -320,20 +323,20 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 />
               )}
             />
-            {errors.date && <Text style={styles.errorText}>{errors.date.message}</Text>}
+            {errors.date && <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.date.message}</Text>}
           </View>
 
           {/* Time */}
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Time (Optional)</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>Time (Optional)</Text>
             <Controller
               control={control}
               name="time"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={styles.input}
+                  style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
                   placeholder="HH:MM"
-                  placeholderTextColor={colors.textDisabled}
+                  placeholderTextColor={themeColors.textDisabled}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -349,8 +352,8 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           <Text style={screenStyles.sectionTitle}>CATEGORY</Text>
           <View style={styles.fieldContainer}>
             {categoriesLoading ? (
-              <View style={styles.loadingBox}>
-                <ActivityIndicator size="small" color={colors.secondary} />
+              <View style={[styles.loadingBox, { borderColor: themeColors.borderSubtle, backgroundColor: themeColors.backgroundSecondary }]}>
+                <ActivityIndicator size="small" color={themeColors.secondary} />
               </View>
             ) : (
               <Controller
@@ -358,12 +361,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 name="category"
                 rules={{ required: 'Category is required' }}
                 render={({ field: { onChange, value } }) => (
-                  <View style={styles.pickerContainer}>
+                  <View style={[styles.pickerContainer, { borderColor: themeColors.border, backgroundColor: themeColors.backgroundElevated }]}>
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
                       enabled={!isLoading}
-                      style={styles.picker}>
+                      style={[styles.picker, { color: themeColors.textPrimary }]}>
                       {categories.map(cat => (
                         <Picker.Item key={cat.id} label={cat.name} value={cat.id} />
                       ))}
@@ -380,7 +383,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           <Text style={screenStyles.sectionTitle}>TAX (OPTIONAL)</Text>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Tax Amount</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>Tax Amount</Text>
             <Controller
               control={control}
               name="tax_amount"
@@ -400,9 +403,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
                 return (
                   <TextInput
-                    style={styles.input}
+                    style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
                     placeholder="0.00"
-                    placeholderTextColor={colors.textDisabled}
+                    placeholderTextColor={themeColors.textDisabled}
                     value={taxAmountText}
                     onChangeText={text => {
                       const cleaned = text.replace(/[^0-9.]/g, '');
@@ -433,7 +436,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           </View>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Tax Rate (%)</Text>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>Tax Rate (%)</Text>
             <Controller
               control={control}
               name="tax_rate"
@@ -445,9 +448,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
                 return (
                   <TextInput
-                    style={styles.input}
+                    style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
                     placeholder="e.g., 8.5"
-                    placeholderTextColor={colors.textDisabled}
+                    placeholderTextColor={themeColors.textDisabled}
                     value={taxRateText}
                     onChangeText={text => {
                       const cleaned = text.replace(/[^0-9.]/g, '');
@@ -487,9 +490,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               name="notes"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, styles.textArea]}
+                  style={[styles.input, styles.textArea, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
                   placeholder="Add any additional notes here..."
-                  placeholderTextColor={colors.textDisabled}
+                  placeholderTextColor={themeColors.textDisabled}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}
@@ -510,22 +513,22 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             disabled={isLoading}
             activeOpacity={0.8}>
             {isLoading ? (
-              <ActivityIndicator color={colors.textInverse} />
+              <ActivityIndicator color={themeColors.textInverse} />
             ) : (
               <>
-                <Icon name="checkmark-circle" size={24} color={colors.textInverse} style={styles.buttonIcon} />
-                <Text style={styles.buttonText}>SAVE EXPENSE</Text>
+                <Icon name="checkmark-circle" size={24} color={themeColors.textInverse} style={styles.buttonIcon} />
+                <Text style={[styles.buttonText, { color: themeColors.textInverse }]}>SAVE EXPENSE</Text>
               </>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
+            style={[styles.button, styles.cancelButton, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border }]}
             onPress={onCancel}
             disabled={isLoading}
             activeOpacity={0.8}>
-            <Icon name="close-circle" size={24} color={colors.textPrimary} style={styles.buttonIcon} />
-            <Text style={[styles.buttonText, styles.cancelButtonText]}>CANCEL</Text>
+            <Icon name="close-circle" size={24} color={themeColors.textPrimary} style={styles.buttonIcon} />
+            <Text style={[styles.buttonText, styles.cancelButtonText, { color: themeColors.textPrimary }]}>CANCEL</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

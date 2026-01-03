@@ -146,18 +146,18 @@ export const GeneralSettingsScreen: React.FC = () => {
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={[styles.container, { backgroundColor: colors.backgroundSecondary }]}>
       <View style={styles.content}>
         {/* Currency Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Currency</Text>
-          <View style={styles.settingCard}>
-            <Text style={styles.settingLabel}>Default Currency</Text>
-            <View style={styles.pickerContainer}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Currency</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Default Currency</Text>
+            <View style={[styles.pickerContainer, { borderColor: colors.border, backgroundColor: colors.background }]}>
               <Picker
                 selectedValue={settings.defaultCurrency}
                 onValueChange={value => updateSetting('defaultCurrency', value)}
-                style={styles.picker}>
+                style={[styles.picker, { color: colors.textPrimary }]}>
                 {CURRENCIES.map(currency => (
                   <Picker.Item
                     key={currency.value}
@@ -167,16 +167,16 @@ export const GeneralSettingsScreen: React.FC = () => {
                 ))}
               </Picker>
             </View>
-            <Text style={styles.settingDescription}>
+            <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
               Used for new expenses and exports
             </Text>
           </View>
 
-          <View style={styles.settingCard}>
+          <View style={[styles.settingCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
             <View style={styles.settingRow}>
               <View style={styles.settingTextContainer}>
-                <Text style={styles.settingLabel}>Show Cents</Text>
-                <Text style={styles.settingDescription}>
+                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Show Cents</Text>
+                <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
                   Display decimal places for amounts
                 </Text>
               </View>
@@ -192,14 +192,14 @@ export const GeneralSettingsScreen: React.FC = () => {
 
         {/* Date & Time Settings */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Date & Time</Text>
-          <View style={styles.settingCard}>
-            <Text style={styles.settingLabel}>Date Format</Text>
-            <View style={styles.pickerContainer}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Date & Time</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Date Format</Text>
+            <View style={[styles.pickerContainer, { borderColor: colors.border, backgroundColor: colors.background }]}>
               <Picker
                 selectedValue={settings.dateFormat}
                 onValueChange={value => updateSetting('dateFormat', value)}
-                style={styles.picker}>
+                style={[styles.picker, { color: colors.textPrimary }]}>
                 {DATE_FORMATS.map(format => (
                   <Picker.Item
                     key={format.value}
@@ -209,16 +209,16 @@ export const GeneralSettingsScreen: React.FC = () => {
                 ))}
               </Picker>
             </View>
-            <Text style={styles.settingDescription}>
+            <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
               How dates are displayed throughout the app
             </Text>
           </View>
 
-          <View style={styles.settingCard}>
+          <View style={[styles.settingCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
             <View style={styles.settingRow}>
               <View style={styles.settingTextContainer}>
-                <Text style={styles.settingLabel}>Use System Locale</Text>
-                <Text style={styles.settingDescription}>
+                <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Use System Locale</Text>
+                <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
                   Follow device language and region settings
                 </Text>
               </View>
@@ -234,14 +234,14 @@ export const GeneralSettingsScreen: React.FC = () => {
 
         {/* Expense Defaults */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Expense Defaults</Text>
-          <View style={styles.settingCard}>
-            <Text style={styles.settingLabel}>Default Tax Type</Text>
-            <View style={styles.pickerContainer}>
+          <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Expense Defaults</Text>
+          <View style={[styles.settingCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+            <Text style={[styles.settingLabel, { color: colors.textPrimary }]}>Default Tax Type</Text>
+            <View style={[styles.pickerContainer, { borderColor: colors.border, backgroundColor: colors.background }]}>
               <Picker
                 selectedValue={settings.defaultTaxType}
                 onValueChange={value => updateSetting('defaultTaxType', value)}
-                style={styles.picker}>
+                style={[styles.picker, { color: colors.textPrimary }]}>
                 {TAX_TYPES.map(taxType => (
                   <Picker.Item
                     key={taxType.value}
@@ -251,7 +251,7 @@ export const GeneralSettingsScreen: React.FC = () => {
                 ))}
               </Picker>
             </View>
-            <Text style={styles.settingDescription}>
+            <Text style={[styles.settingDescription, { color: colors.textTertiary }]}>
               Pre-selected tax type for new expenses
             </Text>
           </View>
@@ -261,29 +261,29 @@ export const GeneralSettingsScreen: React.FC = () => {
         <View style={styles.buttonContainer}>
           {hasChanges && (
             <TouchableOpacity
-              style={styles.saveButton}
+              style={[styles.saveButton, { backgroundColor: colors.primary }]}
               onPress={saveSettings}>
-              <Icon name="checkmark-circle" size={20} color="#FFF" />
-              <Text style={styles.saveButtonText}>Save Changes</Text>
+              <Icon name="checkmark-circle" size={20} color={colors.textInverse} />
+              <Text style={[styles.saveButtonText, { color: colors.textInverse }]}>Save Changes</Text>
             </TouchableOpacity>
           )}
 
           <TouchableOpacity
-            style={styles.resetButton}
+            style={[styles.resetButton, { backgroundColor: colors.background, borderColor: colors.primary }]}
             onPress={resetToDefaults}>
             <Icon name="refresh" size={20} color={colors.primary} />
-            <Text style={styles.resetButtonText}>Reset to Defaults</Text>
+            <Text style={[styles.resetButtonText, { color: colors.primary }]}>Reset to Defaults</Text>
           </TouchableOpacity>
         </View>
 
         {/* Info Section */}
-        <View style={styles.infoCard}>
+        <View style={[styles.infoCard, { backgroundColor: colors.backgroundTertiary }]}>
           <Icon
             name="information-circle-outline"
             size={20}
             color={colors.primary}
           />
-          <Text style={styles.infoText}>
+          <Text style={[styles.infoText, { color: colors.textTertiary }]}>
             These settings affect how data is displayed and the default values
             for new expenses. Changes do not affect existing expenses.
           </Text>

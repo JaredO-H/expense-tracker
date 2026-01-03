@@ -394,9 +394,8 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   );
 };
 
-// Minimal local styles - most styles now use centralized screenStyles
+
 const styles = StyleSheet.create({
-  // Card-specific styles that need component context
   amountText: {
     ...textStyles.amountSmall,
     color: staticColors.primary,

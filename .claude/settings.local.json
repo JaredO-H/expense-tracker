@@ -58,7 +58,8 @@
       "Bash(npx react-native build-android --mode=debug)",
       "Bash(./gradlew.bat assembleRelease:*)",
       "Bash(./gradlew.bat clean:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(./gradlew.bat installDebug:*)"
     ]
   }
 }

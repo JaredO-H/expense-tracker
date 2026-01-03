@@ -13,6 +13,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import { colors, spacing, borderRadius, shadows } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -29,6 +30,8 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
   initialSnapPoint = 1,
   onClose,
 }) => {
+  const { colors, isDarkMode } = useTheme();
+
   // Convert snap points from percentages to actual pixel values
   const snapPointsInPixels = snapPoints.map(point => SCREEN_HEIGHT * (1 - point));
 
@@ -126,7 +129,7 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
     <>
       {/* Backdrop */}
       <Animated.View
-        style={[styles.backdrop, animatedBackdropStyle]}
+        style={[styles.backdrop, { backgroundColor: colors.shadow }, animatedBackdropStyle]}
         pointerEvents={onClose ? 'auto' : 'none'}>
         <TouchableOpacity
           style={StyleSheet.absoluteFill}
@@ -137,10 +140,10 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
 
       {/* Drawer */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.drawer, animatedDrawerStyle]}>
+        <Animated.View style={[styles.drawer, { backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.whiteOverlay80 }, animatedDrawerStyle]}>
           {/* Drag handle */}
           <View style={styles.handleContainer}>
-            <View style={styles.handle} />
+            <View style={[styles.handle, { backgroundColor: colors.gray300 }]} />
           </View>
 
           {/* Drawer content */}
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: SCREEN_HEIGHT,
-    backgroundColor: 'rgba(255, 255, 255, 0.70)',
+    backgroundColor: colors.whiteOverlay80,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
     ...shadows.xl,

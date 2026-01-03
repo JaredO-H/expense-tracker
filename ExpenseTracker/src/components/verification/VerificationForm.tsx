@@ -24,6 +24,7 @@ import { CreateExpenseModel, TaxType } from '../../types/database';
 import { QueueItem } from '../../services/queue/processingQueue';
 import { useCategoryStore } from '../../stores/categoryStore';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
+import { useTheme } from '../../contexts/ThemeContext';
 
 interface VerificationFormProps {
   queueItem: QueueItem;
@@ -51,6 +52,7 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
   isLoading = false,
 }) => {
   const { categories, fetchCategories } = useCategoryStore();
+  const { colors: themeColors } = useTheme();
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   // Determine processing method for display
@@ -58,9 +60,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
     if (queueItem.serviceId === 'mlkit') {
       return { label: 'Processed with Offline OCR', iconName: 'phone-portrait-outline', color: '#FF8C00' };
     } else if (queueItem.serviceId) {
-      return { label: `Processed with AI (${queueItem.serviceId.toUpperCase()})`, iconName: 'hardware-chip-outline', color: colors.primary };
+      return { label: `Processed with AI (${queueItem.serviceId.toUpperCase()})`, iconName: 'hardware-chip-outline', color: themeColors.primary };
     } else {
-      return { label: 'Manual Entry', iconName: 'create-outline', color: colors.textSecondary };
+      return { label: 'Manual Entry', iconName: 'create-outline', color: themeColors.textSecondary };
     }
   };
 
@@ -132,8 +134,8 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
 
         {/* Merchant Name */}
         <View style={styles.fieldContainer}>
-          <Text style={styles.label}>
-            Merchant <Text style={styles.required}>*</Text>
+          <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+            Merchant <Text style={[styles.required, { color: themeColors.error }]}>*</Text>
           </Text>
           <Controller
             control={control}
@@ -151,8 +153,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, errors.merchant && styles.inputError]}
+                style={[styles.input, { backgroundColor: themeColors.background, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.merchant && { borderColor: themeColors.error }]}
                 placeholder="e.g., Uber"
+                placeholderTextColor={themeColors.textDisabled}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -162,7 +165,7 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             )}
           />
           {errors.merchant && (
-            <Text style={styles.errorText}>{errors.merchant.message}</Text>
+            <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.merchant.message}</Text>
           )}
         </View>
 
@@ -183,8 +186,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, errors.amount && styles.inputError]}
+                style={[styles.input, { backgroundColor: themeColors.background, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.amount && { borderColor: themeColors.error }]}
                 placeholder="0.00"
+                placeholderTextColor={themeColors.textDisabled}
                 value={value ? value.toString() : ''}
                 onChangeText={(text) => onChange(parseFloat(text) || 0)}
                 onBlur={onBlur}
@@ -211,8 +215,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, errors.date && styles.inputError]}
+                style={[styles.input, { backgroundColor: themeColors.background, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.date && { borderColor: themeColors.error }]}
                 placeholder="YYYY-MM-DD"
+                placeholderTextColor={themeColors.textDisabled}
                 value={value}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -231,24 +236,25 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             Category <Text style={styles.required}>*</Text>
           </Text>
           {categoriesLoading ? (
-            <ActivityIndicator size="small" color={colors.primary} />
+            <ActivityIndicator size="small" color={themeColors.primary} />
           ) : (
             <Controller
               control={control}
               name="category"
               rules={{ required: 'Category is required' }}
               render={({ field: { onChange, value } }) => (
-                <View style={styles.pickerContainer}>
+                <View style={[styles.pickerContainer, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
                   <Picker
                     selectedValue={value}
                     onValueChange={onChange}
                     enabled={!isLoading}
-                    style={styles.picker}>
+                    style={[styles.picker, { color: themeColors.textPrimary }]}>
                     {categories.map(category => (
                       <Picker.Item
                         key={category.id}
                         label={category.name}
                         value={category.id}
+                        color={themeColors.textPrimary}
                       />
                     ))}
                   </Picker>
@@ -283,8 +289,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, errors.tax_amount && styles.inputError]}
+                style={[styles.input, { backgroundColor: themeColors.background, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.tax_amount && { borderColor: themeColors.error }]}
                 placeholder="0.00"
+                placeholderTextColor={themeColors.textDisabled}
                 value={value ? value.toString() : ''}
                 onChangeText={(text) => onChange(text ? parseFloat(text) : undefined)}
                 onBlur={onBlur}
@@ -305,19 +312,19 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             control={control}
             name="tax_type"
             render={({ field: { onChange, value } }) => (
-              <View style={styles.pickerContainer}>
+              <View style={[styles.pickerContainer, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
                 <Picker
                   selectedValue={value}
                   onValueChange={onChange}
                   enabled={!isLoading}
-                  style={styles.picker}>
-                  <Picker.Item label="None" value={undefined} />
-                  <Picker.Item label="GST" value={TaxType.GST} />
-                  <Picker.Item label="HST" value={TaxType.HST} />
-                  <Picker.Item label="PST" value={TaxType.PST} />
-                  <Picker.Item label="VAT" value={TaxType.VAT} />
-                  <Picker.Item label="Sales Tax" value={TaxType.SALES_TAX} />
-                  <Picker.Item label="Other" value={TaxType.OTHER} />
+                  style={[styles.picker, { color: themeColors.textPrimary }]}>
+                  <Picker.Item label="None" value={undefined} color={themeColors.textPrimary} />
+                  <Picker.Item label="GST" value={TaxType.GST} color={themeColors.textPrimary} />
+                  <Picker.Item label="HST" value={TaxType.HST} color={themeColors.textPrimary} />
+                  <Picker.Item label="PST" value={TaxType.PST} color={themeColors.textPrimary} />
+                  <Picker.Item label="VAT" value={TaxType.VAT} color={themeColors.textPrimary} />
+                  <Picker.Item label="Sales Tax" value={TaxType.SALES_TAX} color={themeColors.textPrimary} />
+                  <Picker.Item label="Other" value={TaxType.OTHER} color={themeColors.textPrimary} />
                 </Picker>
               </View>
             )}
@@ -332,8 +339,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             name="notes"
             render={({ field: { onChange, onBlur, value } }) => (
               <TextInput
-                style={[styles.input, styles.textArea]}
+                style={[styles.input, styles.textArea, { backgroundColor: themeColors.background, borderColor: themeColors.border, color: themeColors.textPrimary }]}
                 placeholder="Add any additional notes..."
+                placeholderTextColor={themeColors.textDisabled}
                 value={value || ''}
                 onChangeText={onChange}
                 onBlur={onBlur}
@@ -349,20 +357,20 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
+            style={[styles.button, styles.cancelButton, { backgroundColor: themeColors.background, borderColor: themeColors.primary }]}
             onPress={onCancel}
             disabled={isLoading}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
+            <Text style={[styles.cancelButtonText, { color: themeColors.primary }]}>Cancel</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.saveButton, isLoading && styles.buttonDisabled]}
+            style={[styles.button, { backgroundColor: themeColors.primary }, isLoading && styles.buttonDisabled]}
             onPress={handleSubmit(onFormSubmit)}
             disabled={isLoading}>
             {isLoading ? (
-              <ActivityIndicator size="small" color={colors.textInverse} />
+              <ActivityIndicator size="small" color={themeColors.textInverse} />
             ) : (
-              <Text style={styles.saveButtonText}>Save Expense</Text>
+              <Text style={[styles.saveButtonText, { color: themeColors.textInverse }]}>Save Expense</Text>
             )}
           </TouchableOpacity>
         </View>
