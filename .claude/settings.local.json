@@ -59,7 +59,9 @@
       "Bash(./gradlew.bat assembleRelease:*)",
       "Bash(./gradlew.bat clean:*)",
       "Bash(taskkill:*)",
-      "Bash(./gradlew.bat installDebug:*)"
+      "Bash(./gradlew.bat installDebug:*)",
+      "Bash(../gradlew.bat assembleRelease)",
+      "Bash(npx eslint:*)"
     ]
   }
 }

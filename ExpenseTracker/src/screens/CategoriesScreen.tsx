@@ -101,7 +101,9 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
     return (
       <View style={[screenStyles.loadingStateContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[screenStyles.loadingStateText, { color: colors.textPrimary }]}>Loading categories...</Text>
+        <Text style={[screenStyles.loadingStateText, { color: colors.textPrimary }]}>
+          Loading categories...
+        </Text>
       </View>
     );
   }
@@ -110,11 +112,15 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
   const totalAmount = (expenses || []).reduce((sum, exp) => sum + (exp.amount || 0), 0);
 
   return (
-    <View style={[screenStyles.screenWithDecorations, { backgroundColor: colors.background }]} key={themeVersion}>
+    <View
+      style={[screenStyles.screenWithDecorations, { backgroundColor: colors.background }]}
+      key={themeVersion}>
       {/* Background decorations */}
       <View style={[screenStyles.bgDecorCircleLarge, { backgroundColor: colors.accent1 }]} />
       <View style={[screenStyles.bgDecorSquare, { backgroundColor: colors.accent3 }]} />
-      <View style={[screenStyles.bgDecorCircleSmallBottom, { backgroundColor: colors.secondary }]} />
+      <View
+        style={[screenStyles.bgDecorCircleSmallBottom, { backgroundColor: colors.secondary }]}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -131,40 +137,67 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
 
         {/* Overall Stats */}
         <View style={styles.statsContainer}>
-          <View style={[screenStyles.statBoxHorizontal, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              screenStyles.statBoxHorizontal,
+              { backgroundColor: colors.primaryLight, borderColor: colors.border },
+            ]}>
             <View style={[screenStyles.statIconCircle, { backgroundColor: colors.primary }]}>
               <Icon name="albums" size={28} color={colors.textInverse} />
             </View>
             <View style={screenStyles.statTextContainer}>
-              <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>{categories.length}</Text>
-              <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>CATEGORIES</Text>
+              <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
+                {categories.length}
+              </Text>
+              <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>
+                CATEGORIES
+              </Text>
             </View>
           </View>
 
-          <View style={[screenStyles.statBoxHorizontal, { backgroundColor: colors.secondaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              screenStyles.statBoxHorizontal,
+              { backgroundColor: colors.secondaryLight, borderColor: colors.border },
+            ]}>
             <View style={[screenStyles.statIconCircle, { backgroundColor: colors.secondary }]}>
               <Icon name="receipt" size={28} color={colors.textOnSecondary} />
             </View>
             <View style={screenStyles.statTextContainer}>
-              <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>{totalExpenses}</Text>
-              <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>EXPENSES</Text>
+              <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
+                {totalExpenses}
+              </Text>
+              <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>
+                EXPENSES
+              </Text>
             </View>
           </View>
 
-          <View style={[screenStyles.statBoxHorizontal, styles.statCardWide, { backgroundColor: colors.accent1Light, borderColor: colors.border }]}>
+          <View
+            style={[
+              screenStyles.statBoxHorizontal,
+              styles.statCardWide,
+              { backgroundColor: colors.accent1Light, borderColor: colors.border },
+            ]}>
             <View style={[screenStyles.statIconCircle, { backgroundColor: colors.accent1Dark }]}>
               <Icon name="cash" size={28} color={colors.textOnSecondary} />
             </View>
             <View style={screenStyles.statTextContainer}>
-              <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>${totalAmount.toFixed(0)}</Text>
-              <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>TOTAL SPENT</Text>
+              <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
+                ${totalAmount.toFixed(0)}
+              </Text>
+              <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>
+                TOTAL SPENT
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Section Title */}
         <View style={screenStyles.sectionHeader}>
-          <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>YOUR CATEGORIES</Text>
+          <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>
+            YOUR CATEGORIES
+          </Text>
           <View style={[screenStyles.sectionLine, { backgroundColor: colors.border }]} />
         </View>
 
@@ -210,15 +243,51 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
                   activeOpacity={0.9}>
                   {/* Geometric decoration unique to each category */}
                   <View style={styles.categoryDecorContainer}>
-                    {index % 4 === 0 && <View style={[styles.decorCircle, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]} />}
-                    {index % 4 === 1 && <View style={[styles.decorSquare, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]} />}
-                    {index % 4 === 2 && <View style={[styles.decorTriangle, { borderBottomColor: colors.whiteOverlay30 }]} />}
-                    {index % 4 === 3 && <View style={[styles.decorPill, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]} />}
+                    {index % 4 === 0 && (
+                      <View
+                        style={[
+                          styles.decorCircle,
+                          {
+                            backgroundColor: colors.whiteOverlay30,
+                            borderColor: colors.whiteOverlay60,
+                          },
+                        ]}
+                      />
+                    )}
+                    {index % 4 === 1 && (
+                      <View
+                        style={[
+                          styles.decorSquare,
+                          {
+                            backgroundColor: colors.whiteOverlay30,
+                            borderColor: colors.whiteOverlay60,
+                          },
+                        ]}
+                      />
+                    )}
+                    {index % 4 === 2 && (
+                      <View
+                        style={[styles.decorTriangle, { borderBottomColor: colors.whiteOverlay30 }]}
+                      />
+                    )}
+                    {index % 4 === 3 && (
+                      <View
+                        style={[
+                          styles.decorPill,
+                          {
+                            backgroundColor: colors.whiteOverlay30,
+                            borderColor: colors.whiteOverlay60,
+                          },
+                        ]}
+                      />
+                    )}
                   </View>
 
                   {/* Category Name */}
                   <View style={styles.categoryHeader}>
-                    <Text style={[styles.categoryName, { color: colors.textOnSecondary }]} numberOfLines={2}>
+                    <Text
+                      style={[styles.categoryName, { color: colors.textOnSecondary }]}
+                      numberOfLines={2}>
                       {category.name.toUpperCase()}
                     </Text>
                   </View>
@@ -228,16 +297,22 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
                     <View style={styles.categoryStats}>
                       <View style={styles.statRow}>
                         <Icon name="receipt-outline" size={16} color={colors.textOnSecondary} />
-                        <Text style={[styles.categoryStatText, { color: colors.textOnSecondary }]}>{stats.count}</Text>
+                        <Text style={[styles.categoryStatText, { color: colors.textOnSecondary }]}>
+                          {stats.count}
+                        </Text>
                       </View>
                       <View style={styles.statRow}>
                         <Icon name="cash-outline" size={16} color={colors.textOnSecondary} />
-                        <Text style={[styles.categoryStatText, { color: colors.textOnSecondary }]}>${stats.total.toFixed(0)}</Text>
+                        <Text style={[styles.categoryStatText, { color: colors.textOnSecondary }]}>
+                          ${stats.total.toFixed(0)}
+                        </Text>
                       </View>
                     </View>
                   ) : (
                     <View style={styles.categoryEmpty}>
-                      <Text style={[styles.categoryEmptyText, { color: colors.textOnSecondary }]}>No expenses yet</Text>
+                      <Text style={[styles.categoryEmptyText, { color: colors.textOnSecondary }]}>
+                        No expenses yet
+                      </Text>
                     </View>
                   )}
 
@@ -252,14 +327,24 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
         </View>
 
         {/* Info Banner */}
-        <View style={[screenStyles.infoBanner, { backgroundColor: colors.accent3Light, borderColor: colors.accent3 }]}>
+        <View
+          style={[
+            screenStyles.infoBanner,
+            { backgroundColor: colors.accent3Light, borderColor: colors.accent3 },
+          ]}>
           <View style={[screenStyles.infoBannerDecor, { backgroundColor: colors.accent3 }]} />
           <View style={screenStyles.infoBannerContent}>
-            <View style={[screenStyles.infoBannerIcon, { backgroundColor: colors.backgroundElevated, borderColor: colors.accent3 }]}>
+            <View
+              style={[
+                screenStyles.infoBannerIcon,
+                { backgroundColor: colors.backgroundElevated, borderColor: colors.accent3 },
+              ]}>
               <Icon name="color-palette" size={24} color={colors.accent3Dark} />
             </View>
             <View style={screenStyles.infoBannerTextContainer}>
-              <Text style={[screenStyles.infoBannerTitle, { color: colors.textPrimary }]}>Unique Patterns</Text>
+              <Text style={[screenStyles.infoBannerTitle, { color: colors.textPrimary }]}>
+                Unique Patterns
+              </Text>
               <Text style={[screenStyles.infoBannerSubtitle, { color: colors.textSecondary }]}>
                 Each category has a distinctive color and border style for instant recognition
               </Text>

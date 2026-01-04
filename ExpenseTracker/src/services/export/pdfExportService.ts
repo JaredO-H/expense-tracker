@@ -23,7 +23,7 @@ export class PDFExportService implements ExportService {
   async generateExport(
     trip: Trip,
     expenses: Expense[],
-    options: ExportOptions
+    options: ExportOptions,
   ): Promise<ExportResult> {
     try {
       // Validate data
@@ -36,11 +36,7 @@ export class PDFExportService implements ExportService {
       }
 
       // Generate HTML content
-      const htmlContent = await this.generateHTMLContent(
-        trip,
-        expenses,
-        options
-      );
+      const htmlContent = await this.generateHTMLContent(trip, expenses, options);
 
       // Generate PDF from HTML
       const filename = generateFilename(trip.name, ExportFormat.PDF);
@@ -87,12 +83,20 @@ export class PDFExportService implements ExportService {
   private async generateHTMLContent(
     trip: Trip,
     expenses: Expense[],
-    options: ExportOptions
+    options: ExportOptions,
   ): Promise<string> {
-    const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-    const totalTax = expenses.reduce(
-      (sum, exp) => sum + (exp.tax_amount || 0),
-      0
+    // Group totals by currency
+    const currencyTotals = expenses.reduce(
+      (acc, exp) => {
+        const currency = exp.currency || 'USD';
+        if (!acc[currency]) {
+          acc[currency] = { amount: 0, tax: 0 };
+        }
+        acc[currency].amount += exp.amount;
+        acc[currency].tax += exp.tax_amount || 0;
+        return acc;
+      },
+      {} as Record<string, { amount: number; tax: number }>,
     );
 
     // Generate receipt images section if requested
@@ -223,6 +227,7 @@ export class PDFExportService implements ExportService {
         <th>#</th>
         <th>Date</th>
         <th>Merchant</th>
+        <th>Currency</th>
         <th>Amount</th>
         <th>Tax</th>
         <th>Total</th>
@@ -236,20 +241,28 @@ export class PDFExportService implements ExportService {
           <td>${index + 1}</td>
           <td>${format(new Date(expense.date), 'MMM dd, yyyy')}</td>
           <td>${this.escapeHTML(expense.merchant || 'N/A')}</td>
-          <td>$${expense.amount.toFixed(2)}</td>
-          <td>${expense.tax_amount ? `$${expense.tax_amount.toFixed(2)}` : '$0.00'}</td>
-          <td>$${(expense.amount + (expense.tax_amount || 0)).toFixed(2)}</td>
+          <td>${expense.currency || 'USD'}</td>
+          <td>${expense.amount.toFixed(2)}</td>
+          <td>${expense.tax_amount ? expense.tax_amount.toFixed(2) : '0.00'}</td>
+          <td>${(expense.amount + (expense.tax_amount || 0)).toFixed(2)}</td>
         </tr>
-      `
+      `,
         )
         .join('')}
     </tbody>
   </table>
 
   <div class="totals">
-    <p>Subtotal: $${totalAmount.toFixed(2)}</p>
-    <p>Total Tax: $${totalTax.toFixed(2)}</p>
-    <p class="grand-total">Grand Total: $${(totalAmount + totalTax).toFixed(2)}</p>
+    ${Object.entries(currencyTotals)
+      .map(
+        ([currency, totals]) => `
+      <p><strong>${currency} Subtotal:</strong> ${totals.amount.toFixed(2)}</p>
+      <p><strong>${currency} Tax:</strong> ${totals.tax.toFixed(2)}</p>
+      <p class="grand-total">${currency} Total: ${(totals.amount + totals.tax).toFixed(2)}</p>
+      ${Object.keys(currencyTotals).length > 1 ? '<br/>' : ''}
+    `,
+      )
+      .join('')}
   </div>
 
   ${receiptSection}
@@ -265,9 +278,7 @@ export class PDFExportService implements ExportService {
   /**
    * Generate receipt images section
    */
-  private async generateReceiptSection(
-    expenses: Expense[]
-  ): Promise<string> {
+  private async generateReceiptSection(expenses: Expense[]): Promise<string> {
     const receipts: string[] = [];
 
     for (let i = 0; i < expenses.length; i++) {
@@ -277,10 +288,7 @@ export class PDFExportService implements ExportService {
           const exists = await RNFS.exists(expense.image_path);
           if (exists) {
             // Read image as base64
-            const base64Image = await RNFS.readFile(
-              expense.image_path,
-              'base64'
-            );
+            const base64Image = await RNFS.readFile(expense.image_path, 'base64');
             const imageExt = expense.image_path.split('.').pop()?.toLowerCase();
             const mimeType = imageExt === 'png' ? 'image/png' : 'image/jpeg';
 
@@ -288,7 +296,7 @@ export class PDFExportService implements ExportService {
               <div class="receipt-item">
                 <h3>Receipt #${i + 1} - ${this.escapeHTML(expense.merchant || 'N/A')}</h3>
                 <p><strong>Date:</strong> ${format(new Date(expense.date), 'MMM dd, yyyy')}</p>
-                <p><strong>Amount:</strong> $${(expense.amount + (expense.tax_amount || 0)).toFixed(2)}</p>
+                <p><strong>Amount:</strong> ${(expense.amount + (expense.tax_amount || 0)).toFixed(2)} ${expense.currency || 'USD'}</p>
                 <img src="data:${mimeType};base64,${base64Image}" alt="Receipt ${i + 1}" />
               </div>
             `);

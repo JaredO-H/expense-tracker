@@ -40,7 +40,6 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
   useEffect(() => {
     loadThemeSettings();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -106,9 +105,8 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         toggleDarkMode,
         refreshTheme,
         colors, // Use state that updates with theme changes
-        themeVersion // Force re-renders when this changes
-      }}
-    >
+        themeVersion, // Force re-renders when this changes
+      }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -11,26 +11,20 @@ export type AIServiceId = 'openai' | 'anthropic' | 'gemini' | 'mlkit';
 export class CredentialService {
   private static readonly KEYCHAIN_SERVICE_PREFIX = 'com.expensetracker.ai.';
 
-
   //Store API key securely in device keychain
   static async storeAPIKey(serviceId: AIServiceId, apiKey: string): Promise<void> {
     try {
       const keychainService = this.getKeychainServiceName(serviceId);
 
-      await Keychain.setGenericPassword(
-        serviceId,
-        apiKey,
-        {
-          service: keychainService,
-          accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
-        }
-      );
+      await Keychain.setGenericPassword(serviceId, apiKey, {
+        service: keychainService,
+        accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
+      });
     } catch (error) {
       console.error(`Failed to store API key for ${serviceId}:`, error);
       throw new Error(`Failed to securely store API key. Please try again.`);
     }
   }
-
 
   //Retrieve API key from device keychain
   static async getAPIKey(serviceId: AIServiceId): Promise<string | null> {
@@ -74,7 +68,6 @@ export class CredentialService {
     return apiKey !== null && apiKey.length > 0;
   }
 
-
   //Mask API key for display (show only last 4 characters)
   static maskAPIKey(apiKey: string): string {
     if (!apiKey || apiKey.length < 8) {
@@ -88,16 +81,12 @@ export class CredentialService {
     return `${maskedPart}${visiblePart}`;
   }
 
-
   //Delete all stored API keys (for logout/reset)
   static async deleteAllAPIKeys(): Promise<void> {
     const services: AIServiceId[] = ['openai', 'anthropic', 'gemini'];
 
-    await Promise.all(
-      services.map(serviceId => this.deleteAPIKey(serviceId))
-    );
+    await Promise.all(services.map(serviceId => this.deleteAPIKey(serviceId)));
   }
-
 
   //Check if keychain is available on device
   static async isKeychainAvailable(): Promise<boolean> {
@@ -110,7 +99,6 @@ export class CredentialService {
       return false;
     }
   }
-
 
   //Get keychain service name for an AI service
   private static getKeychainServiceName(serviceId: AIServiceId): string {

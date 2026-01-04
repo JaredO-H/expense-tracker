@@ -135,7 +135,7 @@ export function validateReceiptData(data: ParsedReceiptData): ValidationResult {
  */
 export function parseAndValidateResponse(
   rawResponse: string,
-  processingTime: number
+  processingTime: number,
 ): ReceiptProcessingResult {
   // Extract JSON from response
   const extracted = extractJSON(rawResponse);

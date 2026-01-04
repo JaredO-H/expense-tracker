@@ -2,64 +2,80 @@
 const mockTables: Record<string, any[]> = {};
 
 const mockTransaction = {
-  executeSql: jest.fn((sql: string, params: any[] = [], successCallback?: Function, errorCallback?: Function) => {
-    try {
-      // Simple SQL parsing for mock behavior
-      const sqlLower = sql.toLowerCase();
+  executeSql: jest.fn(
+    (sql: string, params: any[] = [], successCallback?: Function, errorCallback?: Function) => {
+      try {
+        // Simple SQL parsing for mock behavior
+        const sqlLower = sql.toLowerCase();
 
-      if (sqlLower.includes('create table')) {
-        // Extract table name
-        const match = sql.match(/create table (?:if not exists )?(\w+)/i);
-        if (match) {
-          const tableName = match[1];
-          if (!mockTables[tableName]) {
-            mockTables[tableName] = [];
-          }
-        }
-        successCallback?.(mockTransaction, { rows: { length: 0, item: () => null, raw: () => [] } });
-      } else if (sqlLower.includes('insert into')) {
-        // Mock insert
-        const match = sql.match(/insert into (\w+)/i);
-        if (match) {
-          const tableName = match[1];
-          if (!mockTables[tableName]) mockTables[tableName] = [];
-          const id = mockTables[tableName].length + 1;
-          mockTables[tableName].push({ id, ...params });
-          successCallback?.(mockTransaction, { insertId: id, rowsAffected: 1, rows: { length: 0, item: () => null, raw: () => [] } });
-        }
-      } else if (sqlLower.includes('select')) {
-        // Mock select
-        const match = sql.match(/from (\w+)/i);
-        if (match) {
-          const tableName = match[1];
-          const results = mockTables[tableName] || [];
-          successCallback?.(mockTransaction, {
-            rows: {
-              length: results.length,
-              item: (index: number) => results[index],
-              raw: () => results
+        if (sqlLower.includes('create table')) {
+          // Extract table name
+          const match = sql.match(/create table (?:if not exists )?(\w+)/i);
+          if (match) {
+            const tableName = match[1];
+            if (!mockTables[tableName]) {
+              mockTables[tableName] = [];
             }
+          }
+          successCallback?.(mockTransaction, {
+            rows: { length: 0, item: () => null, raw: () => [] },
+          });
+        } else if (sqlLower.includes('insert into')) {
+          // Mock insert
+          const match = sql.match(/insert into (\w+)/i);
+          if (match) {
+            const tableName = match[1];
+            if (!mockTables[tableName]) mockTables[tableName] = [];
+            const id = mockTables[tableName].length + 1;
+            mockTables[tableName].push({ id, ...params });
+            successCallback?.(mockTransaction, {
+              insertId: id,
+              rowsAffected: 1,
+              rows: { length: 0, item: () => null, raw: () => [] },
+            });
+          }
+        } else if (sqlLower.includes('select')) {
+          // Mock select
+          const match = sql.match(/from (\w+)/i);
+          if (match) {
+            const tableName = match[1];
+            const results = mockTables[tableName] || [];
+            successCallback?.(mockTransaction, {
+              rows: {
+                length: results.length,
+                item: (index: number) => results[index],
+                raw: () => results,
+              },
+            });
+          }
+        } else if (sqlLower.includes('update')) {
+          // Mock update
+          const match = sql.match(/update (\w+)/i);
+          if (match) {
+            successCallback?.(mockTransaction, {
+              rowsAffected: 1,
+              rows: { length: 0, item: () => null, raw: () => [] },
+            });
+          }
+        } else if (sqlLower.includes('delete')) {
+          // Mock delete
+          const match = sql.match(/from (\w+)/i);
+          if (match) {
+            successCallback?.(mockTransaction, {
+              rowsAffected: 1,
+              rows: { length: 0, item: () => null, raw: () => [] },
+            });
+          }
+        } else {
+          successCallback?.(mockTransaction, {
+            rows: { length: 0, item: () => null, raw: () => [] },
           });
         }
-      } else if (sqlLower.includes('update')) {
-        // Mock update
-        const match = sql.match(/update (\w+)/i);
-        if (match) {
-          successCallback?.(mockTransaction, { rowsAffected: 1, rows: { length: 0, item: () => null, raw: () => [] } });
-        }
-      } else if (sqlLower.includes('delete')) {
-        // Mock delete
-        const match = sql.match(/from (\w+)/i);
-        if (match) {
-          successCallback?.(mockTransaction, { rowsAffected: 1, rows: { length: 0, item: () => null, raw: () => [] } });
-        }
-      } else {
-        successCallback?.(mockTransaction, { rows: { length: 0, item: () => null, raw: () => [] } });
+      } catch (error) {
+        errorCallback?.(mockTransaction, error);
       }
-    } catch (error) {
-      errorCallback?.(mockTransaction, error);
-    }
-  }),
+    },
+  ),
 };
 
 const mockDatabase = {
@@ -74,7 +90,7 @@ const mockDatabase = {
         sql,
         params,
         (tx: any, results: any) => resolve([results]),
-        (tx: any, error: any) => reject(error)
+        (tx: any, error: any) => reject(error),
       );
     });
   }),

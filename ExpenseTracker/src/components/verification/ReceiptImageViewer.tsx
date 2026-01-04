@@ -73,7 +73,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
   const clampTranslation = (
     x: number,
     y: number,
-    currentScale: number
+    currentScale: number,
   ): { x: number; y: number } => {
     'worklet';
     const max = getMaxTranslation(currentScale);
@@ -88,7 +88,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
     .onStart(() => {
       savedScale.value = scale.value;
     })
-    .onUpdate((event) => {
+    .onUpdate(event => {
       scale.value = Math.max(MIN_ZOOM, Math.min(MAX_ZOOM, savedScale.value * event.scale));
     })
     .onEnd(() => {
@@ -114,7 +114,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
       savedTranslateX.value = translateX.value;
       savedTranslateY.value = translateY.value;
     })
-    .onUpdate((event) => {
+    .onUpdate(event => {
       if (scale.value > MIN_ZOOM) {
         const newX = savedTranslateX.value + event.translationX;
         const newY = savedTranslateY.value + event.translationY;
@@ -131,7 +131,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
   // Double tap to zoom in/out
   const doubleTapGesture = Gesture.Tap()
     .numberOfTaps(2)
-    .onEnd((event) => {
+    .onEnd(event => {
       if (scale.value > MIN_ZOOM) {
         // Zoom out
         scale.value = withSpring(MIN_ZOOM);
@@ -164,7 +164,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
   // Combine gestures
   const composedGesture = Gesture.Simultaneous(
     pinchGesture,
-    Gesture.Exclusive(doubleTapGesture, panGesture)
+    Gesture.Exclusive(doubleTapGesture, panGesture),
   );
 
   // Animated style for the image

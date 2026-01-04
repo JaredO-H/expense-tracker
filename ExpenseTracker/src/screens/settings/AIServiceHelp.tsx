@@ -4,14 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-  Linking,
-} from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Linking } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getAllServices } from '../../services/ai/aiServiceFactory';
 import { colors as staticColors, spacing, textStyles, commonStyles } from '../../styles';
@@ -29,7 +22,9 @@ export const AIServiceHelp: React.FC = () => {
       <View style={styles.content}>
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>API Key Setup Guide</Text>
+          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>
+            API Key Setup Guide
+          </Text>
           <Text style={[styles.headerSubtitle, { color: colors.textTertiary }]}>
             Follow these steps to obtain API keys for each service
           </Text>
@@ -40,95 +35,207 @@ export const AIServiceHelp: React.FC = () => {
           <View key={service.id} style={styles.serviceSection}>
             <Text style={[styles.serviceName, { color: colors.primary }]}>{service.name}</Text>
 
-            <View style={[styles.guideCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
-              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>How to Get Your API Key:</Text>
+            <View
+              style={[
+                styles.guideCard,
+                { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+              ]}>
+              <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>
+                How to Get Your API Key:
+              </Text>
 
               {service.id === 'openai' && (
                 <View style={styles.stepsList}>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>1. Visit platform.openai.com</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>2. Sign in or create an account</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>3. Navigate to API Keys section</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>4. Click "Create new secret key"</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>5. Copy and save your API key securely</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>6. Paste it in the AI Service Settings</Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    1. Visit platform.openai.com
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    2. Sign in or create an account
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    3. Navigate to API Keys section
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    4. Click "Create new secret key"
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    5. Copy and save your API key securely
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    6. Paste it in the AI Service Settings
+                  </Text>
                 </View>
               )}
 
               {service.id === 'anthropic' && (
                 <View style={styles.stepsList}>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>1. Visit console.anthropic.com</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>2. Sign in or create an account</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>3. Go to API Keys in settings</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>4. Generate a new API key</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>5. Copy your API key</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>6. Paste it in the AI Service Settings</Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    1. Visit console.anthropic.com
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    2. Sign in or create an account
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    3. Go to API Keys in settings
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    4. Generate a new API key
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    5. Copy your API key
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    6. Paste it in the AI Service Settings
+                  </Text>
                 </View>
               )}
 
               {service.id === 'gemini' && (
                 <View style={styles.stepsList}>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>1. Visit console.cloud.google.com</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>2. Create or select a project</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>3. Enable Generative AI API</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>4. Go to Credentials section</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>5. Create API Key</Text>
-                  <Text style={[styles.step, { color: colors.textSecondary }]}>6. Copy and paste in AI Service Settings</Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    1. Visit console.cloud.google.com
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    2. Create or select a project
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    3. Enable Generative AI API
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    4. Go to Credentials section
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    5. Create API Key
+                  </Text>
+                  <Text style={[styles.step, { color: colors.textSecondary }]}>
+                    6. Copy and paste in AI Service Settings
+                  </Text>
                 </View>
               )}
 
               <TouchableOpacity
                 style={styles.linkButton}
                 onPress={() => handleOpenLink(service.documentationUrl)}>
-                <Text style={[styles.linkButtonText, { color: colors.primary }]}>View Official Documentation</Text>
-                <Icon name="arrow-forward" size={16} color={colors.primary} style={styles.linkIcon} />
+                <Text style={[styles.linkButtonText, { color: colors.primary }]}>
+                  View Official Documentation
+                </Text>
+                <Icon
+                  name="arrow-forward"
+                  size={16}
+                  color={colors.primary}
+                  style={styles.linkIcon}
+                />
               </TouchableOpacity>
             </View>
           </View>
         ))}
 
         {/* Troubleshooting Section */}
-        <View style={[styles.troubleshootingSection, { backgroundColor: colors.warningLight, borderLeftColor: colors.warning }]}>
-          <Text style={[styles.troubleshootingTitle, { color: colors.warningDark }]}>Troubleshooting</Text>
+        <View
+          style={[
+            styles.troubleshootingSection,
+            { backgroundColor: colors.warningLight, borderLeftColor: colors.warning },
+          ]}>
+          <Text style={[styles.troubleshootingTitle, { color: colors.warningDark }]}>
+            Troubleshooting
+          </Text>
 
           <View style={styles.troubleshootingItem}>
-            <Text style={[styles.troubleshootingQuestion, { color: colors.textPrimary }]}>Connection test failed?</Text>
+            <Text style={[styles.troubleshootingQuestion, { color: colors.textPrimary }]}>
+              Connection test failed?
+            </Text>
             <View style={styles.answerRow}>
-              <Icon name="wifi-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Check your internet connection</Text>
+              <Icon
+                name="wifi-outline"
+                size={16}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                Check your internet connection
+              </Text>
             </View>
             <View style={styles.answerRow}>
-              <Icon name="key-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Verify API key is correct (no extra spaces)</Text>
+              <Icon
+                name="key-outline"
+                size={16}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                Verify API key is correct (no extra spaces)
+              </Text>
             </View>
             <View style={styles.answerRow}>
-              <Icon name="card-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Ensure you have sufficient credits in your account</Text>
+              <Icon
+                name="card-outline"
+                size={16}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                Ensure you have sufficient credits in your account
+              </Text>
             </View>
             <View style={styles.answerRow}>
-              <Icon name="alert-circle-outline" size={16} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Check if the service is experiencing outages</Text>
+              <Icon
+                name="alert-circle-outline"
+                size={16}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                Check if the service is experiencing outages
+              </Text>
             </View>
           </View>
 
           <View style={styles.troubleshootingItem}>
-            <Text style={[styles.troubleshootingQuestion, { color: colors.textPrimary }]}>Invalid API key format?</Text>
-            <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Each service has a specific key format:</Text>
+            <Text style={[styles.troubleshootingQuestion, { color: colors.textPrimary }]}>
+              Invalid API key format?
+            </Text>
+            <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+              Each service has a specific key format:
+            </Text>
             <View style={styles.answerRow}>
-              <Icon name="ellipse" size={8} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>OpenAI: Starts with "sk-"</Text>
+              <Icon
+                name="ellipse"
+                size={8}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                OpenAI: Starts with "sk-"
+              </Text>
             </View>
             <View style={styles.answerRow}>
-              <Icon name="ellipse" size={8} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Anthropic: Starts with "sk-ant-"</Text>
+              <Icon
+                name="ellipse"
+                size={8}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                Anthropic: Starts with "sk-ant-"
+              </Text>
             </View>
             <View style={styles.answerRow}>
-              <Icon name="ellipse" size={8} color={colors.textSecondary} style={styles.answerIcon} />
-              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>Gemini: Starts with "AIza"</Text>
+              <Icon
+                name="ellipse"
+                size={8}
+                color={colors.textSecondary}
+                style={styles.answerIcon}
+              />
+              <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
+                Gemini: Starts with "AIza"
+              </Text>
             </View>
           </View>
 
           <View style={styles.troubleshootingItem}>
-            <Text style={[styles.troubleshootingQuestion, { color: colors.textPrimary }]}>Rate limit errors?</Text>
+            <Text style={[styles.troubleshootingQuestion, { color: colors.textPrimary }]}>
+              Rate limit errors?
+            </Text>
             <Text style={[styles.troubleshootingAnswer, { color: colors.textSecondary }]}>
               You may have exceeded the service's rate limits. Wait a few minutes and try again, or
               upgrade your account tier with the service provider.

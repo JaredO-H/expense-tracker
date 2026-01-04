@@ -11,7 +11,6 @@ import { TripNavigator } from './TripNavigator';
 import { HomeScreen } from '../screens/HomeScreen';
 import { colors } from '../styles';
 
-
 export type AppTabParamList = {
   HomeTab: undefined;
   TripsTab: undefined;

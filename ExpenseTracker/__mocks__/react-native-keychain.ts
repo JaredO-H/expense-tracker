@@ -41,10 +41,12 @@ export const hasInternetCredentials = jest.fn((service: string) => {
   return Promise.resolve(!!mockStorage[service]);
 });
 
-export const setInternetCredentials = jest.fn((service: string, username: string, password: string) => {
-  mockStorage[service] = { username, password };
-  return Promise.resolve();
-});
+export const setInternetCredentials = jest.fn(
+  (service: string, username: string, password: string) => {
+    mockStorage[service] = { username, password };
+    return Promise.resolve();
+  },
+);
 
 export const getInternetCredentials = jest.fn((service: string) => {
   const credentials = mockStorage[service];

@@ -21,9 +21,9 @@ function createMockTextBlock(text: string, y: number = 0): TextBlock {
 
 // Helper to create mock MLKitResult
 function createMockMLKitResult(text: string, blocks?: TextBlock[]): MLKitResult {
-  const defaultBlocks = text.split('\n').map((line, index) =>
-    createMockTextBlock(line, index * 20)
-  );
+  const defaultBlocks = text
+    .split('\n')
+    .map((line, index) => createMockTextBlock(line, index * 20));
 
   return {
     text,
@@ -125,7 +125,7 @@ describe('Receipt Parser', () => {
 
       expect(result).toBeDefined();
       expect(result.merchant).toBeDefined();
-      expect(result.amount).toBeCloseTo(18.00, 2);
+      expect(result.amount).toBeCloseTo(18.0, 2);
       expect(result.tax_amount).toBeUndefined();
     });
 
@@ -290,7 +290,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.amount).toBe(50.00);
+      expect(result.amount).toBe(50.0);
       expect(result.confidence).toBeGreaterThan(0.7);
     });
 
@@ -301,7 +301,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.amount).toBe(87.50);
+      expect(result.amount).toBe(87.5);
     });
 
     it('should handle AMOUNT keyword', async () => {
@@ -357,7 +357,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.amount).toBe(5000.00);
+      expect(result.amount).toBe(5000.0);
     });
 
     it('should reject amounts above 10000', async () => {
@@ -379,7 +379,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.amount).toBe(0.50);
+      expect(result.amount).toBe(0.5);
     });
 
     it('should use fallback for no amount found', async () => {
@@ -502,7 +502,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.tax_amount).toBe(4.00);
+      expect(result.tax_amount).toBe(4.0);
     });
 
     it('should extract HST amount', async () => {
@@ -513,7 +513,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.tax_amount).toBe(13.00);
+      expect(result.tax_amount).toBe(13.0);
     });
 
     it('should extract VAT amount', async () => {
@@ -524,7 +524,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.tax_amount).toBe(16.00);
+      expect(result.tax_amount).toBe(16.0);
     });
 
     it('should extract PST amount', async () => {
@@ -535,7 +535,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.tax_amount).toBe(3.50);
+      expect(result.tax_amount).toBe(3.5);
     });
 
     it('should extract SALES TAX amount', async () => {
@@ -546,7 +546,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.tax_amount).toBe(4.80);
+      expect(result.tax_amount).toBe(4.8);
     });
 
     it('should handle tax with $ symbol', async () => {
@@ -557,7 +557,7 @@ describe('Receipt Parser', () => {
 
       const result = await parseReceipt(createMockMLKitResult(ocrText));
 
-      expect(result.tax_amount).toBe(3.20);
+      expect(result.tax_amount).toBe(3.2);
     });
 
     it('should return undefined when no tax found', async () => {
@@ -605,7 +605,7 @@ describe('Receipt Parser', () => {
       expect(result.confidence).toBeGreaterThan(0);
       expect(result.confidence).toBeLessThanOrEqual(1);
       // Should be rounded to 2 decimals
-      expect(result.confidence * 100 % 1).toBeLessThan(0.01);
+      expect((result.confidence * 100) % 1).toBeLessThan(0.01);
     });
 
     it('should prioritize amount and merchant confidence', async () => {

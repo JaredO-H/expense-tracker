@@ -2,7 +2,6 @@
  * Database type definitions for ExpenseTracker
  */
 
-
 export enum TaxType {
   GST = 'GST',
   HST = 'HST',
@@ -30,7 +29,8 @@ export interface Trip {
   end_date: string; // ISO 8601 date string
   destination?: string;
   purpose?: string;
-  status?: string,
+  default_currency?: string; // ISO 4217 currency code (e.g., USD, EUR, GBP)
+  status?: string;
   notes?: string;
   created_at: string;
   updated_at: string;
@@ -66,6 +66,7 @@ export interface CreateTripModel {
   end_date: string;
   destination?: string;
   purpose?: string;
+  default_currency?: string;
 }
 
 export interface CreateExpenseModel {
@@ -93,6 +94,7 @@ export interface UpdateTripModel {
   end_date?: string;
   destination?: string;
   purpose?: string;
+  default_currency?: string;
 }
 
 export interface UpdateExpenseModel {

@@ -76,9 +76,7 @@ const MainTabs: React.FC = () => {
         options={{
           title: 'Home',
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="home" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="home" size={size} color={color} />,
         }}
       />
       <Tab.Screen
@@ -87,9 +85,7 @@ const MainTabs: React.FC = () => {
         options={{
           title: 'Trips',
           tabBarLabel: 'Trips',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="airplane" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="airplane" size={size} color={color} />,
         }}
       />
       <Tab.Screen
@@ -98,9 +94,7 @@ const MainTabs: React.FC = () => {
         options={{
           title: 'Expenses',
           tabBarLabel: 'Expenses',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="receipt" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="receipt" size={size} color={color} />,
           headerShown: true,
           headerStyle: {
             backgroundColor: colors.primary,
@@ -117,9 +111,7 @@ const MainTabs: React.FC = () => {
         options={{
           title: 'Settings',
           tabBarLabel: 'Settings',
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="settings" size={size} color={color} />
-          ),
+          tabBarIcon: ({ color, size }) => <Icon name="settings" size={size} color={color} />,
           headerShown: true,
           headerStyle: {
             backgroundColor: colors.primary,

@@ -116,7 +116,7 @@ export const HomeScreen: React.FC = () => {
 
     // Otherwise, return the most recent trip
     return trips.sort(
-      (a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime()
+      (a, b) => new Date(b.start_date).getTime() - new Date(a.start_date).getTime(),
     )[0];
   };
 
@@ -140,7 +140,9 @@ export const HomeScreen: React.FC = () => {
     return (
       <View style={[screenStyles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[screenStyles.loadingText, { color: colors.textPrimary }]}>Loading your expenses...</Text>
+        <Text style={[screenStyles.loadingText, { color: colors.textPrimary }]}>
+          Loading your expenses...
+        </Text>
       </View>
     );
   }
@@ -148,20 +150,36 @@ export const HomeScreen: React.FC = () => {
   return (
     <View style={[screenStyles.screenWithDecorations, { backgroundColor: colors.background }]}>
       {/* Background geometric decorations with floating animation */}
-      <Animated.View style={[screenStyles.bgDecorCircleMedium, { backgroundColor: colors.accent1, transform: [{ translateY: floatAnim1 }] }]} />
-      <Animated.View style={[screenStyles.bgDecorCircleLargeBottom, { backgroundColor: colors.secondary, transform: [{ translateY: floatAnim2 }] }]} />
-      <Animated.View style={[screenStyles.bgDecorSquare, { backgroundColor: colors.accent3, transform: [{ translateY: floatAnim3 }] }]} />
+      <Animated.View
+        style={[
+          screenStyles.bgDecorCircleMedium,
+          { backgroundColor: colors.accent1, transform: [{ translateY: floatAnim1 }] },
+        ]}
+      />
+      <Animated.View
+        style={[
+          screenStyles.bgDecorCircleLargeBottom,
+          { backgroundColor: colors.secondary, transform: [{ translateY: floatAnim2 }] },
+        ]}
+      />
+      <Animated.View
+        style={[
+          screenStyles.bgDecorSquare,
+          { backgroundColor: colors.accent3, transform: [{ translateY: floatAnim3 }] },
+        ]}
+      />
 
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={screenStyles.scrollViewContent}
-        showsVerticalScrollIndicator={false}
-      >
+        showsVerticalScrollIndicator={false}>
         <Animated.View style={{ opacity: fadeAnim }}>
           {/* Header with geometric accent */}
           <View style={screenStyles.headerWithAccent}>
             <View style={[screenStyles.decorativeAccentBar, { backgroundColor: colors.primary }]} />
-            <Text style={[screenStyles.headerTitle, { color: colors.textPrimary }]}>Expense{'\n'}Tracker</Text>
+            <Text style={[screenStyles.headerTitle, { color: colors.textPrimary }]}>
+              Expense{'\n'}Tracker
+            </Text>
           </View>
 
           {/* Current Trip Card */}
@@ -171,7 +189,9 @@ export const HomeScreen: React.FC = () => {
 
           {/* Quick Actions Section */}
           <View style={screenStyles.section}>
-            <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>QUICK ACTIONS</Text>
+            <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>
+              QUICK ACTIONS
+            </Text>
 
             {/* Capture Expense Button - Primary with staggered animation */}
             <Animated.View
@@ -187,20 +207,37 @@ export const HomeScreen: React.FC = () => {
                 ],
               }}>
               <TouchableOpacity
-                style={[screenStyles.actionButtonLarge, { backgroundColor: colors.primary, borderColor: colors.border }]}
+                style={[
+                  screenStyles.actionButtonLarge,
+                  { backgroundColor: colors.primary, borderColor: colors.border },
+                ]}
                 onPress={handleCaptureExpense}
                 activeOpacity={0.8}>
-                <View style={[screenStyles.actionButtonIcon, { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 }]}>
+                <View
+                  style={[
+                    screenStyles.actionButtonIcon,
+                    { backgroundColor: colors.whiteOverlay30, borderColor: colors.whiteOverlay60 },
+                  ]}>
                   <Icon name="camera" size={28} color={colors.textInverse} />
                 </View>
                 <View style={screenStyles.actionButtonContent}>
-                  <Text style={[screenStyles.actionButtonTitle, { color: colors.textInverse }]}>CAPTURE</Text>
-                  <Text style={[screenStyles.actionButtonSubtitle, { color: colors.whiteOverlay80 }]}>Take a photo of your receipt</Text>
+                  <Text style={[screenStyles.actionButtonTitle, { color: colors.textInverse }]}>
+                    CAPTURE
+                  </Text>
+                  <Text
+                    style={[screenStyles.actionButtonSubtitle, { color: colors.whiteOverlay80 }]}>
+                    Take a photo of your receipt
+                  </Text>
                 </View>
                 <Icon name="arrow-forward" size={28} color={colors.whiteOverlay80} />
 
                 {/* Decorative element */}
-                <View style={[screenStyles.buttonGeometricDecor, { backgroundColor: colors.whiteOverlay30 }]} />
+                <View
+                  style={[
+                    screenStyles.buttonGeometricDecor,
+                    { backgroundColor: colors.whiteOverlay30 },
+                  ]}
+                />
               </TouchableOpacity>
             </Animated.View>
 
@@ -218,24 +255,40 @@ export const HomeScreen: React.FC = () => {
                 ],
               }}>
               <TouchableOpacity
-                style={[screenStyles.actionButtonLarge, { backgroundColor: colors.secondary, borderColor: colors.border }]}
+                style={[
+                  screenStyles.actionButtonLarge,
+                  { backgroundColor: colors.secondary, borderColor: colors.border },
+                ]}
                 onPress={handleManualExpense}
                 activeOpacity={0.8}>
-                <View style={[screenStyles.actionButtonIcon, { backgroundColor: colors.accent1, borderColor: colors.border }]}>
+                <View
+                  style={[
+                    screenStyles.actionButtonIcon,
+                    { backgroundColor: colors.accent1, borderColor: colors.border },
+                  ]}>
                   <Icon name="create-outline" size={28} color={colors.textOnSecondary} />
                 </View>
                 <View style={screenStyles.actionButtonContent}>
                   <Text style={[screenStyles.actionButtonTitle, { color: colors.textOnSecondary }]}>
                     MANUAL ENTRY
                   </Text>
-                  <Text style={[screenStyles.actionButtonSubtitle, { color: colors.textOnSecondary, opacity: 0.8 }]}>
+                  <Text
+                    style={[
+                      screenStyles.actionButtonSubtitle,
+                      { color: colors.textOnSecondary, opacity: 0.8 },
+                    ]}>
                     Type in the details yourself
                   </Text>
                 </View>
                 <Icon name="arrow-forward" size={28} color={colors.textOnSecondary} />
 
                 {/* Decorative element */}
-                <View style={[screenStyles.buttonGeometricDecor, { backgroundColor: colors.accent1, opacity: 0.3 }]} />
+                <View
+                  style={[
+                    screenStyles.buttonGeometricDecor,
+                    { backgroundColor: colors.accent1, opacity: 0.3 },
+                  ]}
+                />
               </TouchableOpacity>
             </Animated.View>
           </View>

@@ -32,13 +32,21 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
 
   if (!trip) {
     return (
-      <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+        ]}>
         {/* Decorative elements for empty state */}
         <View style={[styles.emptyDecorCircle, { backgroundColor: colors.accent2 }]} />
         <View style={[styles.emptyDecorSquare, { backgroundColor: colors.accent4 }]} />
 
         <View style={styles.emptyState}>
-          <View style={[styles.emptyIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.emptyIcon,
+              { backgroundColor: colors.primaryLight, borderColor: colors.border },
+            ]}>
             <Icon name="airplane" size={40} color={colors.primary} />
           </View>
           <Text style={[styles.emptyTitle, { color: colors.textSecondary }]}>No Active Trip</Text>
@@ -62,23 +70,44 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
   const getStatusBadge = () => {
     if (isActive) {
       return (
-        <View style={[styles.badge, styles.badgeActive, { backgroundColor: colors.successLight, borderColor: colors.success }]}>
+        <View
+          style={[
+            styles.badge,
+            styles.badgeActive,
+            { backgroundColor: colors.successLight, borderColor: colors.success },
+          ]}>
           <View style={[styles.badgeDot, { backgroundColor: colors.success }]} />
           <Text style={[styles.badgeText, { color: colors.success }]}>ACTIVE</Text>
         </View>
       );
     } else if (isUpcoming) {
       return (
-        <View style={[styles.badge, styles.badgeUpcoming, { backgroundColor: colors.infoLight, borderColor: colors.info }]}>
-          <View style={[styles.badgeDot, styles.badgeDotUpcoming, { backgroundColor: colors.info }]} />
-          <Text style={[styles.badgeText, styles.badgeTextUpcoming, { color: colors.info }]}>UPCOMING</Text>
+        <View
+          style={[
+            styles.badge,
+            styles.badgeUpcoming,
+            { backgroundColor: colors.infoLight, borderColor: colors.info },
+          ]}>
+          <View
+            style={[styles.badgeDot, styles.badgeDotUpcoming, { backgroundColor: colors.info }]}
+          />
+          <Text style={[styles.badgeText, styles.badgeTextUpcoming, { color: colors.info }]}>
+            UPCOMING
+          </Text>
         </View>
       );
     } else {
       return (
-        <View style={[styles.badge, styles.badgePast, { backgroundColor: colors.backgroundTertiary, borderColor: colors.borderLight }]}>
+        <View
+          style={[
+            styles.badge,
+            styles.badgePast,
+            { backgroundColor: colors.backgroundTertiary, borderColor: colors.borderLight },
+          ]}>
           <Icon name="checkmark-circle" size={14} color={colors.textSecondary} />
-          <Text style={[styles.badgeText, styles.badgeTextPast, { color: colors.textSecondary }]}>COMPLETED</Text>
+          <Text style={[styles.badgeText, styles.badgeTextPast, { color: colors.textSecondary }]}>
+            COMPLETED
+          </Text>
         </View>
       );
     }
@@ -113,7 +142,11 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
 
       {/* Header */}
       <View style={styles.header}>
-        <View style={[styles.headerIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.headerIcon,
+            { backgroundColor: colors.primaryLight, borderColor: colors.border },
+          ]}>
           <Icon name="airplane" size={24} color={colors.primary} />
         </View>
         <View style={styles.headerContent}>
@@ -128,17 +161,31 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
       {/* Destination */}
       {trip.destination && (
         <View style={styles.destinationContainer}>
-          <View style={[styles.destinationIcon, { backgroundColor: colors.secondaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.destinationIcon,
+              { backgroundColor: colors.secondaryLight, borderColor: colors.border },
+            ]}>
             <Icon name="location" size={18} color={colors.secondary} />
           </View>
-          <Text style={[styles.destination, { color: colors.textPrimary }]}>{trip.destination}</Text>
+          <Text style={[styles.destination, { color: colors.textPrimary }]}>
+            {trip.destination}
+          </Text>
         </View>
       )}
 
       {/* Date Section */}
       <View style={[styles.dateSection, { borderColor: colors.border }]}>
-        <View style={[styles.dateCard, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
-          <View style={[styles.dateIconContainer, { backgroundColor: colors.accent1Light, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.dateCard,
+            { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+          ]}>
+          <View
+            style={[
+              styles.dateIconContainer,
+              { backgroundColor: colors.accent1Light, borderColor: colors.border },
+            ]}>
             <Icon name="calendar-outline" size={20} color={colors.accent1Dark} />
           </View>
           <View style={styles.dateContent}>
@@ -152,12 +199,24 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
           </View>
         </View>
 
-        <View style={[styles.dateSeparator, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.dateSeparator,
+            { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+          ]}>
           <Icon name="arrow-forward" size={20} color={colors.primary} />
         </View>
 
-        <View style={[styles.dateCard, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
-          <View style={[styles.dateIconContainer, { backgroundColor: colors.accent1Light, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.dateCard,
+            { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+          ]}>
+          <View
+            style={[
+              styles.dateIconContainer,
+              { backgroundColor: colors.accent1Light, borderColor: colors.border },
+            ]}>
             <Icon name="calendar" size={20} color={colors.accent1Dark} />
           </View>
           <View style={styles.dateContent}>
@@ -180,18 +239,23 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
             size={18}
             color={isActive ? colors.success : isUpcoming ? colors.secondary : colors.textSecondary}
           />
-          <Text style={[
-            styles.daysInfo,
-            { color: colors.textSecondary },
-            isActive && { color: colors.success },
-            isUpcoming && { color: colors.secondary },
-          ]}>
+          <Text
+            style={[
+              styles.daysInfo,
+              { color: colors.textSecondary },
+              isActive && { color: colors.success },
+              isUpcoming && { color: colors.secondary },
+            ]}>
             {getDaysInfo()}
           </Text>
         </View>
 
         {onPress && (
-          <View style={[styles.viewMoreContainer, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.viewMoreContainer,
+              { backgroundColor: colors.primaryLight, borderColor: colors.border },
+            ]}>
             <Text style={[styles.viewMoreText, { color: colors.primary }]}>View Details</Text>
             <Icon name="arrow-forward" size={16} color={colors.primary} />
           </View>

@@ -18,7 +18,7 @@ describe('Response Parser', () => {
 
       expect(result).not.toBeNull();
       expect(result?.merchant).toBe('The Italian Kitchen');
-      expect(result?.amount).toBe(87.50);
+      expect(result?.amount).toBe(87.5);
       expect(result?.date).toBe('2024-03-15');
     });
 
@@ -41,7 +41,7 @@ describe('Response Parser', () => {
 
       expect(result).not.toBeNull();
       expect(result?.merchant).toBe('Test Store');
-      expect(result?.amount).toBe(50.00);
+      expect(result?.amount).toBe(50.0);
     });
 
     it('should handle JSON with escaped characters', () => {
@@ -106,7 +106,7 @@ describe('Response Parser', () => {
       it('should validate complete valid receipt data', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -118,7 +118,7 @@ describe('Response Parser', () => {
 
       it('should reject missing merchant', () => {
         const data: ParsedReceiptData = {
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -131,7 +131,7 @@ describe('Response Parser', () => {
       it('should reject empty merchant name', () => {
         const data: ParsedReceiptData = {
           merchant: '   ',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -144,7 +144,7 @@ describe('Response Parser', () => {
       it('should warn about unusually long merchant name', () => {
         const data: ParsedReceiptData = {
           merchant: 'A'.repeat(150),
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -184,7 +184,7 @@ describe('Response Parser', () => {
       it('should reject negative amount', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: -50.00,
+          amount: -50.0,
           date: '2024-03-15',
         };
 
@@ -223,7 +223,7 @@ describe('Response Parser', () => {
       it('should accept small valid amounts', () => {
         const data: ParsedReceiptData = {
           merchant: 'Coffee Shop',
-          amount: 0.50,
+          amount: 0.5,
           date: '2024-03-15',
         };
 
@@ -237,8 +237,8 @@ describe('Response Parser', () => {
       it('should reject negative tax amount', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
-          tax_amount: -5.00,
+          amount: 50.0,
+          tax_amount: -5.0,
           date: '2024-03-15',
         };
 
@@ -251,8 +251,8 @@ describe('Response Parser', () => {
       it('should reject tax amount greater than total', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
-          tax_amount: 60.00,
+          amount: 50.0,
+          tax_amount: 60.0,
           date: '2024-03-15',
         };
 
@@ -265,7 +265,7 @@ describe('Response Parser', () => {
       it('should accept zero tax amount', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           tax_amount: 0,
           date: '2024-03-15',
         };
@@ -278,7 +278,7 @@ describe('Response Parser', () => {
       it('should reject invalid tax rate below 0', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           tax_rate: -5,
           date: '2024-03-15',
         };
@@ -292,7 +292,7 @@ describe('Response Parser', () => {
       it('should reject invalid tax rate above 100', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           tax_rate: 105,
           date: '2024-03-15',
         };
@@ -306,7 +306,7 @@ describe('Response Parser', () => {
       it('should accept valid tax rate', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           tax_rate: 13.5,
           date: '2024-03-15',
         };
@@ -321,7 +321,7 @@ describe('Response Parser', () => {
       it('should reject missing date', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
         };
 
         const result = validateReceiptData(data);
@@ -333,7 +333,7 @@ describe('Response Parser', () => {
       it('should accept valid ISO date format', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -345,7 +345,7 @@ describe('Response Parser', () => {
       it('should reject invalid date format (MM/DD/YYYY)', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '03/15/2024',
         };
 
@@ -358,7 +358,7 @@ describe('Response Parser', () => {
       it('should reject invalid date format (DD/MM/YYYY)', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '15/03/2024',
         };
 
@@ -371,7 +371,7 @@ describe('Response Parser', () => {
       it('should reject invalid date values', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-13-45', // Invalid month and day
         };
 
@@ -388,7 +388,7 @@ describe('Response Parser', () => {
 
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: futureDateStr,
         };
 
@@ -398,12 +398,12 @@ describe('Response Parser', () => {
         expect(result.errors).toContain('Date cannot be in the future');
       });
 
-      it('should accept today\'s date', () => {
+      it("should accept today's date", () => {
         const today = new Date().toISOString().split('T')[0];
 
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: today,
         };
 
@@ -417,7 +417,7 @@ describe('Response Parser', () => {
       it('should accept valid time format', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
           time: '14:30:00',
         };
@@ -431,7 +431,7 @@ describe('Response Parser', () => {
       it('should warn about invalid time format', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
           time: '2:30 PM',
         };
@@ -445,7 +445,7 @@ describe('Response Parser', () => {
       it('should accept missing time', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -462,7 +462,7 @@ describe('Response Parser', () => {
         validCategories.forEach(category => {
           const data: ParsedReceiptData = {
             merchant: 'Test Store',
-            amount: 50.00,
+            amount: 50.0,
             date: '2024-03-15',
             category,
           };
@@ -475,7 +475,7 @@ describe('Response Parser', () => {
       it('should warn about unknown category', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
           category: 'unknown_category',
         };
@@ -489,7 +489,7 @@ describe('Response Parser', () => {
       it('should accept missing category', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
         };
 
@@ -504,7 +504,7 @@ describe('Response Parser', () => {
         [0, 0.5, 0.95, 1.0].forEach(confidence => {
           const data: ParsedReceiptData = {
             merchant: 'Test Store',
-            amount: 50.00,
+            amount: 50.0,
             date: '2024-03-15',
             confidence,
           };
@@ -517,7 +517,7 @@ describe('Response Parser', () => {
       it('should warn about confidence below 0', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
           confidence: -0.1,
         };
@@ -530,7 +530,7 @@ describe('Response Parser', () => {
       it('should warn about confidence above 1', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
           confidence: 1.5,
         };
@@ -543,7 +543,7 @@ describe('Response Parser', () => {
       it('should warn about low confidence', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
-          amount: 50.00,
+          amount: 50.0,
           date: '2024-03-15',
           confidence: 0.3,
         };
@@ -562,7 +562,7 @@ describe('Response Parser', () => {
 
       expect(result).toBeDefined();
       expect(result.merchant).toBe('The Italian Kitchen');
-      expect(result.amount).toBe(87.50);
+      expect(result.amount).toBe(87.5);
       expect(result.date).toBe('2024-03-15');
       expect(result.time).toBe('19:30:00');
       expect(result.processingTime).toBe(1500);

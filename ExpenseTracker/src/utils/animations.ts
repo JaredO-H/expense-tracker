@@ -12,7 +12,7 @@ import { Animated, Easing } from 'react-native';
 export const fadeIn = (
   animatedValue: Animated.Value,
   duration: number = 600,
-  delay: number = 0
+  delay: number = 0,
 ): Animated.CompositeAnimation => {
   return Animated.timing(animatedValue, {
     toValue: 1,
@@ -28,7 +28,7 @@ export const fadeIn = (
  */
 export const fadeOut = (
   animatedValue: Animated.Value,
-  duration: number = 400
+  duration: number = 400,
 ): Animated.CompositeAnimation => {
   return Animated.timing(animatedValue, {
     toValue: 0,
@@ -46,7 +46,7 @@ export const slideUp = (
   animatedValue: Animated.Value,
   distance: number = 50,
   duration: number = 600,
-  delay: number = 0
+  delay: number = 0,
 ): Animated.CompositeAnimation => {
   return Animated.timing(animatedValue, {
     toValue: 0,
@@ -65,7 +65,7 @@ export const scale = (
   animatedValue: Animated.Value,
   toValue: number = 1,
   duration: number = 400,
-  delay: number = 0
+  delay: number = 0,
 ): Animated.CompositeAnimation => {
   return Animated.spring(animatedValue, {
     toValue,
@@ -80,9 +80,7 @@ export const scale = (
  * Press Animation
  * Button press feedback with scale down/up
  */
-export const pressAnimation = (
-  animatedValue: Animated.Value
-): Animated.CompositeAnimation => {
+export const pressAnimation = (animatedValue: Animated.Value): Animated.CompositeAnimation => {
   return Animated.sequence([
     Animated.timing(animatedValue, {
       toValue: 0.95,
@@ -105,7 +103,7 @@ export const pressAnimation = (
  */
 export const bounce = (
   animatedValue: Animated.Value,
-  duration: number = 800
+  duration: number = 800,
 ): Animated.CompositeAnimation => {
   return Animated.spring(animatedValue, {
     toValue: 1,
@@ -122,7 +120,7 @@ export const bounce = (
 export const rotate = (
   animatedValue: Animated.Value,
   duration: number = 1000,
-  toValue: number = 1
+  toValue: number = 1,
 ): Animated.CompositeAnimation => {
   return Animated.timing(animatedValue, {
     toValue,
@@ -136,9 +134,7 @@ export const rotate = (
  * Shake Animation
  * Error or attention-grabbing shake
  */
-export const shake = (
-  animatedValue: Animated.Value
-): Animated.CompositeAnimation => {
+export const shake = (animatedValue: Animated.Value): Animated.CompositeAnimation => {
   return Animated.sequence([
     Animated.timing(animatedValue, {
       toValue: 10,
@@ -170,10 +166,10 @@ export const shake = (
 export const staggeredFadeIn = (
   animatedValues: Animated.Value[],
   staggerDelay: number = 100,
-  duration: number = 600
+  duration: number = 600,
 ): Animated.CompositeAnimation => {
   const animations = animatedValues.map((value, index) =>
-    fadeIn(value, duration, index * staggerDelay)
+    fadeIn(value, duration, index * staggerDelay),
   );
   return Animated.parallel(animations);
 };
@@ -186,7 +182,7 @@ export const pulse = (
   animatedValue: Animated.Value,
   minScale: number = 1,
   maxScale: number = 1.05,
-  duration: number = 1000
+  duration: number = 1000,
 ): Animated.CompositeAnimation => {
   return Animated.loop(
     Animated.sequence([
@@ -202,7 +198,7 @@ export const pulse = (
         easing: Easing.inOut(Easing.ease),
         useNativeDriver: true,
       }),
-    ])
+    ]),
   );
 };
 
@@ -213,7 +209,7 @@ export const pulse = (
 export const float = (
   animatedValue: Animated.Value,
   distance: number = 10,
-  duration: number = 3000
+  duration: number = 3000,
 ): Animated.CompositeAnimation => {
   return Animated.loop(
     Animated.sequence([
@@ -229,7 +225,7 @@ export const float = (
         easing: Easing.inOut(Easing.sin),
         useNativeDriver: true,
       }),
-    ])
+    ]),
   );
 };
 
@@ -239,7 +235,7 @@ export const float = (
  */
 export const successCheckmark = (
   scaleValue: Animated.Value,
-  opacityValue: Animated.Value
+  opacityValue: Animated.Value,
 ): Animated.CompositeAnimation => {
   return Animated.parallel([
     Animated.spring(scaleValue, {
@@ -263,7 +259,7 @@ export const successCheckmark = (
 export const cardEntrance = (
   opacityValue: Animated.Value,
   translateValue: Animated.Value,
-  delay: number = 0
+  delay: number = 0,
 ): Animated.CompositeAnimation => {
   return Animated.parallel([
     fadeIn(opacityValue, 600, delay),
@@ -281,9 +277,6 @@ export const createAnimatedValue = (initialValue: number = 0): Animated.Value =>
 /**
  * Create multiple animated values
  */
-export const createAnimatedValues = (
-  count: number,
-  initialValue: number = 0
-): Animated.Value[] => {
+export const createAnimatedValues = (count: number, initialValue: number = 0): Animated.Value[] => {
   return Array.from({ length: count }, () => new Animated.Value(initialValue));
 };

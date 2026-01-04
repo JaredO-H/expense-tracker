@@ -19,8 +19,8 @@ const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface SlidingDrawerProps {
   children: React.ReactNode;
-  snapPoints: number[];        // [0.25, 0.5, 0.9] of screen height
-  initialSnapPoint: number;    // Index into snapPoints array
+  snapPoints: number[]; // [0.25, 0.5, 0.9] of screen height
+  initialSnapPoint: number; // Index into snapPoints array
   onClose?: () => void;
 }
 
@@ -80,7 +80,7 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
     .onStart(() => {
       startY.value = translateY.value;
     })
-    .onUpdate((event) => {
+    .onUpdate(event => {
       // Calculate new position, clamped within bounds
       const newY = startY.value + event.translationY;
       const minY = snapPointsInPixels[snapPointsInPixels.length - 1]; // Most expanded
@@ -88,12 +88,9 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
 
       translateY.value = Math.max(minY, Math.min(maxY, newY));
     })
-    .onEnd((event) => {
+    .onEnd(event => {
       // Snap to closest point with spring animation
-      const snapPoint = findClosestSnapPoint(
-        translateY.value,
-        event.velocityY
-      );
+      const snapPoint = findClosestSnapPoint(translateY.value, event.velocityY);
 
       translateY.value = withSpring(snapPoint, {
         damping: 20,
@@ -110,7 +107,8 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
   // Animated style for backdrop opacity
   const animatedBackdropStyle = useAnimatedStyle(() => {
     // Calculate opacity based on drawer position (0 at top, 0.5 at bottom)
-    const progress = (translateY.value - snapPointsInPixels[snapPointsInPixels.length - 1]) /
+    const progress =
+      (translateY.value - snapPointsInPixels[snapPointsInPixels.length - 1]) /
       (snapPointsInPixels[0] - snapPointsInPixels[snapPointsInPixels.length - 1]);
 
     return {
@@ -140,16 +138,19 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
 
       {/* Drawer */}
       <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.drawer, { backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.whiteOverlay80 }, animatedDrawerStyle]}>
+        <Animated.View
+          style={[
+            styles.drawer,
+            { backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.whiteOverlay80 },
+            animatedDrawerStyle,
+          ]}>
           {/* Drag handle */}
           <View style={styles.handleContainer}>
             <View style={[styles.handle, { backgroundColor: colors.gray300 }]} />
           </View>
 
           {/* Drawer content */}
-          <View style={styles.content}>
-            {children}
-          </View>
+          <View style={styles.content}>{children}</View>
         </Animated.View>
       </GestureDetector>
     </>

@@ -35,12 +35,11 @@ export const requestStoragePermission = async (): Promise<boolean> => {
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
         title: 'Storage Permission Required',
-        message:
-          'This app needs storage access to save your exported trip files to your device.',
+        message: 'This app needs storage access to save your exported trip files to your device.',
         buttonNeutral: 'Ask Me Later',
         buttonNegative: 'Cancel',
         buttonPositive: 'OK',
-      }
+      },
     );
     return result === PermissionsAndroid.RESULTS.GRANTED;
   } catch (error) {
@@ -66,7 +65,7 @@ export const checkStoragePermission = async (): Promise<boolean> => {
 
     // Android 9 and below
     const granted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
     );
     return granted;
   } catch (error) {
@@ -93,7 +92,7 @@ export const handleStoragePermissionDenied = (): void => {
           Linking.openSettings();
         },
       },
-    ]
+    ],
   );
 };
 

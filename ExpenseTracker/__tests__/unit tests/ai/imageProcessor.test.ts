@@ -84,10 +84,7 @@ describe('Image Processor', () => {
       it('should read file as base64', async () => {
         await processImageForAI('file://test-image.jpg');
 
-        expect(mockRNFS.readFile).toHaveBeenCalledWith(
-          expect.any(String),
-          'base64'
-        );
+        expect(mockRNFS.readFile).toHaveBeenCalledWith(expect.any(String), 'base64');
       });
     });
 
@@ -140,7 +137,7 @@ describe('Image Processor', () => {
           expect.any(Number),
           undefined,
           false,
-          { mode: 'contain' }
+          { mode: 'contain' },
         );
       });
 
@@ -165,7 +162,7 @@ describe('Image Processor', () => {
           expect.any(Number),
           undefined,
           false,
-          { mode: 'contain' }
+          { mode: 'contain' },
         );
       });
 
@@ -252,7 +249,7 @@ describe('Image Processor', () => {
           expect.any(Number),
           undefined,
           false,
-          { mode: 'contain' }
+          { mode: 'contain' },
         );
       });
 
@@ -276,7 +273,7 @@ describe('Image Processor', () => {
         mockRNFS.stat.mockRejectedValue(new Error('File not found'));
 
         await expect(processImageForAI('file://nonexistent.jpg')).rejects.toThrow(
-          'Failed to process image for AI service'
+          'Failed to process image for AI service',
         );
       });
 
@@ -286,12 +283,10 @@ describe('Image Processor', () => {
           isFile: () => true,
         } as any);
 
-        mockImageResizer.createResizedImage.mockRejectedValue(
-          new Error('Resize failed')
-        );
+        mockImageResizer.createResizedImage.mockRejectedValue(new Error('Resize failed'));
 
         await expect(processImageForAI('file://test-image.jpg')).rejects.toThrow(
-          'Failed to process image for AI service'
+          'Failed to process image for AI service',
         );
       });
 
@@ -299,7 +294,7 @@ describe('Image Processor', () => {
         mockRNFS.readFile.mockRejectedValue(new Error('Read failed'));
 
         await expect(processImageForAI('file://test-image.jpg')).rejects.toThrow(
-          'Failed to process image for AI service'
+          'Failed to process image for AI service',
         );
       });
     });

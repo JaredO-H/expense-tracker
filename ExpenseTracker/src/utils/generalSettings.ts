@@ -6,7 +6,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export interface GeneralSettings {
-  defaultCurrency: string;
   dateFormat: string;
   useSystemLocale: boolean;
   showCents: boolean;
@@ -16,7 +15,6 @@ export interface GeneralSettings {
 const SETTINGS_KEY = '@general_settings';
 
 const defaultSettings: GeneralSettings = {
-  defaultCurrency: 'USD',
   dateFormat: 'MM/DD/YYYY',
   useSystemLocale: true,
   showCents: true,
@@ -43,17 +41,10 @@ export const getGeneralSettings = async (): Promise<GeneralSettings> => {
  * Get a specific setting value
  */
 export const getSetting = async <K extends keyof GeneralSettings>(
-  key: K
+  key: K,
 ): Promise<GeneralSettings[K]> => {
   const settings = await getGeneralSettings();
   return settings[key];
-};
-
-/**
- * Get the default currency
- */
-export const getDefaultCurrency = async (): Promise<string> => {
-  return getSetting('defaultCurrency');
 };
 
 /**
@@ -80,12 +71,8 @@ export const shouldShowCents = async (): Promise<boolean> => {
 /**
  * Format currency based on settings
  */
-export const formatCurrency = async (
-  amount: number,
-  currency?: string
-): Promise<string> => {
+export const formatCurrency = async (amount: number, currency: string): Promise<string> => {
   const settings = await getGeneralSettings();
-  const currencyCode = currency || settings.defaultCurrency;
   const showCents = settings.showCents;
 
   const formatted = showCents ? amount.toFixed(2) : Math.round(amount).toString();
@@ -100,9 +87,10 @@ export const formatCurrency = async (
     AUD: 'A$',
     CHF: 'CHF',
     INR: '₹',
+    VND: '₫',
   };
 
-  const symbol = currencySymbols[currencyCode] || currencyCode;
+  const symbol = currencySymbols[currency] || currency;
   return `${symbol}${formatted}`;
 };
 
@@ -143,6 +131,7 @@ export const getCurrencySymbol = (currencyCode: string): string => {
     AUD: 'A$',
     CHF: 'CHF',
     INR: '₹',
+    VND: '₫',
   };
 
   return currencySymbols[currencyCode] || currencyCode;
@@ -151,9 +140,7 @@ export const getCurrencySymbol = (currencyCode: string): string => {
 /**
  * Update general settings
  */
-export const updateGeneralSettings = async (
-  updates: Partial<GeneralSettings>
-): Promise<void> => {
+export const updateGeneralSettings = async (updates: Partial<GeneralSettings>): Promise<void> => {
   try {
     const currentSettings = await getGeneralSettings();
     const newSettings = { ...currentSettings, ...updates };

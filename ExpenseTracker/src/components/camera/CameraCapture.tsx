@@ -18,7 +18,13 @@ import { Camera, useCameraDevice, useCameraPermission } from 'react-native-visio
 import { launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { ensureCameraPermission, ensureGalleryPermission } from '../../utils/cameraPermissions';
-import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
+import {
+  colors as staticColors,
+  spacing,
+  borderRadius,
+  textStyles,
+  commonStyles,
+} from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface CameraCaptureProps {
@@ -92,11 +98,7 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
       onCapture(imageUri);
     } catch (error) {
       console.error('Error capturing photo:', error);
-      Alert.alert(
-        'Capture Failed',
-        'Failed to capture photo. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Capture Failed', 'Failed to capture photo. Please try again.', [{ text: 'OK' }]);
     } finally {
       setIsCapturing(false);
     }
@@ -129,11 +131,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
 
       if (result.errorCode) {
         console.error('ImagePicker Error:', result.errorMessage);
-        Alert.alert(
-          'Selection Failed',
-          'Failed to select image from gallery. Please try again.',
-          [{ text: 'OK' }]
-        );
+        Alert.alert('Selection Failed', 'Failed to select image from gallery. Please try again.', [
+          { text: 'OK' },
+        ]);
         return;
       }
 
@@ -148,11 +148,9 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
       }
     } catch (error) {
       console.error('Error selecting image:', error);
-      Alert.alert(
-        'Selection Failed',
-        'Failed to select image from gallery. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Selection Failed', 'Failed to select image from gallery. Please try again.', [
+        { text: 'OK' },
+      ]);
     }
   };
 
@@ -170,11 +168,15 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
   if (!hasPermission) {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.shadow }]}>
-        <Text style={[styles.permissionText, { color: '#FFFFFF' }]}>Camera permission required</Text>
+        <Text style={[styles.permissionText, { color: '#FFFFFF' }]}>
+          Camera permission required
+        </Text>
         <Text style={[styles.permissionSubtext, { color: colors.gray400 }]}>
           Please grant camera access to capture receipt photos
         </Text>
-        <TouchableOpacity style={[styles.permissionButton, { backgroundColor: colors.primary }]} onPress={requestPermission}>
+        <TouchableOpacity
+          style={[styles.permissionButton, { backgroundColor: colors.primary }]}
+          onPress={requestPermission}>
           <Text style={[styles.permissionButtonText, { color: '#FFFFFF' }]}>Grant Permission</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
@@ -195,25 +197,19 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
         enableZoomGesture={true}
       />
 
-      {/* Framing guide overlay */}
-      <View style={styles.overlay}>
-        <View style={styles.framingGuide}>
-          <View style={[styles.cornerTopLeft, { borderColor: colors.primary }]} />
-          <View style={[styles.cornerTopRight, { borderColor: colors.primary }]} />
-          <View style={[styles.cornerBottomLeft, { borderColor: colors.primary }]} />
-          <View style={[styles.cornerBottomRight, { borderColor: colors.primary }]} />
-        </View>
-      </View>
-
       {/* Camera controls */}
       <View style={styles.controls}>
         {/* Top controls */}
         <View style={styles.topControls}>
-          <TouchableOpacity style={[styles.galleryButton, { backgroundColor: colors.blackOverlay50 }]} onPress={handleSelectFromGallery}>
+          <TouchableOpacity
+            style={[styles.galleryButton, { backgroundColor: colors.blackOverlay50 }]}
+            onPress={handleSelectFromGallery}>
             <Icon name="images-outline" size={20} color="#FFFFFF" style={styles.buttonIcon} />
             <Text style={[styles.galleryButtonText, { color: '#FFFFFF' }]}>Gallery</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[styles.flashButton, { backgroundColor: colors.blackOverlay50 }]} onPress={toggleFlash}>
+          <TouchableOpacity
+            style={[styles.flashButton, { backgroundColor: colors.blackOverlay50 }]}
+            onPress={toggleFlash}>
             <Icon
               name={flashEnabled ? 'flash' : 'flash-off'}
               size={20}
@@ -228,12 +224,18 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
 
         {/* Bottom controls */}
         <View style={styles.bottomControls}>
-          <TouchableOpacity style={[styles.closeButton, { backgroundColor: colors.blackOverlay50 }]} onPress={onCancel}>
+          <TouchableOpacity
+            style={[styles.closeButton, { backgroundColor: colors.blackOverlay50 }]}
+            onPress={onCancel}>
             <Text style={[styles.closeButtonText, { color: '#FFFFFF' }]}>Cancel</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.captureButton, { backgroundColor: colors.whiteOverlay30, borderColor: colors.background }, isCapturing && styles.captureButtonDisabled]}
+            style={[
+              styles.captureButton,
+              { backgroundColor: colors.whiteOverlay30, borderColor: colors.background },
+              isCapturing && styles.captureButtonDisabled,
+            ]}
             onPress={handleCapture}
             disabled={isCapturing}>
             {isCapturing ? (
@@ -245,13 +247,6 @@ export const CameraCapture: React.FC<CameraCaptureProps> = ({ onCapture, onCance
 
           <View style={styles.placeholder} />
         </View>
-      </View>
-
-      {/* Guidance text */}
-      <View style={styles.guidanceContainer}>
-        <Text style={[styles.guidanceText, { color: '#FFFFFF', backgroundColor: colors.blackOverlay50 }]}>
-          Position receipt within the frame
-        </Text>
       </View>
     </View>
   );

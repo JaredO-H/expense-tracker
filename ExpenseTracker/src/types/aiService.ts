@@ -7,8 +7,7 @@ import { AIServiceId } from '../services/security/credentialService';
 
 export type { AIServiceId };
 
-
- //AI Service Configuration
+//AI Service Configuration
 
 export interface AIServiceConfig {
   id: AIServiceId;
@@ -21,18 +20,16 @@ export interface AIServiceConfig {
   documentationUrl: string;
 }
 
-
- //AI Service Status
+//AI Service Status
 
 export type AIServiceStatus =
-  | 'not_configured'  // No API key set
-  | 'configured'      // API key set but not tested
-  | 'testing'         // Currently testing connection
-  | 'connected'       // Successfully tested and working
-  | 'error';          // Connection test failed
+  | 'not_configured' // No API key set
+  | 'configured' // API key set but not tested
+  | 'testing' // Currently testing connection
+  | 'connected' // Successfully tested and working
+  | 'error'; // Connection test failed
 
-
- //Service Configuration State
+//Service Configuration State
 
 export interface ServiceConfigState {
   serviceId: AIServiceId;
@@ -41,7 +38,6 @@ export interface ServiceConfigState {
   lastTested?: Date;
   errorMessage?: string;
 }
-
 
 //Receipt Processing Result
 
@@ -59,30 +55,25 @@ export interface ReceiptProcessingResult {
   processingTime: number;
 }
 
-
- //AI Service Client Interface
+//AI Service Client Interface
 
 export interface AIServiceClient {
   serviceId: AIServiceId;
 
-
- //Process receipt image and extract data
+  //Process receipt image and extract data
 
   processReceipt(imageBase64: string): Promise<ReceiptProcessingResult>;
 
-
-   //Test API connection and credentials
+  //Test API connection and credentials
 
   testConnection(): Promise<boolean>;
 
-
- //Get current usage information (if available)
+  //Get current usage information (if available)
 
   getUsageInfo?(): Promise<UsageInfo>;
 }
 
-
-  //Usage Information
+//Usage Information
 
 export interface UsageInfo {
   requestsThisMonth: number;
@@ -90,14 +81,14 @@ export interface UsageInfo {
   lastReset: Date;
 }
 
-
- //AI Service Constants and Configuration
+//AI Service Constants and Configuration
 
 export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
   openai: {
     id: 'openai',
     name: 'OpenAI GPT-4 Vision',
-    description: 'Advanced AI model with excellent accuracy for complex receipts and handwriting recognition.',
+    description:
+      'Advanced AI model with excellent accuracy for complex receipts and handwriting recognition.',
     apiKeyFormat: /^sk-[A-Za-z0-9-_]{48,}$/,
     apiKeyPlaceholder: 'sk-...',
     testEndpoint: 'https://api.openai.com/v1/chat/completions',
@@ -107,7 +98,8 @@ export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
   anthropic: {
     id: 'anthropic',
     name: 'Anthropic Claude 4 Sonnet',
-    description: 'Fast and reliable AI model optimized for structured data extraction with great value.',
+    description:
+      'Fast and reliable AI model optimized for structured data extraction with great value.',
     apiKeyFormat: /^sk-ant-[A-Za-z0-9-_]{95,}$/,
     apiKeyPlaceholder: 'sk-ant-...',
     testEndpoint: 'https://api.anthropic.com/v1/messages',
@@ -117,10 +109,12 @@ export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
   gemini: {
     id: 'gemini',
     name: 'Google Gemini Pro Vision',
-    description: 'Google\'s advanced multimodal AI with strong performance on varied receipt formats.',
+    description:
+      "Google's advanced multimodal AI with strong performance on varied receipt formats.",
     apiKeyFormat: /^AIza[A-Za-z0-9_-]{35}$/,
     apiKeyPlaceholder: 'AIza...',
-    testEndpoint: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent',
+    testEndpoint:
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent',
     setupInstructions: 'Create API key in Google Cloud Console AI Platform section',
     documentationUrl: 'https://ai.google.dev/tutorials/python_quickstart',
   },
@@ -136,13 +130,11 @@ export const AI_SERVICE_CONFIGS: Record<AIServiceId, AIServiceConfig> = {
   },
 };
 
-
- //Default AI service for new users
+//Default AI service for new users
 
 export const DEFAULT_AI_SERVICE: AIServiceId = 'anthropic';
 
-
- //Validation error types
+//Validation error types
 
 export type ValidationError =
   | 'invalid_format'
@@ -152,8 +144,7 @@ export type ValidationError =
   | 'service_unavailable'
   | 'unknown_error';
 
-
- //Validation result
+//Validation result
 
 export interface ValidationResult {
   success: boolean;

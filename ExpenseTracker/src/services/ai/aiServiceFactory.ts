@@ -14,10 +14,7 @@ import { CredentialService } from '../security/credentialService';
 /**
  * Validate API key format for a specific service
  */
-export function validateAPIKeyFormat(
-  serviceId: AIServiceId,
-  apiKey: string
-): ValidationResult {
+export function validateAPIKeyFormat(serviceId: AIServiceId, apiKey: string): ValidationResult {
   const config = AI_SERVICE_CONFIGS[serviceId];
 
   if (!apiKey || apiKey.trim().length === 0) {
@@ -44,7 +41,7 @@ export function validateAPIKeyFormat(
  */
 export async function testServiceConnection(
   serviceId: AIServiceId,
-  apiKey?: string
+  apiKey?: string,
 ): Promise<ValidationResult> {
   try {
     // Get API key from storage if not provided
@@ -97,7 +94,7 @@ async function testOpenAIConnection(apiKey: string): Promise<ValidationResult> {
     const response = await fetch('https://api.openai.com/v1/models', {
       method: 'GET',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
     });
@@ -206,7 +203,7 @@ async function testGeminiConnection(apiKey: string): Promise<ValidationResult> {
         headers: {
           'Content-Type': 'application/json',
         },
-      }
+      },
     );
 
     if (response.status === 400 || response.status === 403) {

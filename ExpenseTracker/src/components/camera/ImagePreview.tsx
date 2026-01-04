@@ -70,10 +70,7 @@ export const ImagePreview: React.FC<ImagePreviewProps> = ({
     <View style={styles.container}>
       {/* Back button */}
       {onCancel && (
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={onCancel}
-          disabled={isProcessing}>
+        <TouchableOpacity style={styles.backButton} onPress={onCancel} disabled={isProcessing}>
           <Text style={styles.backButtonText}>✕</Text>
         </TouchableOpacity>
       )}

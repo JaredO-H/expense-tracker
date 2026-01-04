@@ -73,7 +73,7 @@ describe('File Service', () => {
       mockRNFS.mkdir.mockRejectedValue(new Error('Permission denied'));
 
       await expect(fileService.initializeReceiptsDirectory()).rejects.toThrow(
-        'Failed to create receipts storage directory'
+        'Failed to create receipts storage directory',
       );
     });
   });
@@ -213,7 +213,7 @@ describe('File Service', () => {
         'JPEG',
         80, // IMAGE_QUALITY
         0,
-        undefined
+        undefined,
       );
     });
 
@@ -222,7 +222,7 @@ describe('File Service', () => {
 
       expect(mockRNFS.moveFile).toHaveBeenCalledWith(
         'file://compressed-image.jpg',
-        expect.stringContaining('/receipts/receipt_')
+        expect.stringContaining('/receipts/receipt_'),
       );
     });
 
@@ -239,15 +239,11 @@ describe('File Service', () => {
         isFile: () => true,
       } as any);
 
-      await expect(fileService.saveReceiptImage(mockImagePath)).rejects.toThrow(
-        'too large'
-      );
+      await expect(fileService.saveReceiptImage(mockImagePath)).rejects.toThrow('too large');
     });
 
     it('should throw error if compression fails', async () => {
-      mockImageResizer.createResizedImage.mockRejectedValue(
-        new Error('Compression failed')
-      );
+      mockImageResizer.createResizedImage.mockRejectedValue(new Error('Compression failed'));
 
       await expect(fileService.saveReceiptImage(mockImagePath)).rejects.toThrow();
     });
@@ -325,7 +321,7 @@ describe('File Service', () => {
       mockRNFS.exists.mockResolvedValueOnce(true); // Still exists after delete
 
       await expect(fileService.deleteReceiptImage(mockImagePath)).rejects.toThrow(
-        'Failed to verify image deletion'
+        'Failed to verify image deletion',
       );
     });
 
@@ -347,7 +343,7 @@ describe('File Service', () => {
         'JPEG',
         70, // lower quality
         0,
-        undefined
+        undefined,
       );
     });
 
@@ -363,7 +359,7 @@ describe('File Service', () => {
 
       expect(mockRNFS.moveFile).toHaveBeenCalledWith(
         'file://compressed-image.jpg',
-        expect.stringContaining('/receipts/thumb_')
+        expect.stringContaining('/receipts/thumb_'),
       );
     });
 
@@ -375,12 +371,10 @@ describe('File Service', () => {
     });
 
     it('should throw error if thumbnail creation fails', async () => {
-      mockImageResizer.createResizedImage.mockRejectedValue(
-        new Error('Resize failed')
-      );
+      mockImageResizer.createResizedImage.mockRejectedValue(new Error('Resize failed'));
 
       await expect(fileService.createThumbnail(mockImagePath)).rejects.toThrow(
-        'Failed to create thumbnail'
+        'Failed to create thumbnail',
       );
     });
   });
@@ -481,7 +475,7 @@ describe('File Service', () => {
       mockRNFS.readDir.mockRejectedValue(new Error('Read error'));
 
       await expect(fileService.cleanupOrphanedImages([])).rejects.toThrow(
-        'Failed to cleanup orphaned images'
+        'Failed to cleanup orphaned images',
       );
     });
 

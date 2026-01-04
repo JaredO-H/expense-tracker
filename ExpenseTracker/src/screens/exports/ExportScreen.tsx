@@ -43,9 +43,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
-  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(
-    ExportFormat.EXCEL
-  );
+  const [selectedFormat, setSelectedFormat] = useState<ExportFormat>(ExportFormat.EXCEL);
   const [includeReceipts, setIncludeReceipts] = useState(true);
   const [loading, setLoading] = useState(false);
   const [estimatedSize, setEstimatedSize] = useState<number>(0);
@@ -134,13 +132,12 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
         }
       }
 
-
       // Show success and offer actions
       showExportSuccess(result.filePath, result.fileSize || 0);
     } catch (error) {
       Alert.alert(
         'Export Failed',
-        error instanceof Error ? error.message : 'Unknown error occurred'
+        error instanceof Error ? error.message : 'Unknown error occurred',
       );
     } finally {
       setLoading(false);
@@ -169,7 +166,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
               console.error('Error sharing file:', error);
               Alert.alert(
                 'Share Failed',
-                error instanceof Error ? error.message : 'Failed to share file'
+                error instanceof Error ? error.message : 'Failed to share file',
               );
             }
           },
@@ -178,7 +175,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
           text: 'Done',
           onPress: () => showCleanupDialog(filePath),
         },
-      ]
+      ],
     );
   };
 
@@ -189,9 +186,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
     }
 
     try {
-      const receiptPaths = expenses
-        .filter(e => e.image_path)
-        .map(e => e.image_path!);
+      const receiptPaths = expenses.filter(e => e.image_path).map(e => e.image_path!);
 
       if (receiptPaths.length === 0) {
         navigation.goBack();
@@ -217,18 +212,15 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
                 const deletedCount = await deleteReceiptImages(receiptPaths);
                 Alert.alert(
                   'Success',
-                  `Deleted ${deletedCount} receipt image(s) and freed up ${formatFileSize(storageSize)}`
+                  `Deleted ${deletedCount} receipt image(s) and freed up ${formatFileSize(storageSize)}`,
                 );
                 navigation.goBack();
               } catch (error) {
-                Alert.alert(
-                  'Error',
-                  'Failed to delete some receipt images'
-                );
+                Alert.alert('Error', 'Failed to delete some receipt images');
               }
             },
           },
-        ]
+        ],
       );
     } catch (error) {
       console.error('Error showing cleanup dialog:', error);
@@ -240,7 +232,9 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
     return (
       <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>Loading trip data...</Text>
+        <Text style={[styles.loadingText, { color: colors.textSecondary }]}>
+          Loading trip data...
+        </Text>
       </View>
     );
   }
@@ -281,7 +275,6 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
               onSelect={() => setSelectedFormat(ExportFormat.CSV)}
               colors={colors}
             />
-
           </View>
         </View>
 
@@ -290,25 +283,24 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={[styles.sectionTitle, { color: colors.textPrimary }]}>Options</Text>
           <TouchableOpacity
             style={[styles.checkboxRow, { backgroundColor: colors.backgroundElevated }]}
-            onPress={() => setIncludeReceipts(!includeReceipts)}
-          >
+            onPress={() => setIncludeReceipts(!includeReceipts)}>
             <Icon
-              name={
-                includeReceipts ? 'checkbox-marked' : 'checkbox-blank-outline'
-              }
+              name={includeReceipts ? 'checkbox-marked' : 'checkbox-blank-outline'}
               size={24}
               color={includeReceipts ? colors.primary : colors.textDisabled}
             />
-            <Text style={[styles.checkboxLabel, { color: colors.textPrimary }]}>Generate PDF with receipt images</Text>
+            <Text style={[styles.checkboxLabel, { color: colors.textPrimary }]}>
+              Generate PDF with receipt images
+            </Text>
           </TouchableOpacity>
           <Text style={[styles.note, { color: colors.textSecondary }]}>
             {selectedFormat === ExportFormat.CSV && includeReceipts
               ? 'Receipt filenames will be included in the CSV'
               : selectedFormat === ExportFormat.PDF && includeReceipts
-              ? 'Receipts will be embedded in the PDF'
-              : selectedFormat === ExportFormat.EXCEL && includeReceipts
-              ? 'Receipt filenames will be included in the Excel file'
-              : ''}
+                ? 'Receipts will be embedded in the PDF'
+                : selectedFormat === ExportFormat.EXCEL && includeReceipts
+                  ? 'Receipt filenames will be included in the Excel file'
+                  : ''}
           </Text>
         </View>
 
@@ -324,10 +316,14 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
             </View>
             <View style={styles.previewRow}>
               <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Expenses:</Text>
-              <Text style={[styles.previewValue, { color: colors.textPrimary }]}>{expenses.length}</Text>
+              <Text style={[styles.previewValue, { color: colors.textPrimary }]}>
+                {expenses.length}
+              </Text>
             </View>
             <View style={styles.previewRow}>
-              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>Estimated size:</Text>
+              <Text style={[styles.previewLabel, { color: colors.textSecondary }]}>
+                Estimated size:
+              </Text>
               <Text style={[styles.previewValue, { color: colors.textPrimary }]}>
                 {formatFileSize(estimatedSize)}
               </Text>
@@ -337,10 +333,13 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
 
         {/* Export Button */}
         <TouchableOpacity
-          style={[styles.exportButton, { backgroundColor: colors.primary }, loading && styles.exportButtonDisabled]}
+          style={[
+            styles.exportButton,
+            { backgroundColor: colors.primary },
+            loading && styles.exportButtonDisabled,
+          ]}
           onPress={handleExport}
-          disabled={loading || expenses.length === 0}
-        >
+          disabled={loading || expenses.length === 0}>
           {loading ? (
             <ActivityIndicator color={colors.textInverse} />
           ) : (
@@ -377,11 +376,13 @@ const FormatOption: React.FC<FormatOptionProps> = ({
     <TouchableOpacity
       style={[
         styles.formatOption,
-        { backgroundColor: colors.backgroundElevated, borderColor: selected ? colors.primary : colors.border },
-        selected && { backgroundColor: colors.primaryLight }
+        {
+          backgroundColor: colors.backgroundElevated,
+          borderColor: selected ? colors.primary : colors.border,
+        },
+        selected && { backgroundColor: colors.primaryLight },
       ]}
-      onPress={onSelect}
-    >
+      onPress={onSelect}>
       <Icon
         name={icon}
         size={32}
@@ -389,10 +390,13 @@ const FormatOption: React.FC<FormatOptionProps> = ({
         style={styles.formatIcon}
       />
       <View style={styles.formatText}>
-        <Text style={[styles.formatTitle, { color: selected ? colors.primary : colors.textPrimary }]}>
+        <Text
+          style={[styles.formatTitle, { color: selected ? colors.primary : colors.textPrimary }]}>
           {title}
         </Text>
-        <Text style={[styles.formatDescription, { color: colors.textSecondary }]}>{description}</Text>
+        <Text style={[styles.formatDescription, { color: colors.textSecondary }]}>
+          {description}
+        </Text>
       </View>
       <Icon
         name={selected ? 'radiobox-marked' : 'radiobox-blank'}

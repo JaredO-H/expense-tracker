@@ -28,7 +28,7 @@ describe('Credential Service', () => {
         apiKey,
         expect.objectContaining({
           service: 'com.expensetracker.ai.openai',
-        })
+        }),
       );
     });
 
@@ -42,7 +42,7 @@ describe('Credential Service', () => {
         apiKey,
         expect.objectContaining({
           service: 'com.expensetracker.ai.anthropic',
-        })
+        }),
       );
     });
 
@@ -56,7 +56,7 @@ describe('Credential Service', () => {
         apiKey,
         expect.objectContaining({
           service: 'com.expensetracker.ai.gemini',
-        })
+        }),
       );
     });
 
@@ -70,7 +70,7 @@ describe('Credential Service', () => {
         expect.any(String),
         expect.objectContaining({
           service: expect.stringContaining('com.expensetracker.ai.'),
-        })
+        }),
       );
     });
 
@@ -84,16 +84,16 @@ describe('Credential Service', () => {
         expect.any(String),
         expect.objectContaining({
           accessible: Keychain.ACCESSIBLE.WHEN_UNLOCKED,
-        })
+        }),
       );
     });
 
     it('should throw error if keychain storage fails', async () => {
       mockKeychain.setGenericPassword.mockRejectedValueOnce(new Error('Keychain error'));
 
-      await expect(
-        CredentialService.storeAPIKey('openai', 'test-key')
-      ).rejects.toThrow('Failed to securely store API key');
+      await expect(CredentialService.storeAPIKey('openai', 'test-key')).rejects.toThrow(
+        'Failed to securely store API key',
+      );
     });
 
     it('should handle empty API key', async () => {
@@ -102,7 +102,7 @@ describe('Credential Service', () => {
       expect(mockKeychain.setGenericPassword).toHaveBeenCalledWith(
         'openai',
         '',
-        expect.any(Object)
+        expect.any(Object),
       );
     });
 
@@ -114,7 +114,7 @@ describe('Credential Service', () => {
       expect(mockKeychain.setGenericPassword).toHaveBeenLastCalledWith(
         'openai',
         'new-key',
-        expect.any(Object)
+        expect.any(Object),
       );
     });
   });
@@ -398,8 +398,8 @@ describe('Credential Service', () => {
       // Mock one deletion to fail
       mockKeychain.resetGenericPassword
         .mockResolvedValueOnce(false) // First call fails
-        .mockResolvedValueOnce(true)   // Second succeeds
-        .mockResolvedValueOnce(true);  // Third succeeds
+        .mockResolvedValueOnce(true) // Second succeeds
+        .mockResolvedValueOnce(true); // Third succeeds
 
       await CredentialService.deleteAllAPIKeys();
 

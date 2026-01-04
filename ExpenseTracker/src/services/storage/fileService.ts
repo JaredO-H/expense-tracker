@@ -14,7 +14,6 @@ const IMAGE_QUALITY = 80;
 const MAX_FILE_SIZE_MB = 10;
 const ALLOWED_FORMATS = ['jpg', 'jpeg', 'png'];
 
-
 //Image validation result
 interface ValidationResult {
   valid: boolean;
@@ -22,7 +21,6 @@ interface ValidationResult {
 }
 
 class FileService {
-
   //Initialize receipts directory
   async initializeReceiptsDirectory(): Promise<void> {
     try {
@@ -37,14 +35,12 @@ class FileService {
     }
   }
 
-
   //Generate unique filename for receipt image
   private generateUniqueFilename(extension: string = 'jpg'): string {
     const timestamp = Date.now();
     const randomId = Math.random().toString(36).substring(2, 9);
     return `receipt_${timestamp}_${randomId}.${extension}`;
   }
-
 
   //Validate image file
   async validateImage(imagePath: string): Promise<ValidationResult> {
@@ -80,7 +76,6 @@ class FileService {
       return { valid: false, error: 'Failed to validate image' };
     }
   }
-
 
   //Compress and save receipt image
   async saveReceiptImage(sourceImagePath: string): Promise<string> {
@@ -122,7 +117,6 @@ class FileService {
     }
   }
 
-
   //Get receipt image path and verify it exists
   async getReceiptImage(imagePath: string): Promise<string | null> {
     try {
@@ -137,7 +131,6 @@ class FileService {
       return null;
     }
   }
-
 
   //Delete receipt image with cleanup verification
   async deleteReceiptImage(imagePath: string): Promise<boolean> {
@@ -168,7 +161,6 @@ class FileService {
     }
   }
 
-
   //Create thumbnail version of receipt image
   async createThumbnail(imagePath: string): Promise<string> {
     try {
@@ -194,7 +186,6 @@ class FileService {
       throw new Error('Failed to create thumbnail image');
     }
   }
-
 
   //Get total size of all receipt images
   async getReceiptsStorageSize(): Promise<number> {

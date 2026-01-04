@@ -21,10 +21,13 @@ export interface QueueItem {
   priority: QueuePriority;
   createdAt: Date;
   processedAt?: Date;
+  startedProcessingAt?: Date;
   result?: ReceiptProcessingResult;
   error?: string;
   retryCount: number;
   maxRetries: number;
+  timeoutExtended?: boolean;
+  switchToOffline?: boolean;
 }
 
 interface ProcessingQueueState {
@@ -33,9 +36,16 @@ interface ProcessingQueueState {
   concurrentLimit: number;
 }
 
+export type TimeoutCallback = (
+  itemId: string,
+  waitingTime: number,
+) => Promise<'continue' | 'offline'>;
+
 const QUEUE_STORAGE_KEY = '@ExpenseTracker:ProcessingQueue';
 const MAX_CONCURRENT = 2;
 const MAX_RETRIES = 3;
+const INITIAL_TIMEOUT = 30000; // 30 seconds
+const EXTENDED_TIMEOUT = 30000; // Additional 30 seconds
 
 class ProcessingQueue {
   private state: ProcessingQueueState = {
@@ -45,7 +55,14 @@ class ProcessingQueue {
   };
 
   private listeners: Array<() => void> = [];
+  private timeoutCallback?: TimeoutCallback;
 
+  /**
+   * Set callback for timeout events
+   */
+  setTimeoutCallback(callback: TimeoutCallback): void {
+    this.timeoutCallback = callback;
+  }
 
   //Initialize queue from storage
   async initialize(): Promise<void> {
@@ -73,12 +90,11 @@ class ProcessingQueue {
     }
   }
 
-
   //Add item to queue
   async addItem(
     imageUri: string,
     serviceId: AIServiceId,
-    priority: QueuePriority = 'normal'
+    priority: QueuePriority = 'normal',
   ): Promise<string> {
     const item: QueueItem = {
       id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -103,12 +119,10 @@ class ProcessingQueue {
     return item.id;
   }
 
-
   //Get queue item by ID
   getItem(id: string): QueueItem | undefined {
     return this.state.items.find(item => item.id === id);
   }
-
 
   //Get all queue items
   getAllItems(): QueueItem[] {
@@ -118,10 +132,9 @@ class ProcessingQueue {
   //Get pending items count
   getPendingCount(): number {
     return this.state.items.filter(
-      item => item.status === 'pending' || item.status === 'processing'
+      item => item.status === 'pending' || item.status === 'processing',
     ).length;
   }
-
 
   //Remove item from queue
   async removeItem(id: string): Promise<void> {
@@ -130,14 +143,12 @@ class ProcessingQueue {
     this.notifyListeners();
   }
 
-
   //Clear completed items
   async clearCompleted(): Promise<void> {
     this.state.items = this.state.items.filter(item => item.status !== 'completed');
     await this.saveQueue();
     this.notifyListeners();
   }
-
 
   //Retry failed item
   async retryItem(id: string): Promise<void> {
@@ -175,9 +186,7 @@ class ProcessingQueue {
   //Check if there are items to process
   private hasItemsToProcess(): boolean {
     return this.state.items.some(
-      item =>
-        item.status === 'pending' &&
-        item.retryCount < item.maxRetries
+      item => item.status === 'pending' && item.retryCount < item.maxRetries,
     );
   }
 
@@ -206,6 +215,7 @@ class ProcessingQueue {
     try {
       // Update status to processing
       item.status = 'processing';
+      item.startedProcessingAt = new Date();
       await this.saveQueue();
       this.notifyListeners();
 
@@ -214,42 +224,59 @@ class ProcessingQueue {
       // Preprocess image
       const processedImage = await processImageForAI(item.imageUri);
 
-      // Process with AI service
-      const result = await processReceiptWithAI(item.serviceId, processedImage.base64);
+      // Process with AI service with timeout handling
+      const result = await this.processWithTimeout(item, processedImage.base64);
 
-      // Mark as completed
-      item.status = 'completed';
-      item.result = result;
-      item.processedAt = new Date();
-      item.error = undefined;
+      if (result) {
+        // Mark as completed
+        item.status = 'completed';
+        item.result = result;
+        item.processedAt = new Date();
+        item.error = undefined;
 
-      console.log(`Successfully processed receipt ${item.id}`);
+        console.log(`Successfully processed receipt ${item.id}`);
+      }
     } catch (error) {
       console.error(`Failed to process receipt ${item.id}:`, error);
 
       item.retryCount++;
 
       if (item.retryCount >= item.maxRetries) {
-        // AI processing failed after all retries - try offline OCR as fallback
-        console.log(`[Queue] AI processing exhausted retries. Attempting offline OCR fallback for ${item.id}`);
+        // Check if user chose to switch to offline
+        if (item.switchToOffline) {
+          console.log(`[Queue] User chose offline OCR for ${item.id}`);
+          try {
+            const offlineResult = await this.processWithOfflineOCR(item.imageUri);
+            item.status = 'completed';
+            item.result = offlineResult;
+            item.serviceId = 'mlkit' as any;
+            item.processedAt = new Date();
+            item.error = undefined;
+            console.log(`[Queue] Offline OCR successful for receipt ${item.id}`);
+          } catch (ocrError) {
+            console.error(`[Queue] Offline OCR also failed for ${item.id}:`, ocrError);
+            item.status = 'failed';
+            item.error = 'Offline processing failed. Please try manual entry.';
+          }
+        } else {
+          // AI processing failed after all retries - try offline OCR as fallback
+          console.log(
+            `[Queue] AI processing exhausted retries. Attempting offline OCR fallback for ${item.id}`,
+          );
 
-        try {
-          const offlineResult = await this.processWithOfflineOCR(item.imageUri);
-
-          // Offline OCR successful
-          item.status = 'completed';
-          item.result = offlineResult;
-          item.serviceId = 'mlkit' as any; // Mark as processed by ML Kit
-          item.processedAt = new Date();
-          item.error = undefined;
-
-          console.log(`[Queue] Offline OCR successful for receipt ${item.id}`);
-        } catch (ocrError) {
-          // Both AI and offline OCR failed
-          console.error(`[Queue] Offline OCR also failed for ${item.id}:`, ocrError);
-
-          item.status = 'failed';
-          item.error = 'Both AI and offline processing failed. Please try manual entry.';
+          try {
+            const offlineResult = await this.processWithOfflineOCR(item.imageUri);
+            item.status = 'completed';
+            item.result = offlineResult;
+            item.serviceId = 'mlkit' as any;
+            item.processedAt = new Date();
+            item.error = undefined;
+            console.log(`[Queue] Offline OCR successful for receipt ${item.id}`);
+          } catch (ocrError) {
+            console.error(`[Queue] Offline OCR also failed for ${item.id}:`, ocrError);
+            item.status = 'failed';
+            item.error = 'Both AI and offline processing failed. Please try manual entry.';
+          }
         }
       } else {
         item.status = 'pending';
@@ -259,6 +286,92 @@ class ProcessingQueue {
       await this.saveQueue();
       this.notifyListeners();
     }
+  }
+
+  /**
+   * Process with AI service with timeout handling and user choice
+   */
+  private async processWithTimeout(
+    item: QueueItem,
+    base64Image: string,
+  ): Promise<ReceiptProcessingResult | null> {
+    const timeout = item.timeoutExtended ? EXTENDED_TIMEOUT : INITIAL_TIMEOUT;
+    const waitingTime = timeout / 1000; // Convert to seconds
+
+    return new Promise<ReceiptProcessingResult | null>((resolve, reject) => {
+      // eslint-disable-next-line prefer-const
+      let timeoutId: NodeJS.Timeout;
+      let isResolved = false;
+
+      const cleanup = () => {
+        if (timeoutId) clearTimeout(timeoutId);
+      };
+
+      // Start AI processing
+      processReceiptWithAI(item.serviceId, base64Image)
+        .then(result => {
+          if (!isResolved) {
+            cleanup();
+            isResolved = true;
+            resolve(result);
+          }
+        })
+        .catch(error => {
+          if (!isResolved) {
+            cleanup();
+            isResolved = true;
+            reject(error);
+          }
+        });
+
+      // Set up timeout
+      timeoutId = setTimeout(async () => {
+        if (isResolved) return;
+
+        console.log(`[Queue] Timeout reached for ${item.id} after ${waitingTime}s`);
+
+        // Call timeout callback if available
+        if (this.timeoutCallback) {
+          try {
+            const userChoice = await this.timeoutCallback(item.id, waitingTime);
+
+            if (userChoice === 'continue') {
+              // User chose to continue waiting
+              console.log(`[Queue] User chose to continue waiting for ${item.id}`);
+              item.timeoutExtended = true;
+
+              // Give it more time by creating a new timeout
+              setTimeout(async () => {
+                if (!isResolved) {
+                  console.log(`[Queue] Extended timeout also reached for ${item.id}`);
+                  // After extended timeout, treat as failure and let normal retry logic handle it
+                  isResolved = true;
+                  reject(new Error('Processing timeout exceeded even after extension'));
+                }
+              }, EXTENDED_TIMEOUT);
+
+              // Wait for either the process to complete or extended timeout
+              return;
+            } else {
+              // User chose to switch to offline
+              console.log(`[Queue] User chose offline OCR for ${item.id}`);
+              item.switchToOffline = true;
+              isResolved = true;
+              reject(new Error('User chose to switch to offline OCR'));
+            }
+          } catch (callbackError) {
+            console.error(`[Queue] Timeout callback error:`, callbackError);
+            // If callback fails, treat as timeout and reject
+            isResolved = true;
+            reject(new Error('Processing timeout'));
+          }
+        } else {
+          // No callback available, treat as normal timeout
+          isResolved = true;
+          reject(new Error('Processing timeout'));
+        }
+      }, timeout);
+    });
   }
 
   /**
@@ -286,13 +399,12 @@ class ProcessingQueue {
         QUEUE_STORAGE_KEY,
         JSON.stringify({
           items: this.state.items,
-        })
+        }),
       );
     } catch (error) {
       console.error('Failed to save processing queue:', error);
     }
   }
-
 
   //Subscribe to queue changes
   subscribe(listener: () => void): () => void {
@@ -303,7 +415,6 @@ class ProcessingQueue {
       this.listeners = this.listeners.filter(l => l !== listener);
     };
   }
-
 
   //Notify all listeners of state change
   private notifyListeners(): void {

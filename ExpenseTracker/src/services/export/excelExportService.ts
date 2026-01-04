@@ -23,7 +23,7 @@ export class ExcelExportService implements ExportService {
   async generateExport(
     trip: Trip,
     expenses: Expense[],
-    options: ExportOptions
+    options: ExportOptions,
   ): Promise<ExportResult> {
     try {
       // Validate data
@@ -77,7 +77,7 @@ export class ExcelExportService implements ExportService {
   private createExpensesSheet(
     trip: Trip,
     expenses: Expense[],
-    options: ExportOptions
+    options: ExportOptions,
   ): XLSX.WorkSheet {
     const data: any[][] = [];
 
@@ -102,6 +102,7 @@ export class ExcelExportService implements ExportService {
     const headerRow = [
       'Date',
       'Merchant',
+      'Currency',
       'Amount',
       'Tax Amount',
       'Tax Type',
@@ -117,6 +118,7 @@ export class ExcelExportService implements ExportService {
       data.push([
         format(new Date(expense.date), 'yyyy-MM-dd'),
         expense.merchant || 'N/A',
+        expense.currency || 'USD',
         expense.amount,
         expense.tax_amount || 0,
         expense.tax_type || 'None',
@@ -127,47 +129,29 @@ export class ExcelExportService implements ExportService {
       ]);
     });
 
-    // Add totals row
-    const totalAmount = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-    const totalTax = expenses.reduce(
-      (sum, exp) => sum + (exp.tax_amount || 0),
-      0
+    // Add totals grouped by currency
+    const currencyTotals = expenses.reduce(
+      (acc, exp) => {
+        const currency = exp.currency || 'USD';
+        if (!acc[currency]) {
+          acc[currency] = { amount: 0, tax: 0 };
+        }
+        acc[currency].amount += exp.amount;
+        acc[currency].tax += exp.tax_amount || 0;
+        return acc;
+      },
+      {} as Record<string, { amount: number; tax: number }>,
     );
 
     data.push([]); // Empty row
-    data.push([
-      '',
-      'Subtotal:',
-      totalAmount,
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    data.push([
-      '',
-      'Total Tax:',
-      totalTax,
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
-    data.push([
-      '',
-      'Grand Total:',
-      totalAmount + totalTax,
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-    ]);
+    Object.entries(currencyTotals).forEach(([currency, totals]) => {
+      data.push(['', `${currency} Subtotal:`, '', totals.amount, '', '', '', '', '', '']);
+      data.push(['', `${currency} Tax:`, '', totals.tax, '', '', '', '', '', '']);
+      data.push(['', `${currency} Total:`, '', totals.amount + totals.tax, '', '', '', '', '', '']);
+      if (Object.keys(currencyTotals).length > 1) {
+        data.push([]); // Add spacing between different currencies
+      }
+    });
 
     // Create worksheet
     const ws = XLSX.utils.aoa_to_sheet(data);
@@ -176,6 +160,7 @@ export class ExcelExportService implements ExportService {
     ws['!cols'] = [
       { wch: 12 }, // Date
       { wch: 20 }, // Merchant
+      { wch: 10 }, // Currency
       { wch: 12 }, // Amount
       { wch: 12 }, // Tax Amount
       { wch: 12 }, // Tax Type

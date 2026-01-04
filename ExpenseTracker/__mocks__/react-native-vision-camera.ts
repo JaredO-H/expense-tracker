@@ -26,7 +26,10 @@ export const useCameraPermission = jest.fn(() => ({
 }));
 
 export const CameraRuntimeError = class extends Error {
-  constructor(message: string, public code: string) {
+  constructor(
+    message: string,
+    public code: string,
+  ) {
     super(message);
     this.name = 'CameraRuntimeError';
   }

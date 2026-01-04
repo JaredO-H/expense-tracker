@@ -191,11 +191,15 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
                   borderWidth: pattern.borderWidth,
                 },
               ]}>
-              <Text style={[screenStyles.categoryBadgeText, { color: colors.textOnSecondary }]}>{categoryName.toUpperCase()}</Text>
+              <Text style={[screenStyles.categoryBadgeText, { color: colors.textOnSecondary }]}>
+                {categoryName.toUpperCase()}
+              </Text>
             </View>
 
             {/* Amount - Big and Bold */}
-            <Text style={[styles.amountText, { color: colors.primary }]}>${expense.amount?.toFixed(2) || '0.00'}</Text>
+            <Text style={[styles.amountText, { color: colors.primary }]}>
+              ${expense.amount?.toFixed(2) || '0.00'}
+            </Text>
           </View>
 
           {/* Merchant */}
@@ -207,13 +211,17 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
           <View style={screenStyles.cardFooter}>
             <View style={styles.dateContainer}>
               <Icon name="calendar-outline" size={14} color={colors.textTertiary} />
-              <Text style={[styles.dateText, { color: colors.textTertiary }]}>{format(new Date(expense.date), 'MMM dd, yyyy')}</Text>
+              <Text style={[styles.dateText, { color: colors.textTertiary }]}>
+                {format(new Date(expense.date), 'MMM dd, yyyy')}
+              </Text>
             </View>
 
             {expense.time && (
               <View style={styles.timeContainer}>
                 <Icon name="time-outline" size={14} color={colors.textTertiary} />
-                <Text style={[styles.timeText, { color: colors.textTertiary }]}>{expense.time}</Text>
+                <Text style={[styles.timeText, { color: colors.textTertiary }]}>
+                  {expense.time}
+                </Text>
               </View>
             )}
           </View>
@@ -241,21 +249,37 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
       <View style={[screenStyles.emptyStateDecorCircle, { backgroundColor: colors.accent1 }]} />
       <View style={[screenStyles.emptyStateDecorSquare, { backgroundColor: colors.accent3 }]} />
 
-      <View style={[screenStyles.emptyStateIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+      <View
+        style={[
+          screenStyles.emptyStateIcon,
+          { backgroundColor: colors.primaryLight, borderColor: colors.border },
+        ]}>
         <Icon name="receipt-outline" size={64} color={colors.primary} />
       </View>
 
-      <Text style={[screenStyles.emptyStateTitle, { color: colors.textPrimary }]}>No Expenses Yet</Text>
+      <Text style={[screenStyles.emptyStateTitle, { color: colors.textPrimary }]}>
+        No Expenses Yet
+      </Text>
       <Text style={[screenStyles.emptyStateText, { color: colors.textSecondary }]}>
-        {searchQuery
-          ? 'No expenses match your search criteria'
-          : "Let's track your first expense!"}
+        {searchQuery ? 'No expenses match your search criteria' : "Let's track your first expense!"}
       </Text>
 
       {!searchQuery && (
-        <TouchableOpacity style={[screenStyles.emptyStateButton, { backgroundColor: colors.primary, borderColor: colors.border }]} onPress={handleCreateExpense}>
-          <Icon name="add-circle" size={24} color={colors.textInverse} style={{ marginRight: spacing.sm }} />
-          <Text style={[screenStyles.emptyStateButtonText, { color: colors.textInverse }]}>CREATE EXPENSE</Text>
+        <TouchableOpacity
+          style={[
+            screenStyles.emptyStateButton,
+            { backgroundColor: colors.primary, borderColor: colors.border },
+          ]}
+          onPress={handleCreateExpense}>
+          <Icon
+            name="add-circle"
+            size={24}
+            color={colors.textInverse}
+            style={{ marginRight: spacing.sm }}
+          />
+          <Text style={[screenStyles.emptyStateButtonText, { color: colors.textInverse }]}>
+            CREATE EXPENSE
+          </Text>
         </TouchableOpacity>
       )}
     </View>
@@ -269,22 +293,43 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   return (
     <View style={[screenStyles.screenWithDecorations, { backgroundColor: colors.background }]}>
       {/* Background decorations with floating animation */}
-      <Animated.View style={[screenStyles.bgDecorCircleLarge, { backgroundColor: colors.accent1, transform: [{ translateY: floatAnim1 }] }]} />
-      <Animated.View style={[screenStyles.bgDecorSquareLeft, { backgroundColor: colors.accent4, transform: [{ translateY: floatAnim2 }] }]} />
+      <Animated.View
+        style={[
+          screenStyles.bgDecorCircleLarge,
+          { backgroundColor: colors.accent1, transform: [{ translateY: floatAnim1 }] },
+        ]}
+      />
+      <Animated.View
+        style={[
+          screenStyles.bgDecorSquareLeft,
+          { backgroundColor: colors.accent4, transform: [{ translateY: floatAnim2 }] },
+        ]}
+      />
 
       {/* Header Section */}
       <View style={[screenStyles.headerSection, { backgroundColor: colors.backgroundSecondary }]}>
         {/* Processing Queue Button */}
-        <TouchableOpacity style={[screenStyles.queueButton, { backgroundColor: colors.accent3, borderColor: colors.border }]} onPress={handleViewProcessingQueue}>
+        <TouchableOpacity
+          style={[
+            screenStyles.queueButton,
+            { backgroundColor: colors.accent3, borderColor: colors.border },
+          ]}
+          onPress={handleViewProcessingQueue}>
           <View style={[screenStyles.queueIconBadge, { backgroundColor: colors.accent3Dark }]}>
             <Icon name="time-outline" size={20} color={colors.textInverse} />
           </View>
-          <Text style={[screenStyles.queueButtonText, { color: colors.textInverse }]}>PROCESSING QUEUE</Text>
+          <Text style={[screenStyles.queueButtonText, { color: colors.textInverse }]}>
+            PROCESSING QUEUE
+          </Text>
           <Icon name="chevron-forward" size={20} color={colors.whiteOverlay80} />
         </TouchableOpacity>
 
         {/* Search Bar - Bold Memphis style */}
-        <View style={[screenStyles.memphisSearchBar, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+        <View
+          style={[
+            screenStyles.memphisSearchBar,
+            { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+          ]}>
           <View style={screenStyles.searchIconContainer}>
             <Icon name="search" size={22} color={colors.textSecondary} />
           </View>
@@ -304,11 +349,21 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
 
         {/* Stats Row */}
         <View style={screenStyles.statsRow}>
-          <View style={[screenStyles.statBox, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
-            <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>{filteredExpenses.length}</Text>
+          <View
+            style={[
+              screenStyles.statBox,
+              { backgroundColor: colors.primaryLight, borderColor: colors.border },
+            ]}>
+            <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
+              {filteredExpenses.length}
+            </Text>
             <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>EXPENSES</Text>
           </View>
-          <View style={[screenStyles.statBox, { backgroundColor: colors.secondaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              screenStyles.statBox,
+              { backgroundColor: colors.secondaryLight, borderColor: colors.border },
+            ]}>
             <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
               ${filteredExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0).toFixed(0)}
             </Text>
@@ -354,9 +409,26 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
                 },
               ],
             }}>
-            <TouchableOpacity style={screenStyles.fabMenuOption} onPress={handleCaptureExpense} activeOpacity={0.8}>
-              <Text style={[screenStyles.fabMenuLabel, { color: colors.textPrimary, backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>Capture Receipt</Text>
-              <View style={[screenStyles.fabMenuButton, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
+            <TouchableOpacity
+              style={screenStyles.fabMenuOption}
+              onPress={handleCaptureExpense}
+              activeOpacity={0.8}>
+              <Text
+                style={[
+                  screenStyles.fabMenuLabel,
+                  {
+                    color: colors.textPrimary,
+                    backgroundColor: colors.backgroundElevated,
+                    borderColor: colors.border,
+                  },
+                ]}>
+                Capture Receipt
+              </Text>
+              <View
+                style={[
+                  screenStyles.fabMenuButton,
+                  { backgroundColor: colors.secondary, borderColor: colors.border },
+                ]}>
                 <Icon name="camera" size={24} color={colors.textInverse} />
               </View>
             </TouchableOpacity>
@@ -374,9 +446,26 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
                 },
               ],
             }}>
-            <TouchableOpacity style={screenStyles.fabMenuOption} onPress={handleCreateExpense} activeOpacity={0.8}>
-              <Text style={[screenStyles.fabMenuLabel, { color: colors.textPrimary, backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>Manual Entry</Text>
-              <View style={[screenStyles.fabMenuButton, { backgroundColor: colors.accent1Dark, borderColor: colors.border }]}>
+            <TouchableOpacity
+              style={screenStyles.fabMenuOption}
+              onPress={handleCreateExpense}
+              activeOpacity={0.8}>
+              <Text
+                style={[
+                  screenStyles.fabMenuLabel,
+                  {
+                    color: colors.textPrimary,
+                    backgroundColor: colors.backgroundElevated,
+                    borderColor: colors.border,
+                  },
+                ]}>
+                Manual Entry
+              </Text>
+              <View
+                style={[
+                  screenStyles.fabMenuButton,
+                  { backgroundColor: colors.accent1Dark, borderColor: colors.border },
+                ]}>
                 <Icon name="create-outline" size={24} color={colors.textOnSecondary} />
               </View>
             </TouchableOpacity>
@@ -385,15 +474,21 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
       )}
 
       {/* Floating Action Button - Bold Memphis style */}
-      <Animated.View style={[screenStyles.fabContainer, { backgroundColor: colors.primary, transform: [{ rotate: fabRotate }] }]}>
-        <TouchableOpacity style={[screenStyles.fabButton, { backgroundColor: colors.primary }]} onPress={toggleFabMenu} activeOpacity={0.8}>
+      <Animated.View
+        style={[
+          screenStyles.fabContainer,
+          { backgroundColor: colors.primary, transform: [{ rotate: fabRotate }] },
+        ]}>
+        <TouchableOpacity
+          style={[screenStyles.fabButton, { backgroundColor: colors.primary }]}
+          onPress={toggleFabMenu}
+          activeOpacity={0.8}>
           <Text style={[screenStyles.fabIconText, { color: colors.textInverse }]}>+</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   amountText: {

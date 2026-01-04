@@ -40,7 +40,7 @@ export const createMockExpense = (overrides: Partial<Expense> = {}): Expense => 
     confidence_score: 0.95,
     extracted_data: JSON.stringify({
       merchant: 'Test Merchant',
-      amount: 50.00,
+      amount: 50.0,
       date: '2024-03-15',
     }),
     capture_method: 'ai_service',
@@ -113,16 +113,18 @@ export const createMockCreateTrip = (
 /**
  * Create mock OCR text that looks like a receipt
  */
-export const createMockOCRText = (overrides: {
-  merchant?: string;
-  amount?: number;
-  date?: string;
-  tax?: number;
-} = {}): string => {
+export const createMockOCRText = (
+  overrides: {
+    merchant?: string;
+    amount?: number;
+    date?: string;
+    tax?: number;
+  } = {},
+): string => {
   const merchant = overrides.merchant || 'Test Store';
-  const amount = overrides.amount || 50.00;
+  const amount = overrides.amount || 50.0;
   const date = overrides.date || '03/15/2024';
-  const tax = overrides.tax || 4.00;
+  const tax = overrides.tax || 4.0;
 
   return `${merchant}
 123 Main Street
@@ -145,24 +147,26 @@ Thank you for your purchase!`;
 /**
  * Create mock AI response JSON
  */
-export const createMockAIResponse = (overrides: {
-  merchant?: string;
-  amount?: number;
-  date?: string;
-  tax?: number;
-  category?: string;
-} = {}): string => {
+export const createMockAIResponse = (
+  overrides: {
+    merchant?: string;
+    amount?: number;
+    date?: string;
+    tax?: number;
+    category?: string;
+  } = {},
+): string => {
   const response = {
     merchant: overrides.merchant || 'Test Store',
-    amount: overrides.amount || 50.00,
+    amount: overrides.amount || 50.0,
     date: overrides.date || '2024-03-15',
     time: '14:30:00',
-    tax: overrides.tax || 4.00,
+    tax: overrides.tax || 4.0,
     taxType: 'GST',
     category: overrides.category || 'Food',
     items: [
-      { name: 'Item 1', price: 20.00 },
-      { name: 'Item 2', price: 26.00 },
+      { name: 'Item 1', price: 20.0 },
+      { name: 'Item 2', price: 26.0 },
     ],
     paymentMethod: 'Credit Card',
   };

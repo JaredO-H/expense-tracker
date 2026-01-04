@@ -18,13 +18,7 @@ export {
   shadows,
 } from './spacing';
 
-export {
-  fontSizes,
-  fontWeights,
-  lineHeights,
-  letterSpacing,
-  textStyles,
-} from './typography';
+export { fontSizes, fontWeights, lineHeights, letterSpacing, textStyles } from './typography';
 export type { TextStyleName } from './typography';
 
 export { commonStyles } from './common';

@@ -38,7 +38,7 @@ const DEFAULT_COMPRESSION_OPTIONS: CompressionOptions = {
  */
 export const compressImage = async (
   imageUri: string,
-  options: CompressionOptions = {}
+  options: CompressionOptions = {},
 ): Promise<CompressionResult> => {
   try {
     const mergedOptions = { ...DEFAULT_COMPRESSION_OPTIONS, ...options };
@@ -64,7 +64,7 @@ export const compressImage = async (
       {
         mode: 'contain', // Maintain aspect ratio
         onlyScaleDown: true, // Only scale down, never up
-      }
+      },
     );
 
     // Get compressed file size
@@ -90,7 +90,7 @@ export const compressImage = async (
   } catch (error) {
     console.error('Error compressing image:', error);
     throw new Error(
-      `Failed to compress image: ${error instanceof Error ? error.message : 'Unknown error'}`
+      `Failed to compress image: ${error instanceof Error ? error.message : 'Unknown error'}`,
     );
   }
 };

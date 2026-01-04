@@ -17,7 +17,14 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors as staticColors, spacing, textStyles, borderRadius, shadows, screenStyles } from '../../styles';
+import {
+  colors as staticColors,
+  spacing,
+  textStyles,
+  borderRadius,
+  shadows,
+  screenStyles,
+} from '../../styles';
 import { staggeredFadeIn, createAnimatedValues } from '../../utils/animations';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -75,7 +82,11 @@ export const SettingsScreen: React.FC = () => {
         {/* Header */}
         <View style={styles.header}>
           <View style={[styles.headerDecor, { backgroundColor: colors.primary }]} />
-          <View style={[styles.headerIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+          <View
+            style={[
+              styles.headerIcon,
+              { backgroundColor: colors.primaryLight, borderColor: colors.border },
+            ]}>
             <Icon name="cog" size={40} color={colors.primary} />
           </View>
           <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Settings</Text>
@@ -99,16 +110,20 @@ export const SettingsScreen: React.FC = () => {
                 },
               ],
             }}>
-            <View style={[styles.optionCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+            <View
+              style={[
+                styles.optionCard,
+                { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+              ]}>
               {/* Geometric decoration */}
               <View style={[styles.cardDecor, { backgroundColor: colors.accent3Light }]} />
 
-              <View style={[styles.optionIcon, { backgroundColor: colors.accent3Light, borderColor: colors.border }]}>
-                <Icon
-                  name={isDarkMode ? 'moon' : 'sunny'}
-                  size={28}
-                  color={colors.accent3Dark}
-                />
+              <View
+                style={[
+                  styles.optionIcon,
+                  { backgroundColor: colors.accent3Light, borderColor: colors.border },
+                ]}>
+                <Icon name={isDarkMode ? 'moon' : 'sunny'} size={28} color={colors.accent3Dark} />
               </View>
 
               <View style={styles.optionContent}>
@@ -123,7 +138,7 @@ export const SettingsScreen: React.FC = () => {
                 onValueChange={toggleDarkMode}
                 trackColor={{
                   false: colors.borderLight,
-                  true: colors.accent3Dark
+                  true: colors.accent3Dark,
                 }}
                 thumbColor={isDarkMode ? colors.accent3 : colors.backgroundElevated}
                 ios_backgroundColor={colors.borderLight}
@@ -146,35 +161,61 @@ export const SettingsScreen: React.FC = () => {
                 ],
               }}>
               <TouchableOpacity
-                style={[styles.optionCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}
+                style={[
+                  styles.optionCard,
+                  { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+                ]}
                 onPress={option.onPress}
                 activeOpacity={0.8}>
-              {/* Geometric decoration */}
-              <View style={[styles.cardDecor, { backgroundColor: option.bgColor }]} />
+                {/* Geometric decoration */}
+                <View style={[styles.cardDecor, { backgroundColor: option.bgColor }]} />
 
-              <View style={[styles.optionIcon, { backgroundColor: option.bgColor, borderColor: colors.border }]}>
-                <Icon name={option.icon} size={28} color={option.color} />
-              </View>
+                <View
+                  style={[
+                    styles.optionIcon,
+                    { backgroundColor: option.bgColor, borderColor: colors.border },
+                  ]}>
+                  <Icon name={option.icon} size={28} color={option.color} />
+                </View>
 
-              <View style={styles.optionContent}>
-                <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>{option.title}</Text>
-                <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>{option.description}</Text>
-              </View>
+                <View style={styles.optionContent}>
+                  <Text style={[styles.optionTitle, { color: colors.textPrimary }]}>
+                    {option.title}
+                  </Text>
+                  <Text style={[styles.optionDescription, { color: colors.textSecondary }]}>
+                    {option.description}
+                  </Text>
+                </View>
 
-              <View style={[styles.optionArrow, { backgroundColor: colors.backgroundSecondary, borderColor: colors.border }]}>
-                <Icon name="arrow-forward" size={24} color={colors.textSecondary} />
-              </View>
+                <View
+                  style={[
+                    styles.optionArrow,
+                    { backgroundColor: colors.backgroundSecondary, borderColor: colors.border },
+                  ]}>
+                  <Icon name="arrow-forward" size={24} color={colors.textSecondary} />
+                </View>
               </TouchableOpacity>
             </Animated.View>
           ))}
         </View>
 
         {/* App Information Card */}
-        <View style={[styles.infoCard, { backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.accent3Light, borderColor: colors.accent3 }]}>
+        <View
+          style={[
+            styles.infoCard,
+            {
+              backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.accent3Light,
+              borderColor: colors.accent3,
+            },
+          ]}>
           <View style={[styles.infoDecor, { backgroundColor: colors.accent3 }]} />
 
           <View style={styles.infoHeader}>
-            <View style={[styles.infoIconContainer, { backgroundColor: colors.backgroundElevated, borderColor: colors.accent3 }]}>
+            <View
+              style={[
+                styles.infoIconContainer,
+                { backgroundColor: colors.backgroundElevated, borderColor: colors.accent3 },
+              ]}>
               <Icon name="information-circle" size={32} color={colors.accent3Dark} />
             </View>
             <Text style={[styles.infoTitle, { color: colors.textPrimary }]}>ABOUT THIS APP</Text>

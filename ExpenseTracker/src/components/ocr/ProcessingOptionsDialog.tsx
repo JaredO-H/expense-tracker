@@ -4,13 +4,7 @@
  */
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Modal,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
 
@@ -30,83 +24,59 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
   onSelectRetryLater,
 }) => {
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
       <View style={styles.overlay}>
         <View style={styles.dialog}>
           {/* Header */}
           <View style={styles.header}>
             <Text style={styles.title}>AI Processing Failed</Text>
-            <Text style={styles.message}>
-              How would you like to proceed with this receipt?
-            </Text>
+            <Text style={styles.message}>How would you like to proceed with this receipt?</Text>
           </View>
 
           {/* Option 1: Try Offline OCR */}
-          <TouchableOpacity
-            style={styles.option}
-            onPress={onSelectOfflineOCR}
-            activeOpacity={0.7}>
+          <TouchableOpacity style={styles.option} onPress={onSelectOfflineOCR} activeOpacity={0.7}>
             <View style={styles.optionContent}>
               <View style={styles.optionIconContainer}>
                 <Icon name="document-text-outline" size={28} color={colors.primary} />
               </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Try Offline OCR</Text>
-                <Text style={styles.optionDesc}>
-                  Use device text recognition (60-80% accuracy)
-                </Text>
+                <Text style={styles.optionDesc}>Use device text recognition (60-80% accuracy)</Text>
               </View>
             </View>
             <Icon name="chevron-forward" size={24} color={colors.textTertiary} />
           </TouchableOpacity>
 
           {/* Option 2: Enter Manually */}
-          <TouchableOpacity
-            style={styles.option}
-            onPress={onSelectManual}
-            activeOpacity={0.7}>
+          <TouchableOpacity style={styles.option} onPress={onSelectManual} activeOpacity={0.7}>
             <View style={styles.optionContent}>
               <View style={styles.optionIconContainer}>
                 <Icon name="create-outline" size={28} color={colors.primary} />
               </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Enter Manually</Text>
-                <Text style={styles.optionDesc}>
-                  Enter details yourself (100% accuracy)
-                </Text>
+                <Text style={styles.optionDesc}>Enter details yourself (100% accuracy)</Text>
               </View>
             </View>
             <Icon name="chevron-forward" size={24} color={colors.textTertiary} />
           </TouchableOpacity>
 
           {/* Option 3: Retry Later */}
-          <TouchableOpacity
-            style={styles.option}
-            onPress={onSelectRetryLater}
-            activeOpacity={0.7}>
+          <TouchableOpacity style={styles.option} onPress={onSelectRetryLater} activeOpacity={0.7}>
             <View style={styles.optionContent}>
               <View style={styles.optionIconContainer}>
                 <Icon name="refresh-outline" size={28} color={colors.primary} />
               </View>
               <View style={styles.optionTextContainer}>
                 <Text style={styles.optionTitle}>Retry Later</Text>
-                <Text style={styles.optionDesc}>
-                  Try again when back online
-                </Text>
+                <Text style={styles.optionDesc}>Try again when back online</Text>
               </View>
             </View>
             <Icon name="chevron-forward" size={24} color={colors.textTertiary} />
           </TouchableOpacity>
 
           {/* Cancel Button */}
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={onClose}
-            activeOpacity={0.7}>
+          <TouchableOpacity style={styles.cancelButton} onPress={onClose} activeOpacity={0.7}>
             <Text style={styles.cancelText}>Cancel</Text>
           </TouchableOpacity>
         </View>

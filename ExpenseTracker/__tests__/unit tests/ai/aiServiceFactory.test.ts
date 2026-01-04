@@ -82,7 +82,10 @@ describe('AI Service Factory', () => {
       });
 
       it('should reject Anthropic key with wrong prefix', () => {
-        const result = validateAPIKeyFormat('anthropic', fixtures.invalidAPIKeys.anthropicWrongPrefix);
+        const result = validateAPIKeyFormat(
+          'anthropic',
+          fixtures.invalidAPIKeys.anthropicWrongPrefix,
+        );
 
         expect(result.success).toBe(false);
         expect(result.error).toBe('invalid_format');
@@ -97,7 +100,10 @@ describe('AI Service Factory', () => {
       });
 
       it('should reject Anthropic key with invalid characters', () => {
-        const result = validateAPIKeyFormat('anthropic', fixtures.invalidAPIKeys.anthropicInvalidChars);
+        const result = validateAPIKeyFormat(
+          'anthropic',
+          fixtures.invalidAPIKeys.anthropicInvalidChars,
+        );
 
         expect(result.success).toBe(false);
         expect(result.error).toBe('invalid_format');
@@ -190,9 +196,9 @@ describe('AI Service Factory', () => {
           expect.objectContaining({
             method: 'GET',
             headers: expect.objectContaining({
-              'Authorization': `Bearer ${fixtures.validAPIKeys.openai}`,
+              Authorization: `Bearer ${fixtures.validAPIKeys.openai}`,
             }),
-          })
+          }),
         );
       });
 
@@ -255,7 +261,9 @@ describe('AI Service Factory', () => {
       });
 
       it('should retrieve API key from storage if not provided', async () => {
-        (CredentialService.getAPIKey as jest.Mock).mockResolvedValueOnce(fixtures.validAPIKeys.openai);
+        (CredentialService.getAPIKey as jest.Mock).mockResolvedValueOnce(
+          fixtures.validAPIKeys.openai,
+        );
         (global.fetch as jest.Mock).mockResolvedValueOnce({
           ok: true,
           status: 200,
@@ -296,7 +304,7 @@ describe('AI Service Factory', () => {
               'x-api-key': fixtures.validAPIKeys.anthropic,
               'anthropic-version': '2023-06-01',
             }),
-          })
+          }),
         );
       });
 
@@ -362,7 +370,7 @@ describe('AI Service Factory', () => {
           expect.stringContaining('generativelanguage.googleapis.com'),
           expect.objectContaining({
             method: 'GET',
-          })
+          }),
         );
       });
 
@@ -422,7 +430,7 @@ describe('AI Service Factory', () => {
 
         expect(global.fetch).toHaveBeenCalledWith(
           expect.stringContaining(`key=${fixtures.validAPIKeys.gemini}`),
-          expect.any(Object)
+          expect.any(Object),
         );
       });
     });

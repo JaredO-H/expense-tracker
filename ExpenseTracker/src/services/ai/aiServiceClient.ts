@@ -24,7 +24,7 @@ const DEFAULT_OPTIONS: Required<AIProcessingOptions> = {
 export async function processReceiptWithAI(
   serviceId: AIServiceId,
   imageBase64: string,
-  options: AIProcessingOptions = {}
+  options: AIProcessingOptions = {},
 ): Promise<ReceiptProcessingResult> {
   const opts = { ...DEFAULT_OPTIONS, ...options };
 
@@ -71,12 +71,12 @@ export async function processReceiptWithAI(
 async function processWithOpenAI(
   apiKey: string,
   imageBase64: string,
-  options: Required<AIProcessingOptions>
+  options: Required<AIProcessingOptions>,
 ): Promise<string> {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -123,7 +123,7 @@ async function processWithOpenAI(
 async function processWithAnthropic(
   apiKey: string,
   imageBase64: string,
-  options: Required<AIProcessingOptions>
+  options: Required<AIProcessingOptions>,
 ): Promise<string> {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -178,7 +178,7 @@ async function processWithAnthropic(
 async function processWithGemini(
   apiKey: string,
   imageBase64: string,
-  options: Required<AIProcessingOptions>
+  options: Required<AIProcessingOptions>,
 ): Promise<string> {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`,
@@ -208,7 +208,7 @@ async function processWithGemini(
           maxOutputTokens: options.maxTokens,
         },
       }),
-    }
+    },
   );
 
   if (!response.ok) {
@@ -229,4 +229,3 @@ async function processWithGemini(
 
   return content.parts[0].text;
 }
-

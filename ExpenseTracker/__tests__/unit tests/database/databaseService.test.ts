@@ -5,7 +5,12 @@
 
 import databaseService from '../../../src/services/database/databaseService';
 import { getDatabase } from '../../../src/services/database/databaseInit';
-import { CreateTripModel, UpdateTripModel, CreateExpenseModel, UpdateExpenseModel } from '../../../src/types/database';
+import {
+  CreateTripModel,
+  UpdateTripModel,
+  CreateExpenseModel,
+  UpdateExpenseModel,
+} from '../../../src/types/database';
 
 // Mock database init
 jest.mock('../../../src/services/database/databaseInit');
@@ -40,21 +45,24 @@ describe('Database Service', () => {
         // Mock insert result
         mockDb.executeSql
           .mockResolvedValueOnce([{ insertId: 1 }]) // Insert
-          .mockResolvedValueOnce([{ // Select created trip
-            rows: {
-              length: 1,
-              item: (i: number) => ({
-                trip_id: 1,
-                trip_name: 'Business Trip to NYC',
-                start_date: '2024-03-01',
-                end_date: '2024-03-05',
-                destination: 'New York',
-                business_purpose: 'Client Meeting',
-                created_at: '2024-03-01T00:00:00Z',
-                updated_at: '2024-03-01T00:00:00Z',
-              }),
+          .mockResolvedValueOnce([
+            {
+              // Select created trip
+              rows: {
+                length: 1,
+                item: (i: number) => ({
+                  trip_id: 1,
+                  trip_name: 'Business Trip to NYC',
+                  start_date: '2024-03-01',
+                  end_date: '2024-03-05',
+                  destination: 'New York',
+                  business_purpose: 'Client Meeting',
+                  created_at: '2024-03-01T00:00:00Z',
+                  updated_at: '2024-03-01T00:00:00Z',
+                }),
+              },
             },
-          }]);
+          ]);
 
         const trip = await databaseService.createTrip(validTripModel);
 
@@ -71,7 +79,7 @@ describe('Database Service', () => {
         };
 
         await expect(databaseService.createTrip(invalidModel)).rejects.toThrow(
-          'End date cannot be before start date'
+          'End date cannot be before start date',
         );
       });
 
@@ -82,9 +90,8 @@ describe('Database Service', () => {
           end_date: '2024-03-02',
         };
 
-        mockDb.executeSql
-          .mockResolvedValueOnce([{ insertId: 2 }])
-          .mockResolvedValueOnce([{
+        mockDb.executeSql.mockResolvedValueOnce([{ insertId: 2 }]).mockResolvedValueOnce([
+          {
             rows: {
               length: 1,
               item: () => ({
@@ -98,7 +105,8 @@ describe('Database Service', () => {
                 updated_at: '2024-03-01T00:00:00Z',
               }),
             },
-          }]);
+          },
+        ]);
 
         const trip = await databaseService.createTrip(minimalModel);
 
@@ -117,28 +125,30 @@ describe('Database Service', () => {
         mockDb.executeSql.mockResolvedValueOnce([{}]); // No insertId
 
         await expect(databaseService.createTrip(validTripModel)).rejects.toThrow(
-          'Failed to create trip - no ID returned'
+          'Failed to create trip - no ID returned',
         );
       });
     });
 
     describe('getTripById', () => {
       it('should return trip when found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 1,
-            item: () => ({
-              trip_id: 1,
-              trip_name: 'Test Trip',
-              start_date: '2024-03-01',
-              end_date: '2024-03-05',
-              destination: 'NYC',
-              business_purpose: 'Meeting',
-              created_at: '2024-03-01T00:00:00Z',
-              updated_at: '2024-03-01T00:00:00Z',
-            }),
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 1,
+              item: () => ({
+                trip_id: 1,
+                trip_name: 'Test Trip',
+                start_date: '2024-03-01',
+                end_date: '2024-03-05',
+                destination: 'NYC',
+                business_purpose: 'Meeting',
+                created_at: '2024-03-01T00:00:00Z',
+                updated_at: '2024-03-01T00:00:00Z',
+              }),
+            },
           },
-        }]);
+        ]);
 
         const trip = await databaseService.getTripById(1);
 
@@ -148,9 +158,11 @@ describe('Database Service', () => {
       });
 
       it('should return null when trip not found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: { length: 0 },
-        }]);
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: { length: 0 },
+          },
+        ]);
 
         const trip = await databaseService.getTripById(999);
 
@@ -166,33 +178,36 @@ describe('Database Service', () => {
 
     describe('getAllTrips', () => {
       it('should return all trips without filter', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 2,
-            item: (i: number) => ([
-              {
-                trip_id: 1,
-                trip_name: 'Trip 1',
-                start_date: '2024-03-01',
-                end_date: '2024-03-05',
-                destination: 'NYC',
-                business_purpose: 'Meeting',
-                created_at: '2024-03-01T00:00:00Z',
-                updated_at: '2024-03-01T00:00:00Z',
-              },
-              {
-                trip_id: 2,
-                trip_name: 'Trip 2',
-                start_date: '2024-04-01',
-                end_date: '2024-04-05',
-                destination: 'LA',
-                business_purpose: 'Conference',
-                created_at: '2024-04-01T00:00:00Z',
-                updated_at: '2024-04-01T00:00:00Z',
-              },
-            ])[i],
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 2,
+              item: (i: number) =>
+                [
+                  {
+                    trip_id: 1,
+                    trip_name: 'Trip 1',
+                    start_date: '2024-03-01',
+                    end_date: '2024-03-05',
+                    destination: 'NYC',
+                    business_purpose: 'Meeting',
+                    created_at: '2024-03-01T00:00:00Z',
+                    updated_at: '2024-03-01T00:00:00Z',
+                  },
+                  {
+                    trip_id: 2,
+                    trip_name: 'Trip 2',
+                    start_date: '2024-04-01',
+                    end_date: '2024-04-05',
+                    destination: 'LA',
+                    business_purpose: 'Conference',
+                    created_at: '2024-04-01T00:00:00Z',
+                    updated_at: '2024-04-01T00:00:00Z',
+                  },
+                ][i],
+            },
           },
-        }]);
+        ]);
 
         const trips = await databaseService.getAllTrips();
 
@@ -202,35 +217,39 @@ describe('Database Service', () => {
       });
 
       it('should filter by status', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 1,
-            item: () => ({
-              trip_id: 1,
-              trip_name: 'Active Trip',
-              start_date: '2024-03-01',
-              end_date: '2024-03-05',
-              destination: 'NYC',
-              business_purpose: 'Meeting',
-              created_at: '2024-03-01T00:00:00Z',
-              updated_at: '2024-03-01T00:00:00Z',
-            }),
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 1,
+              item: () => ({
+                trip_id: 1,
+                trip_name: 'Active Trip',
+                start_date: '2024-03-01',
+                end_date: '2024-03-05',
+                destination: 'NYC',
+                business_purpose: 'Meeting',
+                created_at: '2024-03-01T00:00:00Z',
+                updated_at: '2024-03-01T00:00:00Z',
+              }),
+            },
           },
-        }]);
+        ]);
 
         const trips = await databaseService.getAllTrips('active');
 
         expect(mockDb.executeSql).toHaveBeenCalledWith(
           expect.stringContaining('WHERE status = ?'),
-          ['active']
+          ['active'],
         );
         expect(trips).toHaveLength(1);
       });
 
       it('should return empty array when no trips', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: { length: 0 },
-        }]);
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: { length: 0 },
+          },
+        ]);
 
         const trips = await databaseService.getAllTrips();
 
@@ -247,37 +266,43 @@ describe('Database Service', () => {
 
       it('should update trip successfully', async () => {
         mockDb.executeSql
-          .mockResolvedValueOnce([{ // getTripById - existing trip
-            rows: {
-              length: 1,
-              item: () => ({
-                trip_id: 1,
-                trip_name: 'Old Trip',
-                start_date: '2024-03-01',
-                end_date: '2024-03-05',
-                destination: 'NYC',
-                business_purpose: 'Meeting',
-                created_at: '2024-03-01T00:00:00Z',
-                updated_at: '2024-03-01T00:00:00Z',
-              }),
+          .mockResolvedValueOnce([
+            {
+              // getTripById - existing trip
+              rows: {
+                length: 1,
+                item: () => ({
+                  trip_id: 1,
+                  trip_name: 'Old Trip',
+                  start_date: '2024-03-01',
+                  end_date: '2024-03-05',
+                  destination: 'NYC',
+                  business_purpose: 'Meeting',
+                  created_at: '2024-03-01T00:00:00Z',
+                  updated_at: '2024-03-01T00:00:00Z',
+                }),
+              },
             },
-          }])
+          ])
           .mockResolvedValueOnce([{ rowsAffected: 1 }]) // Update
-          .mockResolvedValueOnce([{ // getTripById - updated trip
-            rows: {
-              length: 1,
-              item: () => ({
-                trip_id: 1,
-                trip_name: 'Updated Trip',
-                start_date: '2024-03-01',
-                end_date: '2024-03-05',
-                destination: 'San Francisco',
-                business_purpose: 'Meeting',
-                created_at: '2024-03-01T00:00:00Z',
-                updated_at: '2024-03-02T00:00:00Z',
-              }),
+          .mockResolvedValueOnce([
+            {
+              // getTripById - updated trip
+              rows: {
+                length: 1,
+                item: () => ({
+                  trip_id: 1,
+                  trip_name: 'Updated Trip',
+                  start_date: '2024-03-01',
+                  end_date: '2024-03-05',
+                  destination: 'San Francisco',
+                  business_purpose: 'Meeting',
+                  created_at: '2024-03-01T00:00:00Z',
+                  updated_at: '2024-03-02T00:00:00Z',
+                }),
+              },
             },
-          }]);
+          ]);
 
         const trip = await databaseService.updateTrip(updateModel);
 
@@ -286,31 +311,33 @@ describe('Database Service', () => {
       });
 
       it('should throw error if trip not found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: { length: 0 },
-        }]);
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: { length: 0 },
+          },
+        ]);
 
-        await expect(databaseService.updateTrip(updateModel)).rejects.toThrow(
-          'not found'
-        );
+        await expect(databaseService.updateTrip(updateModel)).rejects.toThrow('not found');
       });
 
       it('should return existing trip if no updates provided', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 1,
-            item: () => ({
-              trip_id: 1,
-              trip_name: 'Test Trip',
-              start_date: '2024-03-01',
-              end_date: '2024-03-05',
-              destination: 'NYC',
-              business_purpose: 'Meeting',
-              created_at: '2024-03-01T00:00:00Z',
-              updated_at: '2024-03-01T00:00:00Z',
-            }),
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 1,
+              item: () => ({
+                trip_id: 1,
+                trip_name: 'Test Trip',
+                start_date: '2024-03-01',
+                end_date: '2024-03-05',
+                destination: 'NYC',
+                business_purpose: 'Meeting',
+                created_at: '2024-03-01T00:00:00Z',
+                updated_at: '2024-03-01T00:00:00Z',
+              }),
+            },
           },
-        }]);
+        ]);
 
         const trip = await databaseService.updateTrip({ id: 1 });
 
@@ -323,59 +350,66 @@ describe('Database Service', () => {
     describe('deleteTrip', () => {
       it('should delete trip with no expenses', async () => {
         mockDb.executeSql
-          .mockResolvedValueOnce([{ // getTripById
-            rows: {
-              length: 1,
-              item: () => ({
-                trip_id: 1,
-                trip_name: 'Test Trip',
-                start_date: '2024-03-01',
-                end_date: '2024-03-05',
-              }),
+          .mockResolvedValueOnce([
+            {
+              // getTripById
+              rows: {
+                length: 1,
+                item: () => ({
+                  trip_id: 1,
+                  trip_name: 'Test Trip',
+                  start_date: '2024-03-01',
+                  end_date: '2024-03-05',
+                }),
+              },
             },
-          }])
-          .mockResolvedValueOnce([{ // Check expense count
-            rows: {
-              item: () => ({ count: 0 }),
+          ])
+          .mockResolvedValueOnce([
+            {
+              // Check expense count
+              rows: {
+                item: () => ({ count: 0 }),
+              },
             },
-          }])
+          ])
           .mockResolvedValueOnce([{ rowsAffected: 1 }]); // Delete
 
         await databaseService.deleteTrip(1);
 
-        expect(mockDb.executeSql).toHaveBeenCalledWith(
-          'DELETE FROM trip WHERE trip_id = ?',
-          [1]
-        );
+        expect(mockDb.executeSql).toHaveBeenCalledWith('DELETE FROM trip WHERE trip_id = ?', [1]);
       });
 
       it('should throw error if trip not found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: { length: 0 },
-        }]);
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: { length: 0 },
+          },
+        ]);
 
-        await expect(databaseService.deleteTrip(999)).rejects.toThrow(
-          'not found'
-        );
+        await expect(databaseService.deleteTrip(999)).rejects.toThrow('not found');
       });
 
       it('should throw error if trip has expenses', async () => {
         mockDb.executeSql
-          .mockResolvedValueOnce([{ // getTripById
-            rows: {
-              length: 1,
-              item: () => ({ trip_id: 1 }),
+          .mockResolvedValueOnce([
+            {
+              // getTripById
+              rows: {
+                length: 1,
+                item: () => ({ trip_id: 1 }),
+              },
             },
-          }])
-          .mockResolvedValueOnce([{ // Check expense count
-            rows: {
-              item: () => ({ count: 5 }),
+          ])
+          .mockResolvedValueOnce([
+            {
+              // Check expense count
+              rows: {
+                item: () => ({ count: 5 }),
+              },
             },
-          }]);
+          ]);
 
-        await expect(databaseService.deleteTrip(1)).rejects.toThrow(
-          'Cannot delete trip'
-        );
+        await expect(databaseService.deleteTrip(1)).rejects.toThrow('Cannot delete trip');
       });
     });
   });
@@ -385,7 +419,7 @@ describe('Database Service', () => {
       const validExpenseModel: CreateExpenseModel = {
         trip_id: 1,
         merchant: 'Starbucks',
-        amount: 15.50,
+        amount: 15.5,
         date: '2024-03-02',
         category: 4, // Food
         capture_method: 'ai_service',
@@ -394,22 +428,25 @@ describe('Database Service', () => {
       it('should create expense successfully', async () => {
         mockDb.executeSql
           .mockResolvedValueOnce([{ insertId: 1 }]) // Insert
-          .mockResolvedValueOnce([{ // Select created expense
-            rows: {
-              length: 1,
-              item: () => ({
-                expense_id: 1,
-                trip_id: 1,
-                merchant_name: 'Starbucks',
-                total_amount: 15.50,
-                expense_date: '2024-03-02',
-                category_id: 4,
-                data_capture_method: 'ai_service',
-                created_at: '2024-03-02T00:00:00Z',
-                updated_at: '2024-03-02T00:00:00Z',
-              }),
+          .mockResolvedValueOnce([
+            {
+              // Select created expense
+              rows: {
+                length: 1,
+                item: () => ({
+                  expense_id: 1,
+                  trip_id: 1,
+                  merchant_name: 'Starbucks',
+                  total_amount: 15.5,
+                  expense_date: '2024-03-02',
+                  category_id: 4,
+                  data_capture_method: 'ai_service',
+                  created_at: '2024-03-02T00:00:00Z',
+                  updated_at: '2024-03-02T00:00:00Z',
+                }),
+              },
             },
-          }]);
+          ]);
 
         const expense = await databaseService.createExpense(validExpenseModel);
 
@@ -421,21 +458,20 @@ describe('Database Service', () => {
       it('should handle optional fields', async () => {
         const minimalModel: CreateExpenseModel = {
           trip_id: 1,
-          amount: 10.00,
+          amount: 10.0,
           date: '2024-03-02',
           category: 8,
           capture_method: 'manual',
         };
 
-        mockDb.executeSql
-          .mockResolvedValueOnce([{ insertId: 2 }])
-          .mockResolvedValueOnce([{
+        mockDb.executeSql.mockResolvedValueOnce([{ insertId: 2 }]).mockResolvedValueOnce([
+          {
             rows: {
               length: 1,
               item: () => ({
                 expense_id: 2,
                 trip_id: 1,
-                total_amount: 10.00,
+                total_amount: 10.0,
                 expense_date: '2024-03-02',
                 category_id: 8,
                 data_capture_method: 'manual',
@@ -443,7 +479,8 @@ describe('Database Service', () => {
                 updated_at: '2024-03-02T00:00:00Z',
               }),
             },
-          }]);
+          },
+        ]);
 
         const expense = await databaseService.createExpense(minimalModel);
 
@@ -459,21 +496,23 @@ describe('Database Service', () => {
 
     describe('getExpenseById', () => {
       it('should return expense when found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 1,
-            item: () => ({
-              expense_id: 1,
-              trip_id: 1,
-              merchant_name: 'Starbucks',
-              total_amount: 15.50,
-              expense_date: '2024-03-02',
-              category_id: 4,
-              created_at: '2024-03-02T00:00:00Z',
-              updated_at: '2024-03-02T00:00:00Z',
-            }),
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 1,
+              item: () => ({
+                expense_id: 1,
+                trip_id: 1,
+                merchant_name: 'Starbucks',
+                total_amount: 15.5,
+                expense_date: '2024-03-02',
+                category_id: 4,
+                created_at: '2024-03-02T00:00:00Z',
+                updated_at: '2024-03-02T00:00:00Z',
+              }),
+            },
           },
-        }]);
+        ]);
 
         const expense = await databaseService.getExpenseById(1);
 
@@ -482,9 +521,11 @@ describe('Database Service', () => {
       });
 
       it('should return null when not found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: { length: 0 },
-        }]);
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: { length: 0 },
+          },
+        ]);
 
         const expense = await databaseService.getExpenseById(999);
 
@@ -494,27 +535,30 @@ describe('Database Service', () => {
 
     describe('getAllExpenses', () => {
       it('should return all expenses without filter', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 2,
-            item: (i: number) => ([
-              {
-                expense_id: 1,
-                trip_id: 1,
-                merchant_name: 'Starbucks',
-                total_amount: 15.50,
-                expense_date: '2024-03-02',
-              },
-              {
-                expense_id: 2,
-                trip_id: 1,
-                merchant_name: 'Walmart',
-                total_amount: 45.00,
-                expense_date: '2024-03-03',
-              },
-            ])[i],
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 2,
+              item: (i: number) =>
+                [
+                  {
+                    expense_id: 1,
+                    trip_id: 1,
+                    merchant_name: 'Starbucks',
+                    total_amount: 15.5,
+                    expense_date: '2024-03-02',
+                  },
+                  {
+                    expense_id: 2,
+                    trip_id: 1,
+                    merchant_name: 'Walmart',
+                    total_amount: 45.0,
+                    expense_date: '2024-03-03',
+                  },
+                ][i],
+            },
           },
-        }]);
+        ]);
 
         const expenses = await databaseService.getAllExpenses();
 
@@ -522,24 +566,26 @@ describe('Database Service', () => {
       });
 
       it('should filter by trip_id', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: {
-            length: 1,
-            item: () => ({
-              expense_id: 1,
-              trip_id: 1,
-              merchant_name: 'Starbucks',
-              total_amount: 15.50,
-              expense_date: '2024-03-02',
-            }),
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: {
+              length: 1,
+              item: () => ({
+                expense_id: 1,
+                trip_id: 1,
+                merchant_name: 'Starbucks',
+                total_amount: 15.5,
+                expense_date: '2024-03-02',
+              }),
+            },
           },
-        }]);
+        ]);
 
         const expenses = await databaseService.getAllExpenses(1);
 
         expect(mockDb.executeSql).toHaveBeenCalledWith(
           expect.stringContaining('WHERE trip_id = ?'),
-          ['1']
+          ['1'],
         );
       });
     });
@@ -547,30 +593,33 @@ describe('Database Service', () => {
     describe('deleteExpense', () => {
       it('should delete expense successfully', async () => {
         mockDb.executeSql
-          .mockResolvedValueOnce([{ // getExpenseById
-            rows: {
-              length: 1,
-              item: () => ({ expense_id: 1 }),
+          .mockResolvedValueOnce([
+            {
+              // getExpenseById
+              rows: {
+                length: 1,
+                item: () => ({ expense_id: 1 }),
+              },
             },
-          }])
+          ])
           .mockResolvedValueOnce([{ rowsAffected: 1 }]); // Delete
 
         await databaseService.deleteExpense(1);
 
         expect(mockDb.executeSql).toHaveBeenCalledWith(
           'DELETE FROM expense WHERE expense_id = ?',
-          [1]
+          [1],
         );
       });
 
       it('should throw error if expense not found', async () => {
-        mockDb.executeSql.mockResolvedValue([{
-          rows: { length: 0 },
-        }]);
+        mockDb.executeSql.mockResolvedValue([
+          {
+            rows: { length: 0 },
+          },
+        ]);
 
-        await expect(databaseService.deleteExpense(999)).rejects.toThrow(
-          'not found'
-        );
+        await expect(databaseService.deleteExpense(999)).rejects.toThrow('not found');
       });
     });
   });

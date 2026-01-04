@@ -57,11 +57,7 @@ export interface ExportService {
   /**
    * Generate an export file for a trip
    */
-  generateExport(
-    trip: Trip,
-    expenses: Expense[],
-    options: ExportOptions
-  ): Promise<ExportResult>;
+  generateExport(trip: Trip, expenses: Expense[], options: ExportOptions): Promise<ExportResult>;
 
   /**
    * Estimate the size of the export file

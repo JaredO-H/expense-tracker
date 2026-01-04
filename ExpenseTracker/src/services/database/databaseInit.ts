@@ -14,6 +14,48 @@ SQLite.DEBUG(false);
 let databaseInstance: SQLiteDatabase | null = null;
 
 /**
+ * Run database migrations from one version to another
+ */
+const runMigrations = async (
+  db: SQLiteDatabase,
+  fromVersion: number,
+  toVersion: number,
+): Promise<void> => {
+  console.log(`Running migrations from version ${fromVersion} to ${toVersion}`);
+
+  // Migration from version 1 to 2: Add default_currency to trip table
+  if (fromVersion < 2 && toVersion >= 2) {
+    console.log('Running migration: Adding default_currency column to trip table');
+    try {
+      // Check if column already exists
+      const tableInfo = await db.executeSql('PRAGMA table_info(trip)');
+      const columns = [];
+      for (let i = 0; i < tableInfo[0].rows.length; i++) {
+        columns.push(tableInfo[0].rows.item(i).name);
+      }
+
+      if (!columns.includes('default_currency')) {
+        await db.executeSql(
+          'ALTER TABLE trip ADD COLUMN default_currency TEXT DEFAULT "USD" CHECK(length(default_currency) = 3);',
+        );
+        console.log('Successfully added default_currency column to trip table');
+      } else {
+        console.log('default_currency column already exists in trip table');
+      }
+    } catch (error) {
+      console.error('Migration error:', error);
+      throw error;
+    }
+  }
+
+  // Update version in metadata
+  await db.executeSql("UPDATE db_metadata SET value = ? WHERE key = 'version'", [
+    toVersion.toString(),
+  ]);
+  console.log(`Database migrated to version ${toVersion}`);
+};
+
+/**
  * Initialize the database and create tables if they don't exist
  * @returns Promise<SQLiteDatabase>
  */
@@ -66,10 +108,10 @@ export const initializeDatabase = async (): Promise<SQLiteDatabase> => {
       const currentVersion = parseInt(versionCheck[0].rows.item(0).value, 10);
       console.log(`Database version: ${currentVersion}`);
 
-      // Future migration logic would go here
+      // Migration logic
       if (currentVersion < DB_CONFIG.version) {
         console.log(`Migration needed from version ${currentVersion} to ${DB_CONFIG.version}`);
-        // This will be implemented in the migrations system
+        await runMigrations(db, currentVersion, DB_CONFIG.version);
       }
     }
 

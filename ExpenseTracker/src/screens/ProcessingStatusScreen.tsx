@@ -20,12 +20,19 @@ import { processingQueue, QueueItem } from '../services/queue/processingQueue';
 import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
 import { AI_SERVICE_CONFIGS } from '../types/aiService';
 import { useTheme } from '../contexts/ThemeContext';
+import { ProcessingTimeoutDialog } from '../components/ocr/ProcessingTimeoutDialog';
 
 export const ProcessingStatusScreen: React.FC = () => {
   const navigation = useNavigation();
   const { colors, themeVersion } = useTheme();
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [timeoutDialogVisible, setTimeoutDialogVisible] = useState(false);
+  const [timeoutItemId, setTimeoutItemId] = useState<string | null>(null);
+  const [timeoutWaitingTime, setTimeoutWaitingTime] = useState(0);
+  const [timeoutResolve, setTimeoutResolve] = useState<
+    ((value: 'continue' | 'offline') => void) | null
+  >(null);
 
   /**
    * Load queue items
@@ -42,6 +49,17 @@ export const ProcessingStatusScreen: React.FC = () => {
    */
   useEffect(() => {
     loadQueueItems();
+
+    // Set up timeout callback for processing queue
+    processingQueue.setTimeoutCallback(async (itemId: string, waitingTime: number) => {
+      // Return a promise that will be resolved when user makes a choice
+      return new Promise<'continue' | 'offline'>(resolve => {
+        setTimeoutItemId(itemId);
+        setTimeoutWaitingTime(waitingTime);
+        setTimeoutResolve(() => resolve);
+        setTimeoutDialogVisible(true);
+      });
+    });
 
     // Subscribe to queue updates
     const unsubscribe = processingQueue.subscribe(() => {
@@ -63,6 +81,30 @@ export const ProcessingStatusScreen: React.FC = () => {
   };
 
   /**
+   * Handle user choosing to continue waiting for AI processing
+   */
+  const handleContinueWaiting = () => {
+    if (timeoutResolve) {
+      timeoutResolve('continue');
+      setTimeoutDialogVisible(false);
+      setTimeoutItemId(null);
+      setTimeoutResolve(null);
+    }
+  };
+
+  /**
+   * Handle user choosing to switch to offline OCR
+   */
+  const handleSwitchToOffline = () => {
+    if (timeoutResolve) {
+      timeoutResolve('offline');
+      setTimeoutDialogVisible(false);
+      setTimeoutItemId(null);
+      setTimeoutResolve(null);
+    }
+  };
+
+  /**
    * Handle retry failed item
    */
   const handleRetry = async (item: QueueItem) => {
@@ -78,20 +120,16 @@ export const ProcessingStatusScreen: React.FC = () => {
    * Handle remove item
    */
   const handleRemove = async (item: QueueItem) => {
-    Alert.alert(
-      'Remove Item',
-      'Are you sure you want to remove this item from the queue?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: async () => {
-            await processingQueue.removeItem(item.id);
-          },
+    Alert.alert('Remove Item', 'Are you sure you want to remove this item from the queue?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: async () => {
+          await processingQueue.removeItem(item.id);
         },
-      ]
-    );
+      },
+    ]);
   };
 
   /**
@@ -118,7 +156,7 @@ export const ProcessingStatusScreen: React.FC = () => {
             Alert.alert('Success', 'Completed items have been cleared.');
           },
         },
-      ]
+      ],
     );
   };
 
@@ -191,7 +229,11 @@ export const ProcessingStatusScreen: React.FC = () => {
     const methodBadge = getProcessingMethodBadge(item.serviceId);
 
     const cardContent = (
-      <View style={[styles.itemCard, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+      <View
+        style={[
+          styles.itemCard,
+          { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+        ]}>
         <View style={styles.itemHeader}>
           <View style={[styles.statusBadge, { backgroundColor: colors.backgroundSecondary }]}>
             <Icon name={statusIconName} size={16} color={statusColor} style={styles.statusIcon} />
@@ -199,19 +241,27 @@ export const ProcessingStatusScreen: React.FC = () => {
               {item.status.toUpperCase()}
             </Text>
           </View>
-          <TouchableOpacity
-            onPress={() => handleRemove(item)}
-            style={styles.removeButton}
-          >
+          <TouchableOpacity onPress={() => handleRemove(item)} style={styles.removeButton}>
             <Icon name="close" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.itemBody}>
           <View style={styles.serviceRow}>
-            <Text style={[styles.serviceText, { color: colors.textPrimary }]}>Service: {serviceName}</Text>
-            <View style={[styles.methodBadge, { backgroundColor: methodBadge.color + '20', borderColor: methodBadge.color }]}>
-              <Icon name={methodBadge.iconName} size={12} color={methodBadge.color} style={styles.methodIcon} />
+            <Text style={[styles.serviceText, { color: colors.textPrimary }]}>
+              Service: {serviceName}
+            </Text>
+            <View
+              style={[
+                styles.methodBadge,
+                { backgroundColor: methodBadge.color + '20', borderColor: methodBadge.color },
+              ]}>
+              <Icon
+                name={methodBadge.iconName}
+                size={12}
+                color={methodBadge.color}
+                style={styles.methodIcon}
+              />
               <Text style={[styles.methodText, { color: methodBadge.color }]}>
                 {methodBadge.label}
               </Text>
@@ -229,7 +279,11 @@ export const ProcessingStatusScreen: React.FC = () => {
           )}
 
           {item.status === 'completed' && item.result && (
-            <View style={[styles.resultContainer, { backgroundColor: colors.backgroundSecondary, borderLeftColor: colors.success }]}>
+            <View
+              style={[
+                styles.resultContainer,
+                { backgroundColor: colors.backgroundSecondary, borderLeftColor: colors.success },
+              ]}>
               <Text style={[styles.resultLabel, { color: colors.textSecondary }]}>Result:</Text>
               <Text style={[styles.resultText, { color: colors.textPrimary }]}>
                 {item.result.merchant} - ${(item.result.amount || 0).toFixed(2)}
@@ -246,7 +300,12 @@ export const ProcessingStatusScreen: React.FC = () => {
                 </Text>
               )}
               <View style={styles.tapToVerifyContainer}>
-                <Icon name="hand-left-outline" size={16} color={colors.primary} style={styles.tapIcon} />
+                <Icon
+                  name="hand-left-outline"
+                  size={16}
+                  color={colors.primary}
+                  style={styles.tapIcon}
+                />
                 <Text style={[styles.tapToVerifyText, { color: colors.primary }]}>
                   Tap to verify and create expense
                 </Text>
@@ -255,25 +314,33 @@ export const ProcessingStatusScreen: React.FC = () => {
           )}
 
           {item.status === 'failed' && (
-            <View style={[styles.errorContainer, { backgroundColor: colors.backgroundSecondary, borderLeftColor: colors.error }]}>
+            <View
+              style={[
+                styles.errorContainer,
+                { backgroundColor: colors.backgroundSecondary, borderLeftColor: colors.error },
+              ]}>
               <Text style={[styles.errorLabel, { color: colors.error }]}>Error:</Text>
-              <Text style={[styles.errorText, { color: colors.textSecondary }]}>{item.error || 'Unknown error'}</Text>
+              <Text style={[styles.errorText, { color: colors.textSecondary }]}>
+                {item.error || 'Unknown error'}
+              </Text>
               <Text style={[styles.retryText, { color: colors.textSecondary }]}>
                 Retry {item.retryCount}/{item.maxRetries}
               </Text>
               {item.retryCount < item.maxRetries && (
                 <TouchableOpacity
                   style={[styles.retryButton, { backgroundColor: colors.primary }]}
-                  onPress={() => handleRetry(item)}
-                >
-                  <Text style={[styles.retryButtonText, { color: colors.textInverse }]}>Retry Now</Text>
+                  onPress={() => handleRetry(item)}>
+                  <Text style={[styles.retryButtonText, { color: colors.textInverse }]}>
+                    Retry Now
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
           )}
 
           {item.status === 'pending' && (
-            <View style={[styles.pendingContainer, { backgroundColor: colors.backgroundSecondary }]}>
+            <View
+              style={[styles.pendingContainer, { backgroundColor: colors.backgroundSecondary }]}>
               <Text style={[styles.pendingText, { color: colors.textSecondary }]}>
                 Priority: {item.priority}
               </Text>
@@ -308,7 +375,12 @@ export const ProcessingStatusScreen: React.FC = () => {
    */
   const renderEmptyState = () => (
     <View style={styles.emptyContainer}>
-      <Icon name="clipboard-outline" size={64} color={colors.textDisabled} style={styles.emptyIcon} />
+      <Icon
+        name="clipboard-outline"
+        size={64}
+        color={colors.textDisabled}
+        style={styles.emptyIcon}
+      />
       <Text style={[styles.emptyTitle, { color: colors.textPrimary }]}>No Processing Items</Text>
       <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
         Capture a receipt to see it appear here for processing.
@@ -334,27 +406,25 @@ export const ProcessingStatusScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]} key={themeVersion}>
       {/* Header Stats */}
-      <View style={[styles.statsContainer, { backgroundColor: colors.background, borderBottomColor: colors.border }]}>
+      <View
+        style={[
+          styles.statsContainer,
+          { backgroundColor: colors.background, borderBottomColor: colors.border },
+        ]}>
         <View style={styles.statItem}>
           <Text style={[styles.statValue, { color: colors.textPrimary }]}>{stats.pending}</Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Pending</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: colors.primary }]}>
-            {stats.processing}
-          </Text>
+          <Text style={[styles.statValue, { color: colors.primary }]}>{stats.processing}</Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Processing</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: colors.success }]}>
-            {stats.completed}
-          </Text>
+          <Text style={[styles.statValue, { color: colors.success }]}>{stats.completed}</Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Completed</Text>
         </View>
         <View style={styles.statItem}>
-          <Text style={[styles.statValue, { color: colors.error }]}>
-            {stats.failed}
-          </Text>
+          <Text style={[styles.statValue, { color: colors.error }]}>{stats.failed}</Text>
           <Text style={[styles.statLabel, { color: colors.textSecondary }]}>Failed</Text>
         </View>
       </View>
@@ -363,9 +433,10 @@ export const ProcessingStatusScreen: React.FC = () => {
       {hasCompleted && (
         <TouchableOpacity
           style={[styles.clearButton, { backgroundColor: colors.error }]}
-          onPress={handleClearCompleted}
-        >
-          <Text style={[styles.clearButtonText, { color: colors.textInverse }]}>Clear Completed</Text>
+          onPress={handleClearCompleted}>
+          <Text style={[styles.clearButtonText, { color: colors.textInverse }]}>
+            Clear Completed
+          </Text>
         </TouchableOpacity>
       )}
 
@@ -384,6 +455,14 @@ export const ProcessingStatusScreen: React.FC = () => {
             colors={[colors.primary]}
           />
         }
+      />
+
+      {/* Timeout Dialog */}
+      <ProcessingTimeoutDialog
+        visible={timeoutDialogVisible}
+        onContinueWaiting={handleContinueWaiting}
+        onSwitchToOffline={handleSwitchToOffline}
+        waitingTime={timeoutWaitingTime}
       />
     </View>
   );

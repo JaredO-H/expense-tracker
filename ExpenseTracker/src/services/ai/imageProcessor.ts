@@ -34,7 +34,7 @@ const DEFAULT_OPTIONS: Required<ImageProcessingOptions> = {
  */
 export async function processImageForAI(
   imageUri: string,
-  options: ImageProcessingOptions = {}
+  options: ImageProcessingOptions = {},
 ): Promise<ProcessedImage> {
   try {
     const opts = { ...DEFAULT_OPTIONS, ...options };
@@ -63,7 +63,7 @@ export async function processImageForAI(
         0, // rotation
         undefined, // output path
         false, // keep metadata
-        { mode: 'contain' } // resize mode
+        { mode: 'contain' }, // resize mode
       );
 
       processedUri = resizeResult.uri;
@@ -85,7 +85,7 @@ export async function processImageForAI(
           0,
           undefined,
           false,
-          { mode: 'contain' }
+          { mode: 'contain' },
         );
 
         // Clean up previous file
@@ -98,14 +98,13 @@ export async function processImageForAI(
         resizedSizeKB = info.size / 1024;
       }
 
-      console.log(`Compressed image size: ${resizedSizeKB.toFixed(2)} KB (quality: ${currentQuality})`);
+      console.log(
+        `Compressed image size: ${resizedSizeKB.toFixed(2)} KB (quality: ${currentQuality})`,
+      );
     }
 
     // Convert to base64
-    const base64Data = await RNFS.readFile(
-      processedUri.replace('file://', ''),
-      'base64'
-    );
+    const base64Data = await RNFS.readFile(processedUri.replace('file://', ''), 'base64');
 
     // Get final image dimensions
     const finalInfo = await RNFS.stat(processedUri.replace('file://', ''));
@@ -173,7 +172,7 @@ export async function validateImageQuality(imageUri: string): Promise<{
  */
 export function estimateProcessingCost(
   imageSizeKB: number,
-  serviceId: 'openai' | 'anthropic' | 'gemini'
+  serviceId: 'openai' | 'anthropic' | 'gemini',
 ): number {
   // Rough cost estimates based on service pricing
   const costPerMB = {

@@ -24,18 +24,11 @@ export const sanitizeFilename = (filename: string): string => {
 export const generateFilename = (
   tripName: string,
   format: ExportFormat,
-  timestamp?: Date
+  timestamp?: Date,
 ): string => {
   const date = timestamp || new Date();
-  const formattedDate = date
-    .toISOString()
-    .replace(/[:.]/g, '-')
-    .split('T')[0];
-  const formattedTime = date
-    .toISOString()
-    .split('T')[1]
-    .split('.')[0]
-    .replace(/:/g, '');
+  const formattedDate = date.toISOString().replace(/[:.]/g, '-').split('T')[0];
+  const formattedTime = date.toISOString().split('T')[1].split('.')[0].replace(/:/g, '');
 
   const sanitizedName = sanitizeFilename(tripName);
   const ext = getFileExtension(format);
@@ -108,7 +101,7 @@ export const getExportDirectory = async (): Promise<string> => {
 export const saveExportFile = async (
   content: string,
   filename: string,
-  encoding: 'utf8' | 'base64' = 'utf8'
+  encoding: 'utf8' | 'base64' = 'utf8',
 ): Promise<string> => {
   try {
     const directory = await getExportDirectory();
@@ -167,10 +160,7 @@ const getMimeType = (filePath: string): string => {
 /**
  * Share an export file
  */
-export const shareExportFile = async (
-  filePath: string,
-  title: string
-): Promise<void> => {
+export const shareExportFile = async (filePath: string, title: string): Promise<void> => {
   try {
     console.log('shareExportFile called with path:', filePath);
 
@@ -199,21 +189,22 @@ export const shareExportFile = async (
     console.log('Sharing with URL:', fileUrl);
 
     // On Android, use urls array for better FileProvider support
-    const shareOptions: any = Platform.OS === 'android'
-      ? {
-          title: title,
-          subject: title,
-          failOnCancel: false,
-          urls: [fileUrl],
-          type: mimeType,
-        }
-      : {
-          title: title,
-          subject: title,
-          failOnCancel: false,
-          url: fileUrl,
-          type: mimeType,
-        };
+    const shareOptions: any =
+      Platform.OS === 'android'
+        ? {
+            title: title,
+            subject: title,
+            failOnCancel: false,
+            urls: [fileUrl],
+            type: mimeType,
+          }
+        : {
+            title: title,
+            subject: title,
+            failOnCancel: false,
+            url: fileUrl,
+            type: mimeType,
+          };
 
     console.log('Share options:', shareOptions);
 
@@ -223,7 +214,9 @@ export const shareExportFile = async (
     // User cancelled sharing or error occurred
     if (error instanceof Error && error.message !== 'User did not share') {
       console.error('Share error:', error);
-      throw new Error(`Failed to share file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(
+        `Failed to share file: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
     console.log('User cancelled share');
   }
@@ -246,9 +239,7 @@ export const deleteFile = async (filePath: string): Promise<void> => {
 /**
  * Check if there's enough storage space
  */
-export const hasEnoughSpace = async (
-  requiredBytes: number
-): Promise<boolean> => {
+export const hasEnoughSpace = async (requiredBytes: number): Promise<boolean> => {
   try {
     const freeSpace = await RNFS.getFSInfo();
     return freeSpace.freeSpace > requiredBytes;
@@ -261,9 +252,7 @@ export const hasEnoughSpace = async (
 /**
  * Calculate storage space that would be recovered by deleting receipt images
  */
-export const calculateReceiptStorageSize = async (
-  receiptPaths: string[]
-): Promise<number> => {
+export const calculateReceiptStorageSize = async (receiptPaths: string[]): Promise<number> => {
   let totalSize = 0;
 
   for (const path of receiptPaths) {
@@ -284,9 +273,7 @@ export const calculateReceiptStorageSize = async (
 /**
  * Delete receipt images for a trip
  */
-export const deleteReceiptImages = async (
-  receiptPaths: string[]
-): Promise<number> => {
+export const deleteReceiptImages = async (receiptPaths: string[]): Promise<number> => {
   let deletedCount = 0;
 
   for (const path of receiptPaths) {

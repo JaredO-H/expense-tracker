@@ -13,11 +13,7 @@ import {
   ExportFormat,
 } from '../../types/export';
 import { Expense, Trip } from '../../types/database';
-import {
-  generateFilename,
-  saveExportFile,
-  getFileSize,
-} from './fileManager';
+import { generateFilename, saveExportFile, getFileSize } from './fileManager';
 
 export class CSVExportService implements ExportService {
   /**
@@ -26,7 +22,7 @@ export class CSVExportService implements ExportService {
   async generateExport(
     trip: Trip,
     expenses: Expense[],
-    options: ExportOptions
+    options: ExportOptions,
   ): Promise<ExportResult> {
     try {
       // Validate data
@@ -67,18 +63,14 @@ export class CSVExportService implements ExportService {
   /**
    * Generate CSV content with headers and data
    */
-  private generateCSVContent(
-    trip: Trip,
-    expenses: Expense[],
-    options: ExportOptions
-  ): string {
+  private generateCSVContent(trip: Trip, expenses: Expense[], options: ExportOptions): string {
     const lines: string[] = [];
 
     // Add header section if requested
     if (options.includeHeader) {
       lines.push(`Trip Name:,${this.escapeCSV(trip.name)}`);
       lines.push(
-        `Trip Dates:,${format(new Date(trip.start_date), 'MMM dd, yyyy')} - ${format(new Date(trip.end_date), 'MMM dd, yyyy')}`
+        `Trip Dates:,${format(new Date(trip.start_date), 'MMM dd, yyyy')} - ${format(new Date(trip.end_date), 'MMM dd, yyyy')}`,
       );
       if (trip.destination) {
         lines.push(`Destination:,${this.escapeCSV(trip.destination)}`);
@@ -94,10 +86,9 @@ export class CSVExportService implements ExportService {
     const expenseRows = expenses.map(expense => ({
       Date: format(new Date(expense.date), 'yyyy-MM-dd'),
       Merchant: expense.merchant || 'N/A',
-      Amount: `$${expense.amount.toFixed(2)}`,
-      'Tax Amount': expense.tax_amount
-        ? `$${expense.tax_amount.toFixed(2)}`
-        : '$0.00',
+      Currency: expense.currency || 'USD',
+      Amount: expense.amount.toFixed(2),
+      'Tax Amount': expense.tax_amount ? expense.tax_amount.toFixed(2) : '0.00',
       'Tax Type': expense.tax_type || 'None',
       'Tax Rate': expense.tax_rate ? `${expense.tax_rate.toFixed(1)}%` : '0%',
       'Has Receipt': expense.image_path ? 'Yes' : 'No',

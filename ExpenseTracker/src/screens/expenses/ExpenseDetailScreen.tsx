@@ -18,7 +18,13 @@ import { useExpenseStore } from '../../stores/expenseStore';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { CreateExpenseModel } from '../../types/database';
 import { format } from 'date-fns';
-import { colors as staticColors, spacing, textStyles, commonStyles, screenStyles } from '../../styles';
+import {
+  colors as staticColors,
+  spacing,
+  textStyles,
+  commonStyles,
+  screenStyles,
+} from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface ExpenseDetailScreenProps {
@@ -36,7 +42,9 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
   useEffect(() => {
     if (!expense) {
-      Alert.alert('Error', 'Expense not found', [{ text: 'OK', onPress: () => navigation.goBack() }]);
+      Alert.alert('Error', 'Expense not found', [
+        { text: 'OK', onPress: () => navigation.goBack() },
+      ]);
     }
   }, [expense, navigation]);
 
@@ -70,30 +78,26 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
       return;
     }
 
-    Alert.alert(
-      'Delete Expense',
-      `Are you sure you want to delete "${expense.merchant}"?`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Delete',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteExpense(expense.id);
-              Alert.alert('Success', 'Expense deleted successfully', [
-                { text: 'OK', onPress: () => navigation.goBack() },
-              ]);
-            } catch (error) {
-              Alert.alert(
-                'Error',
-                error instanceof Error ? error.message : 'Failed to delete expense',
-              );
-            }
-          },
+    Alert.alert('Delete Expense', `Are you sure you want to delete "${expense.merchant}"?`, [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Delete',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteExpense(expense.id);
+            Alert.alert('Success', 'Expense deleted successfully', [
+              { text: 'OK', onPress: () => navigation.goBack() },
+            ]);
+          } catch (error) {
+            Alert.alert(
+              'Error',
+              error instanceof Error ? error.message : 'Failed to delete expense',
+            );
+          }
         },
-      ],
-    );
+      },
+    ]);
   };
 
   if (!expense) {
@@ -121,41 +125,55 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
     <ScrollView style={[styles.containerGray, { backgroundColor: colors.backgroundSecondary }]}>
       <View style={styles.content}>
         {/* Expense Information Card */}
-        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
-          <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>Expense Information</Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+          ]}>
+          <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>
+            Expense Information
+          </Text>
 
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Merchant Name</Text>
-            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.merchant}</Text>
+            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+              {expense.merchant}
+            </Text>
           </View>
-
-
 
           {expense.amount && (
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Amount</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.amount}</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.amount}
+              </Text>
             </View>
           )}
 
           {expense.tax_amount && (
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Tax Amount</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.tax_amount}</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.tax_amount}
+              </Text>
             </View>
           )}
 
           {expense.tax_type && (
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Tax Type</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.tax_type}</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.tax_type}
+              </Text>
             </View>
           )}
 
           {expense.tax_rate && (
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Tax Rate</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.tax_rate}</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.tax_rate}
+              </Text>
             </View>
           )}
 
@@ -176,7 +194,9 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
           {expense.category && (
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Category</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.category}</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.category}
+              </Text>
             </View>
           )}
 
@@ -190,27 +210,30 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
           {expense.capture_method && (
             <View style={styles.infoRow}>
               <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Capture Method</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.capture_method}</Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.capture_method}
+              </Text>
             </View>
           )}
 
           {expense.ai_service_used && (
             <View style={styles.infoRow}>
-              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Ai Service Used</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.ai_service_used}</Text>
+              <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>
+                Ai Service Used
+              </Text>
+              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
+                {expense.ai_service_used}
+              </Text>
             </View>
           )}
-
-          <View style={styles.infoRow}>
-            <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Verification Status</Text>
-            <Text style={[styles.infoValue, { color: colors.textPrimary }]}>{expense.verification_status}</Text>
-          </View>
-
         </View>
 
-
         {/* Metadata Card */}
-        <View style={[styles.card, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+          ]}>
           <View style={styles.infoRow}>
             <Text style={[styles.infoLabel, { color: colors.textTertiary }]}>Created</Text>
             <Text style={[styles.infoValue, { color: colors.textPrimary }]}>
@@ -230,22 +253,31 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={[styles.actionButton, styles.editButton, { backgroundColor: colors.primary, borderColor: colors.border }]}
+            style={[
+              styles.actionButton,
+              styles.editButton,
+              { backgroundColor: colors.primary, borderColor: colors.border },
+            ]}
             onPress={() => setIsEditing(true)}>
             <Text style={[styles.editButtonText, { color: colors.textInverse }]}>Edit Expense</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.actionButton, styles.deleteButton, { backgroundColor: colors.background, borderColor: colors.errorDark }]}
+            style={[
+              styles.actionButton,
+              styles.deleteButton,
+              { backgroundColor: colors.background, borderColor: colors.errorDark },
+            ]}
             onPress={handleDelete}>
-            <Text style={[styles.deleteButtonText, { color: colors.errorDark }]}>Delete Expense</Text>
+            <Text style={[styles.deleteButtonText, { color: colors.errorDark }]}>
+              Delete Expense
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
     </ScrollView>
   );
 };
-
 
 const styles = StyleSheet.create({
   // Gray container for detail view

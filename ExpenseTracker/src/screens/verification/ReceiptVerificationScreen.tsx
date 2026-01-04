@@ -41,30 +41,22 @@ export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps>
       const item = processingQueue.getItem(route.params.queueItemId);
 
       if (!item) {
-        Alert.alert(
-          'Item Not Found',
-          'The receipt processing item could not be found.',
-          [
-            {
-              text: 'OK',
-              onPress: () => navigation.goBack(),
-            },
-          ]
-        );
+        Alert.alert('Item Not Found', 'The receipt processing item could not be found.', [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack(),
+          },
+        ]);
         return;
       }
 
       if (item.status !== 'completed' || !item.result) {
-        Alert.alert(
-          'Not Ready',
-          'This receipt has not been processed yet.',
-          [
-            {
-              text: 'OK',
-              onPress: () => navigation.goBack(),
-            },
-          ]
-        );
+        Alert.alert('Not Ready', 'This receipt has not been processed yet.', [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack(),
+          },
+        ]);
         return;
       }
 
@@ -89,23 +81,15 @@ export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps>
       await processingQueue.removeItem(queueItem.id);
 
       // Show success message
-      Alert.alert(
-        'Expense Created',
-        'Your expense has been saved successfully!',
-        [
-          {
-            text: 'OK',
-            onPress: () => navigation.goBack(),
-          },
-        ]
-      );
+      Alert.alert('Expense Created', 'Your expense has been saved successfully!', [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack(),
+        },
+      ]);
     } catch (error) {
       console.error('Failed to save expense:', error);
-      Alert.alert(
-        'Save Failed',
-        'Failed to save the expense. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Save Failed', 'Failed to save the expense. Please try again.', [{ text: 'OK' }]);
     } finally {
       setIsSaving(false);
     }
@@ -126,7 +110,7 @@ export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps>
           style: 'destructive',
           onPress: () => navigation.goBack(),
         },
-      ]
+      ],
     );
   };
 
@@ -135,7 +119,7 @@ export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps>
     Alert.alert(
       'Image Error',
       'Failed to load the receipt image. The file may be corrupted or missing.',
-      [{ text: 'OK' }]
+      [{ text: 'OK' }],
     );
   };
 
@@ -148,10 +132,7 @@ export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps>
   return (
     <GestureHandlerRootView style={styles.container}>
       {/* Background: Receipt Image */}
-      <ReceiptImageViewer
-        imageUri={queueItem.imageUri}
-        onLoadError={handleImageError}
-      />
+      <ReceiptImageViewer imageUri={queueItem.imageUri} onLoadError={handleImageError} />
 
       {/* Foreground: Sliding Drawer with Form */}
       <SlidingDrawer

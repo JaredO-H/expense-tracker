@@ -5,7 +5,8 @@
 // Valid format examples
 export const validAPIKeys = {
   openai: 'sk-proj-abcdef1234567890abcdef1234567890abcdef1234567890',
-  anthropic: 'sk-ant-api03-abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr',
+  anthropic:
+    'sk-ant-api03-abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqr',
   gemini: 'AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz1234567',
 };
 

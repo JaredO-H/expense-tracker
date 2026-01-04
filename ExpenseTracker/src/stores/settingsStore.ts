@@ -27,8 +27,7 @@ interface SettingsState {
 
 const SETTINGS_STORAGE_KEY = '@ExpenseTracker:Settings';
 
-
- //Settings Store using Zustand
+//Settings Store using Zustand
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
   // Initial state
@@ -78,7 +77,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }));
   },
 
-
   //Initialize settings from storage
   initializeSettings: async () => {
     try {
@@ -94,9 +92,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
       // Check configuration status for all services
       const services: AIServiceId[] = ['openai', 'anthropic', 'gemini'];
-      await Promise.all(
-        services.map(serviceId => get().checkServiceConfiguration(serviceId))
-      );
+      await Promise.all(services.map(serviceId => get().checkServiceConfiguration(serviceId)));
 
       set({ isLoading: false });
     } catch (error) {
@@ -107,7 +103,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       });
     }
   },
-
 
   // Check if a service has API key configured
   checkServiceConfiguration: async (serviceId: AIServiceId) => {
@@ -132,7 +127,6 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       }));
     }
   },
-
 
   //Clear error message
   clearError: () => {

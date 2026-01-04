@@ -14,7 +14,7 @@ interface ExpenseState {
   selectedExpense: Expense | null;
 
   // Actions
-  fetchExpenses: (trip_id? : number) => Promise<void>;
+  fetchExpenses: (trip_id?: number) => Promise<void>;
   createExpense: (model: CreateExpenseModel) => Promise<Expense>;
   updateExpense: (model: UpdateExpenseModel) => Promise<Expense>;
   deleteExpense: (id: number) => Promise<void>;
@@ -28,7 +28,7 @@ export const useExpenseStore = create<ExpenseState>(set => ({
   error: null,
   selectedExpense: null,
 
-  fetchExpenses: async (trip_id? : number) => {
+  fetchExpenses: async (trip_id?: number) => {
     set({ isLoading: true, error: null });
     try {
       const expenses = await databaseService.getAllExpenses(trip_id);
@@ -61,8 +61,11 @@ export const useExpenseStore = create<ExpenseState>(set => ({
     try {
       const updatedExpense = await databaseService.updateExpense(model);
       set(state => ({
-        expenses: state.expenses.map(expense => (expense.id === updatedExpense.id ? updatedExpense : expense)),
-        selectedExpense: state.selectedExpense?.id === updatedExpense.id ? updatedExpense : state.selectedExpense,
+        expenses: state.expenses.map(expense =>
+          expense.id === updatedExpense.id ? updatedExpense : expense,
+        ),
+        selectedExpense:
+          state.selectedExpense?.id === updatedExpense.id ? updatedExpense : state.selectedExpense,
         isLoading: false,
       }));
       return updatedExpense;

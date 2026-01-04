@@ -89,10 +89,7 @@ export const CameraScreen: React.FC = () => {
       const finalPath = `${receiptsDir}/${filename}`;
 
       // Move compressed image to final location
-      await RNFS.moveFile(
-        compressionResult.uri.replace('file://', ''),
-        finalPath
-      );
+      await RNFS.moveFile(compressionResult.uri.replace('file://', ''), finalPath);
 
       // Clean up original captured image if different
       if (capturedImageUri !== compressionResult.uri) {
@@ -106,11 +103,7 @@ export const CameraScreen: React.FC = () => {
       console.log('Image saved to:', finalUri);
 
       // Add to processing queue
-      const queueId = await processingQueue.addItem(
-        finalUri,
-        selectedAIService,
-        'immediate'
-      );
+      const queueId = await processingQueue.addItem(finalUri, selectedAIService, 'immediate');
 
       console.log('Added to processing queue:', queueId);
 
@@ -131,15 +124,13 @@ export const CameraScreen: React.FC = () => {
               navigation.goBack();
             },
           },
-        ]
+        ],
       );
     } catch (error) {
       console.error('Error processing image:', error);
-      Alert.alert(
-        'Processing Failed',
-        'Failed to process the image. Please try again.',
-        [{ text: 'OK' }]
-      );
+      Alert.alert('Processing Failed', 'Failed to process the image. Please try again.', [
+        { text: 'OK' },
+      ]);
     } finally {
       setIsProcessing(false);
     }

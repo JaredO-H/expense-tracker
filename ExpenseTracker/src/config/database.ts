@@ -7,7 +7,7 @@ import { DatabaseConfig } from '../types/database';
 // Database configuration
 export const DB_CONFIG: DatabaseConfig = {
   name: 'ExpenseTracker.db',
-  version: 1,
+  version: 2,
 };
 
 // SQL Schema Definitions
@@ -24,6 +24,7 @@ export const CREATE_TRIP_TABLE = `
        end_date TEXT NOT NULL,
        destination TEXT,
        business_purpose TEXT,
+       default_currency TEXT DEFAULT 'USD' CHECK(length(default_currency) = 3),
        status TEXT DEFAULT 'active' CHECK(status IN ('active', 'completed', 'archived')),
        notes TEXT,
        created_at TEXT NOT NULL DEFAULT (datetime('now')),
@@ -36,8 +37,7 @@ export const CREATE_TRIP_DATE_INDEX = `
     CREATE INDEX IF NOT EXISTS idx_trip_date ON trip(start_date, end_date);
 `;
 
-
- //Trigger to automatically update updated_at timestamp for trips
+//Trigger to automatically update updated_at timestamp for trips
 
 export const CREATE_TRIP_UPDATE_TRIGGER = `
     CREATE TRIGGER IF NOT EXISTS trip_updated_at
@@ -88,7 +88,7 @@ export const CREATE_EXPENSE_TABLE = `
      trip_id INT,
      merchant_name TEXT NOT NULL,
      total_amount REAL NOT NULL CHECK(total_amount >= 0),
-     currency TEXT DEFAULT 'GBP' CHECK(length(currency) = 3),
+     currency TEXT DEFAULT 'USD' CHECK(length(currency) = 3),
      tax_amount REAL CHECK(tax_amount >= 0),
      tax_type TEXT,
      tax_rate REAL CHECK(tax_rate >= 0 AND tax_rate <= 100),
@@ -118,8 +118,7 @@ export const CREATE_EXPENSE_DATE_INDEX = `
   CREATE INDEX IF NOT EXISTS idx_expense_date ON expense(expense_date);
 `;
 
-
- //Trigger to automatically update updated_at timestamp for expenses
+//Trigger to automatically update updated_at timestamp for expenses
 
 export const CREATE_EXPENSE_UPDATE_TRIGGER = `
   CREATE TRIGGER IF NOT EXISTS expense_updated_at
@@ -209,8 +208,7 @@ export const CREATE_USER_SETTING_INDEX = `
     CREATE INDEX IF NOT EXISTS idx_user_setting_key ON user_setting(setting_key);
 `;
 
-
- //Database metadata table for version tracking and migrations
+//Database metadata table for version tracking and migrations
 
 export const CREATE_METADATA_TABLE = `
   CREATE TABLE IF NOT EXISTS db_metadata (
@@ -220,8 +218,7 @@ export const CREATE_METADATA_TABLE = `
   );
 `;
 
-
- //All initialization SQL statements in order
+//All initialization SQL statements in order
 
 export const INITIALIZATION_STATEMENTS = [
   CREATE_TRIP_TABLE,

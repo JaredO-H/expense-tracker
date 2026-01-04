@@ -3,7 +3,11 @@
  * Validates offline text recognition using ML Kit
  */
 
-import { recognizeText, isMLKitAvailable, MLKitResult } from '../../../src/services/ocr/mlKitService';
+import {
+  recognizeText,
+  isMLKitAvailable,
+  MLKitResult,
+} from '../../../src/services/ocr/mlKitService';
 import TextRecognition, { TextBlock } from '@react-native-ml-kit/text-recognition';
 
 // Mock ML Kit module
@@ -158,45 +162,33 @@ describe('ML Kit Service', () => {
 
     describe('error handling', () => {
       it('should throw error if recognition fails', async () => {
-        mockTextRecognition.recognize.mockRejectedValue(
-          new Error('Image not found')
-        );
+        mockTextRecognition.recognize.mockRejectedValue(new Error('Image not found'));
 
         await expect(recognizeText('file://nonexistent.jpg')).rejects.toThrow(
-          'ML Kit recognition failed'
+          'ML Kit recognition failed',
         );
       });
 
       it('should include original error message', async () => {
-        mockTextRecognition.recognize.mockRejectedValue(
-          new Error('Invalid image format')
-        );
+        mockTextRecognition.recognize.mockRejectedValue(new Error('Invalid image format'));
 
-        await expect(recognizeText('file://invalid.jpg')).rejects.toThrow(
-          'Invalid image format'
-        );
+        await expect(recognizeText('file://invalid.jpg')).rejects.toThrow('Invalid image format');
       });
 
       it('should handle undefined error message', async () => {
         mockTextRecognition.recognize.mockRejectedValue({});
 
-        await expect(recognizeText('file://receipt.jpg')).rejects.toThrow(
-          'Unknown error'
-        );
+        await expect(recognizeText('file://receipt.jpg')).rejects.toThrow('Unknown error');
       });
 
       it('should handle null image URI', async () => {
-        mockTextRecognition.recognize.mockRejectedValue(
-          new Error('Invalid URI')
-        );
+        mockTextRecognition.recognize.mockRejectedValue(new Error('Invalid URI'));
 
         await expect(recognizeText('')).rejects.toThrow();
       });
 
       it('should include processing time in error case', async () => {
-        mockTextRecognition.recognize.mockRejectedValue(
-          new Error('Recognition failed')
-        );
+        mockTextRecognition.recognize.mockRejectedValue(new Error('Recognition failed'));
 
         const startTime = Date.now();
         try {
@@ -288,8 +280,18 @@ Thank you!`;
       mockTextRecognition.recognize.mockResolvedValue({
         text: receiptText,
         blocks: [
-          { text: 'WALMART', frame: { x: 0, y: 0, width: 100, height: 30 }, cornerPoints: [], lines: [] },
-          { text: 'Total $11.64', frame: { x: 0, y: 200, width: 150, height: 30 }, cornerPoints: [], lines: [] },
+          {
+            text: 'WALMART',
+            frame: { x: 0, y: 0, width: 100, height: 30 },
+            cornerPoints: [],
+            lines: [],
+          },
+          {
+            text: 'Total $11.64',
+            frame: { x: 0, y: 200, width: 150, height: 30 },
+            cornerPoints: [],
+            lines: [],
+          },
         ],
       });
 
@@ -305,8 +307,18 @@ Thank you!`;
       mockTextRecognition.recognize.mockResolvedValue({
         text: 'STORE\n...blur...\nTotal: $5.00',
         blocks: [
-          { text: 'STORE', frame: { x: 0, y: 0, width: 50, height: 20 }, cornerPoints: [], lines: [] },
-          { text: 'Total: $5.00', frame: { x: 0, y: 100, width: 80, height: 20 }, cornerPoints: [], lines: [] },
+          {
+            text: 'STORE',
+            frame: { x: 0, y: 0, width: 50, height: 20 },
+            cornerPoints: [],
+            lines: [],
+          },
+          {
+            text: 'Total: $5.00',
+            frame: { x: 0, y: 100, width: 80, height: 20 },
+            cornerPoints: [],
+            lines: [],
+          },
         ],
       });
 

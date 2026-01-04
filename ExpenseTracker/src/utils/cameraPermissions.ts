@@ -31,8 +31,7 @@ export const getCameraPermissionStatus = (): PermissionStatus => {
   return permission as PermissionStatus;
 };
 
-
- //Handle permission denied scenario with guidance to open settings
+//Handle permission denied scenario with guidance to open settings
 
 export const handlePermissionDenied = (): void => {
   Alert.alert(
@@ -49,7 +48,7 @@ export const handlePermissionDenied = (): void => {
           Linking.openSettings();
         },
       },
-    ]
+    ],
   );
 };
 
@@ -123,7 +122,7 @@ export const requestGalleryPermission = async (): Promise<boolean> => {
             buttonNeutral: 'Ask Me Later',
             buttonNegative: 'Cancel',
             buttonPositive: 'OK',
-          }
+          },
         );
         return result === PermissionsAndroid.RESULTS.GRANTED;
       } else {
@@ -136,7 +135,7 @@ export const requestGalleryPermission = async (): Promise<boolean> => {
             buttonNeutral: 'Ask Me Later',
             buttonNegative: 'Cancel',
             buttonPositive: 'OK',
-          }
+          },
         );
         return result === PermissionsAndroid.RESULTS.GRANTED;
       }
@@ -159,12 +158,12 @@ export const checkGalleryPermission = async (): Promise<boolean> => {
     if (Platform.OS === 'android') {
       if (Platform.Version >= 33) {
         const granted = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES
+          PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
         );
         return granted;
       } else {
         const granted = await PermissionsAndroid.check(
-          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         );
         return granted;
       }
@@ -195,7 +194,7 @@ export const handleGalleryPermissionDenied = (): void => {
           Linking.openSettings();
         },
       },
-    ]
+    ],
   );
 };
 

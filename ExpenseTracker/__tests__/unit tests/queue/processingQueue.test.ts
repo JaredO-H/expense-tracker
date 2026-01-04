@@ -3,7 +3,12 @@
  * Validates queue management, async processing, retry logic, and fallback mechanisms
  */
 
-import { processingQueue, QueueItem, QueueItemStatus, QueuePriority } from '../../../src/services/queue/processingQueue';
+import {
+  processingQueue,
+  QueueItem,
+  QueueItemStatus,
+  QueuePriority,
+} from '../../../src/services/queue/processingQueue';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as imageProcessor from '../../../src/services/ai/imageProcessor';
 import * as aiServiceClient from '../../../src/services/ai/aiServiceClient';
@@ -130,7 +135,7 @@ describe('Processing Queue', () => {
 
         expect(AsyncStorage.setItem).toHaveBeenCalledWith(
           '@ExpenseTracker:ProcessingQueue',
-          expect.any(String)
+          expect.any(String),
         );
       });
     });
@@ -215,9 +220,7 @@ describe('Processing Queue', () => {
       });
 
       it('should handle removing non-existent item', async () => {
-        await expect(
-          processingQueue.removeItem('non-existent-id')
-        ).resolves.not.toThrow();
+        await expect(processingQueue.removeItem('non-existent-id')).resolves.not.toThrow();
       });
     });
 
@@ -392,7 +395,9 @@ describe('Processing Queue', () => {
     describe('fallback to offline OCR', () => {
       it('should fallback to offline OCR after max retries', async () => {
         // Mock AI service to always fail
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
 
         const id = await processingQueue.addItem('file://test.jpg', 'openai');
 
@@ -406,7 +411,9 @@ describe('Processing Queue', () => {
       });
 
       it('should use ML Kit for offline OCR', async () => {
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
 
         await processingQueue.addItem('file://test.jpg', 'openai');
 
@@ -421,7 +428,9 @@ describe('Processing Queue', () => {
       });
 
       it('should mark item as failed if both AI and OCR fail', async () => {
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
         mockMLKitService.recognizeText.mockRejectedValue(new Error('OCR failed'));
 
         const id = await processingQueue.addItem('file://test.jpg', 'openai');
@@ -436,7 +445,9 @@ describe('Processing Queue', () => {
       });
 
       it('should set error message when both methods fail', async () => {
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
         mockMLKitService.recognizeText.mockRejectedValue(new Error('OCR failed'));
 
         const id = await processingQueue.addItem('file://test.jpg', 'openai');
@@ -455,7 +466,9 @@ describe('Processing Queue', () => {
 
     describe('retryItem', () => {
       it('should reset failed item to pending', async () => {
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
         mockMLKitService.recognizeText.mockRejectedValue(new Error('OCR failed'));
 
         const id = await processingQueue.addItem('file://test.jpg', 'openai');
@@ -477,7 +490,9 @@ describe('Processing Queue', () => {
       });
 
       it('should reset retry count on manual retry', async () => {
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
         mockMLKitService.recognizeText.mockRejectedValue(new Error('OCR failed'));
 
         const id = await processingQueue.addItem('file://test.jpg', 'openai');
@@ -496,7 +511,9 @@ describe('Processing Queue', () => {
       });
 
       it('should clear error on manual retry', async () => {
-        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(new Error('AI service unavailable'));
+        mockAIServiceClient.processReceiptWithAI.mockRejectedValue(
+          new Error('AI service unavailable'),
+        );
         mockMLKitService.recognizeText.mockRejectedValue(new Error('OCR failed'));
 
         const id = await processingQueue.addItem('file://test.jpg', 'openai');
@@ -532,16 +549,18 @@ describe('Processing Queue', () => {
       it('should reset processing items to pending on initialize', async () => {
         // Mock stored queue with processing item
         const mockQueue = {
-          items: [{
-            id: 'test-id',
-            imageUri: 'file://test.jpg',
-            serviceId: 'openai',
-            status: 'processing',
-            priority: 'normal',
-            createdAt: new Date().toISOString(),
-            retryCount: 0,
-            maxRetries: 3,
-          }],
+          items: [
+            {
+              id: 'test-id',
+              imageUri: 'file://test.jpg',
+              serviceId: 'openai',
+              status: 'processing',
+              priority: 'normal',
+              createdAt: new Date().toISOString(),
+              retryCount: 0,
+              maxRetries: 3,
+            },
+          ],
         };
 
         (AsyncStorage.getItem as jest.Mock).mockResolvedValueOnce(JSON.stringify(mockQueue));

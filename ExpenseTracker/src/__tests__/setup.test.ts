@@ -3,7 +3,11 @@
  */
 
 import { createMockExpense, createMockTrip, createMockOCRText } from './utils/mockFactories';
-import { expectValidAmountCents, expectValidISODate, expectValidConfidenceScore } from './utils/assertions';
+import {
+  expectValidAmountCents,
+  expectValidISODate,
+  expectValidConfidenceScore,
+} from './utils/assertions';
 import * as fixtures from './fixtures';
 
 describe('Test Setup Verification', () => {
@@ -145,7 +149,7 @@ describe('Test Setup Verification', () => {
     it('should support TypeScript', () => {
       const expense: { id: number; amount: number } = {
         id: 1,
-        amount: 50.00,
+        amount: 50.0,
       };
       expect(expense.id).toBe(1);
     });

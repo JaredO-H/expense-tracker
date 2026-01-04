@@ -15,7 +15,7 @@ jest.mock('../../../src/stores/categoryStore');
 
 // Mock date-fns
 jest.mock('date-fns', () => ({
-  format: jest.fn((date) => '2024-03-15'),
+  format: jest.fn(date => '2024-03-15'),
 }));
 
 const mockUseTripStore = useTripStore as jest.MockedFunction<typeof useTripStore>;
@@ -55,9 +55,7 @@ describe('ExpenseForm', () => {
 
   describe('rendering', () => {
     it('should render form in create mode', () => {
-      const { getByText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
-      );
+      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       expect(getByText('Save Expense')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -68,18 +66,14 @@ describe('ExpenseForm', () => {
         id: 1,
         trip_id: 1,
         merchant: 'Starbucks',
-        amount: 15.50,
+        amount: 15.5,
         date: '2024-03-15',
         category: 4,
         capture_method: 'manual',
       } as any;
 
       const { getByDisplayValue } = render(
-        <ExpenseForm
-          expense={existingExpense}
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />
+        <ExpenseForm expense={existingExpense} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       expect(getByDisplayValue('Starbucks')).toBeTruthy();
@@ -88,11 +82,7 @@ describe('ExpenseForm', () => {
 
     it('should show loading indicator when isLoading is true', () => {
       const { getByTestId } = render(
-        <ExpenseForm
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-          isLoading={true}
-        />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} isLoading={true} />,
       );
 
       expect(getByTestId('loading-indicator')).toBeTruthy();
@@ -100,11 +90,7 @@ describe('ExpenseForm', () => {
 
     it('should pre-fill trip when initialTripId is provided', async () => {
       const { getByTestId } = render(
-        <ExpenseForm
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-          initialTripId={1}
-        />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />,
       );
 
       await waitFor(() => {
@@ -117,7 +103,7 @@ describe('ExpenseForm', () => {
   describe('form validation', () => {
     it('should validate required amount field', async () => {
       const { getByText, getByPlaceholderText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const amountInput = getByPlaceholderText('0.00');
@@ -134,7 +120,7 @@ describe('ExpenseForm', () => {
 
     it('should validate date format', async () => {
       const { getByText, getByPlaceholderText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const dateInput = getByPlaceholderText('YYYY-MM-DD');
@@ -150,7 +136,7 @@ describe('ExpenseForm', () => {
 
     it('should accept valid amount values', async () => {
       const { getByPlaceholderText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const amountInput = getByPlaceholderText('0.00');
@@ -167,7 +153,7 @@ describe('ExpenseForm', () => {
   describe('form submission', () => {
     it('should call onSubmit with valid form data', async () => {
       const { getByText, getByPlaceholderText, getByTestId } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />,
       );
 
       // Fill form fields
@@ -188,16 +174,16 @@ describe('ExpenseForm', () => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
             merchant: 'Starbucks',
-            amount: 15.50,
+            amount: 15.5,
             date: '2024-03-15',
-          })
+          }),
         );
       });
     });
 
     it('should include optional fields when provided', async () => {
       const { getByText, getByPlaceholderText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />,
       );
 
       const merchantInput = getByPlaceholderText('Enter merchant name');
@@ -219,18 +205,14 @@ describe('ExpenseForm', () => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
             notes: 'Business accommodation',
-          })
+          }),
         );
       });
     });
 
     it('should not submit when form is loading', () => {
       const { getByText } = render(
-        <ExpenseForm
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-          isLoading={true}
-        />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} isLoading={true} />,
       );
 
       const submitButton = getByText('Save Expense');
@@ -242,9 +224,7 @@ describe('ExpenseForm', () => {
 
   describe('cancel functionality', () => {
     it('should call onCancel when cancel button is pressed', () => {
-      const { getByText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
-      );
+      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       const cancelButton = getByText('Cancel');
       fireEvent.press(cancelButton);
@@ -253,9 +233,7 @@ describe('ExpenseForm', () => {
     });
 
     it('should not submit form when canceling', () => {
-      const { getByText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
-      );
+      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       const cancelButton = getByText('Cancel');
       fireEvent.press(cancelButton);
@@ -295,7 +273,7 @@ describe('ExpenseForm', () => {
 
     it('should handle trip selection change', async () => {
       const { getByTestId } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       await waitFor(() => {
@@ -307,7 +285,7 @@ describe('ExpenseForm', () => {
 
     it('should handle category selection change', async () => {
       const { getByTestId } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       await waitFor(() => {
@@ -324,8 +302,8 @@ describe('ExpenseForm', () => {
         id: 1,
         trip_id: 1,
         merchant: 'Restaurant ABC',
-        amount: 45.00,
-        tax_amount: 4.50,
+        amount: 45.0,
+        tax_amount: 4.5,
         date: '2024-03-10',
         time: '18:30',
         category: 3,
@@ -334,11 +312,7 @@ describe('ExpenseForm', () => {
       } as any;
 
       const { getByDisplayValue } = render(
-        <ExpenseForm
-          expense={existingExpense}
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />
+        <ExpenseForm expense={existingExpense} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       expect(getByDisplayValue('Restaurant ABC')).toBeTruthy();
@@ -351,18 +325,14 @@ describe('ExpenseForm', () => {
         id: 1,
         trip_id: 1,
         merchant: 'Old Merchant',
-        amount: 10.00,
+        amount: 10.0,
         date: '2024-03-10',
         category: 3,
         capture_method: 'manual',
       } as any;
 
       const { getByText, getByDisplayValue } = render(
-        <ExpenseForm
-          expense={existingExpense}
-          onSubmit={mockOnSubmit}
-          onCancel={mockOnCancel}
-        />
+        <ExpenseForm expense={existingExpense} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       // Update merchant field
@@ -376,7 +346,7 @@ describe('ExpenseForm', () => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
             merchant: 'New Merchant',
-          })
+          }),
         );
       });
     });
@@ -390,9 +360,7 @@ describe('ExpenseForm', () => {
         fetchTrips: mockFetchTrips,
       } as any);
 
-      const { getByText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
-      );
+      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       await waitFor(() => {
         // Component should still render
@@ -407,9 +375,7 @@ describe('ExpenseForm', () => {
         fetchCategories: mockFetchCategories,
       } as any);
 
-      const { getByText } = render(
-        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />
-      );
+      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       await waitFor(() => {
         // Component should still render

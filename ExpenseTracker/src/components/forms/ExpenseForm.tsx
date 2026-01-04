@@ -19,12 +19,33 @@ import { useForm, Controller } from 'react-hook-form';
 import { format } from 'date-fns';
 import { Picker } from '@react-native-picker/picker';
 import { Expense, CreateExpenseModel, TaxType } from '../../types/database';
-import { isValidDateFormat } from '../../components/common/DateChecker';
 import { useTripStore } from '../../stores/tripStore';
 import { useCategoryStore } from '../../stores/categoryStore';
-import { colors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
+import {
+  colors,
+  spacing,
+  borderRadius,
+  textStyles,
+  commonStyles,
+  shadows,
+  screenStyles,
+} from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { getDateFormat } from '../../utils/generalSettings';
+import { formatDateToDisplay, parseDisplayToISO } from '../../utils/dateFormatHelpers';
+
+const CURRENCIES = [
+  { label: 'US Dollar (USD)', value: 'USD', symbol: '$' },
+  { label: 'Canadian Dollar (CAD)', value: 'CAD', symbol: 'CA$' },
+  { label: 'Euro (EUR)', value: 'EUR', symbol: '€' },
+  { label: 'British Pound (GBP)', value: 'GBP', symbol: '£' },
+  { label: 'Japanese Yen (JPY)', value: 'JPY', symbol: '¥' },
+  { label: 'Australian Dollar (AUD)', value: 'AUD', symbol: 'A$' },
+  { label: 'Swiss Franc (CHF)', value: 'CHF', symbol: 'CHF' },
+  { label: 'Indian Rupee (INR)', value: 'INR', symbol: '₹' },
+  { label: 'Vietnamese Dong (VND)', value: 'VND', symbol: '₫' },
+];
 
 interface ExpenseFormProps {
   expense?: Expense; // If provided, form is in edit mode
@@ -39,6 +60,7 @@ interface ExpenseFormData {
   image_path?: string;
   merchant?: string;
   amount: number;
+  currency: string;
   tax_amount?: number;
   tax_type?: TaxType;
   tax_rate?: number;
@@ -68,10 +90,25 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   const { categories, fetchCategories } = useCategoryStore();
   const [categoriesLoading, setCategoriesLoading] = useState(true);
 
+  // Date format from settings
+  const [dateFormat, setDateFormat] = useState<string>('YYYY-MM-DD');
+
   // Local state for amount text inputs to preserve decimals while typing
   const [amountText, setAmountText] = useState('');
   const [taxAmountText, setTaxAmountText] = useState('');
   const [taxRateText, setTaxRateText] = useState('');
+
+  useEffect(() => {
+    const loadDateFormat = async () => {
+      try {
+        const format = await getDateFormat();
+        setDateFormat(format);
+      } catch (error) {
+        console.error('Failed to load date format:', error);
+      }
+    };
+    loadDateFormat();
+  }, []);
 
   useEffect(() => {
     const loadTrips = async () => {
@@ -103,12 +140,15 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     control,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<ExpenseFormData>({
     defaultValues: {
       trip_id: expense?.trip_id || initialTripId || undefined,
       image_path: expense?.image_path || undefined,
       merchant: expense?.merchant || undefined,
       amount: expense?.amount || 0,
+      currency: expense?.currency || 'USD',
       tax_amount: expense?.tax_amount || undefined,
       tax_type: expense?.tax_type || undefined,
       tax_rate: expense?.tax_rate || undefined,
@@ -122,11 +162,39 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     },
   });
 
+  // Watch for trip changes and update currency if trip has a default currency
+  const selectedTripId = watch('trip_id');
+  const selectedCurrency = watch('currency');
+
+  useEffect(() => {
+    if (selectedTripId && !expense) {
+      const selectedTrip = trips.find(t => t.id === selectedTripId);
+      if (selectedTrip?.default_currency) {
+        setValue('currency', selectedTrip.default_currency);
+      }
+    }
+  }, [selectedTripId, trips, setValue, expense]);
+
+  // Get currency symbol for display
+  const getCurrencySymbol = (currencyCode: string): string => {
+    const currency = CURRENCIES.find(c => c.value === currencyCode);
+    return currency?.symbol || currencyCode;
+  };
+
   const onFormSubmit = (data: ExpenseFormData) => {
+    // Date is already in ISO format from form state (converted in onChangeText handler)
+    const dateISO = data.date;
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
+    const expenseDate = new Date(dateISO);
 
-    if (data.date > today.toISOString()) {
+    if (isNaN(expenseDate.getTime())) {
+      Alert.alert('Validation Error', `Please enter a valid date in ${dateFormat} format`);
+      return;
+    }
+
+    if (expenseDate > today) {
       Alert.alert('Validation Error', 'Date cannot be in the future');
       return;
     }
@@ -136,10 +204,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       image_path: data.image_path,
       merchant: data.merchant,
       amount: data.amount,
+      currency: data.currency,
       tax_amount: data.tax_amount,
       tax_type: data.tax_type,
       tax_rate: data.tax_rate,
-      date: data.date,
+      date: dateISO,
       time: data.time,
       category: data.category,
       ai_service_used: data.ai_service_used,
@@ -152,7 +221,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     <View style={[screenStyles.screenWithDecorations, { backgroundColor: themeColors.background }]}>
       {/* Background decorations */}
       <View style={[screenStyles.bgDecorSmall, { backgroundColor: themeColors.primaryLight }]} />
-      <View style={[screenStyles.bgDecorSquareLeft, { backgroundColor: themeColors.accent2Light }]} />
+      <View
+        style={[screenStyles.bgDecorSquareLeft, { backgroundColor: themeColors.accent2Light }]}
+      />
 
       <ScrollView
         style={styles.scrollView}
@@ -161,7 +232,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
         showsVerticalScrollIndicator={false}>
         {/* Form Header */}
         <View style={styles.formHeader}>
-          <View style={[styles.headerIcon, { backgroundColor: themeColors.primaryLight, borderColor: themeColors.border }]}>
+          <View
+            style={[
+              styles.headerIcon,
+              { backgroundColor: themeColors.primaryLight, borderColor: themeColors.border },
+            ]}>
             <Icon name="receipt" size={32} color={themeColors.primary} />
           </View>
           <Text style={[styles.formTitle, { color: themeColors.textPrimary }]}>
@@ -178,7 +253,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           <View style={styles.fieldContainer}>
             <Text style={[styles.label, { color: themeColors.textPrimary }]}>Trip (Optional)</Text>
             {tripsLoading ? (
-              <View style={[styles.loadingBox, { borderColor: themeColors.borderSubtle, backgroundColor: themeColors.backgroundSecondary }]}>
+              <View
+                style={[
+                  styles.loadingBox,
+                  {
+                    borderColor: themeColors.borderSubtle,
+                    backgroundColor: themeColors.backgroundSecondary,
+                  },
+                ]}>
                 <ActivityIndicator size="small" color={themeColors.primary} />
               </View>
             ) : (
@@ -186,7 +268,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 control={control}
                 name="trip_id"
                 render={({ field: { onChange, value } }) => (
-                  <View style={[styles.pickerContainer, { borderColor: themeColors.border, backgroundColor: themeColors.backgroundElevated }]}>
+                  <View
+                    style={[
+                      styles.pickerContainer,
+                      {
+                        borderColor: themeColors.border,
+                        backgroundColor: themeColors.backgroundElevated,
+                      },
+                    ]}>
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
@@ -223,7 +312,15 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.merchant && styles.inputError]}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: themeColors.backgroundElevated,
+                      borderColor: themeColors.border,
+                      color: themeColors.textPrimary,
+                    },
+                    errors.merchant && styles.inputError,
+                  ]}
                   placeholder="e.g., Starbucks"
                   placeholderTextColor={themeColors.textDisabled}
                   value={value}
@@ -233,7 +330,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 />
               )}
             />
-            {errors.merchant && <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.merchant.message}</Text>}
+            {errors.merchant && (
+              <Text style={[styles.errorText, { color: themeColors.error }]}>
+                {errors.merchant.message}
+              </Text>
+            )}
           </View>
 
           {/* Amount - Make it stand out! */}
@@ -255,8 +356,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 }
 
                 return (
-                  <View style={[styles.amountInputContainer, { borderColor: themeColors.border, backgroundColor: themeColors.accent1Light }]}>
-                    <Text style={[styles.currencySymbol, { color: themeColors.primary }]}>$</Text>
+                  <View
+                    style={[
+                      styles.amountInputContainer,
+                      {
+                        borderColor: themeColors.border,
+                        backgroundColor: themeColors.accent1Light,
+                      },
+                    ]}>
                     <TextInput
                       style={[styles.amountInput, { color: themeColors.textPrimary }]}
                       placeholder="0.00"
@@ -279,7 +386,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                           onChange(isNaN(parsed) ? 0 : parsed);
                         }
                       }}
-                      onBlur={(e) => {
+                      onBlur={e => {
                         // Clean up trailing decimal on blur
                         if (amountText.endsWith('.')) {
                           setAmountText(amountText.slice(0, -1));
@@ -293,7 +400,57 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 );
               }}
             />
-            {errors.amount && <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.amount.message}</Text>}
+            {errors.amount && (
+              <Text style={[styles.errorText, { color: themeColors.error }]}>
+                {errors.amount.message}
+              </Text>
+            )}
+          </View>
+
+          {/* Currency */}
+          <View style={styles.fieldContainer}>
+            <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+              Currency <Text style={[styles.required, { color: themeColors.error }]}>*</Text>
+            </Text>
+            <Controller
+              control={control}
+              name="currency"
+              rules={{ required: 'Currency is required' }}
+              render={({ field: { onChange, value } }) => (
+                <View
+                  style={[
+                    styles.pickerContainer,
+                    {
+                      borderColor: themeColors.border,
+                      backgroundColor: themeColors.backgroundElevated,
+                    },
+                  ]}>
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={onChange}
+                    enabled={!isLoading}
+                    style={[styles.picker, { color: themeColors.textPrimary }]}>
+                    {CURRENCIES.map(currency => (
+                      <Picker.Item
+                        key={currency.value}
+                        label={currency.label}
+                        value={currency.value}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+            />
+            <Text style={[styles.hint, { color: themeColors.textTertiary }]}>
+              {selectedTripId && trips.find(t => t.id === selectedTripId)?.default_currency
+                ? 'Defaulted from trip currency'
+                : 'Select the currency for this expense'}
+            </Text>
+            {errors.currency && (
+              <Text style={[styles.errorText, { color: themeColors.error }]}>
+                {errors.currency.message}
+              </Text>
+            )}
           </View>
 
           {/* Date */}
@@ -306,24 +463,41 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               name="date"
               rules={{
                 required: 'Date is required',
-                validate: value => {
-                  if (!isValidDateFormat(value)) return 'Date must be in YYYY-MM-DD format';
-                  return true;
-                },
               }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <TextInput
-                  style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }, errors.date && styles.inputError]}
-                  placeholder="YYYY-MM-DD"
-                  placeholderTextColor={themeColors.textDisabled}
-                  value={value}
-                  onChangeText={onChange}
-                  onBlur={onBlur}
-                  editable={!isLoading}
-                />
-              )}
+              render={({ field: { onChange, onBlur, value } }) => {
+                // Convert ISO date to display format
+                const displayValue = value ? formatDateToDisplay(value, dateFormat) : '';
+
+                return (
+                  <TextInput
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: themeColors.backgroundElevated,
+                        borderColor: themeColors.border,
+                        color: themeColors.textPrimary,
+                      },
+                      errors.date && styles.inputError,
+                    ]}
+                    placeholder={dateFormat}
+                    placeholderTextColor={themeColors.textDisabled}
+                    value={displayValue}
+                    onChangeText={text => {
+                      // Store in ISO format
+                      const isoDate = parseDisplayToISO(text, dateFormat);
+                      onChange(isoDate);
+                    }}
+                    onBlur={onBlur}
+                    editable={!isLoading}
+                  />
+                );
+              }}
             />
-            {errors.date && <Text style={[styles.errorText, { color: themeColors.error }]}>{errors.date.message}</Text>}
+            {errors.date && (
+              <Text style={[styles.errorText, { color: themeColors.error }]}>
+                {errors.date.message}
+              </Text>
+            )}
           </View>
 
           {/* Time */}
@@ -334,7 +508,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               name="time"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: themeColors.backgroundElevated,
+                      borderColor: themeColors.border,
+                      color: themeColors.textPrimary,
+                    },
+                  ]}
                   placeholder="HH:MM"
                   placeholderTextColor={themeColors.textDisabled}
                   value={value}
@@ -352,7 +533,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           <Text style={screenStyles.sectionTitle}>CATEGORY</Text>
           <View style={styles.fieldContainer}>
             {categoriesLoading ? (
-              <View style={[styles.loadingBox, { borderColor: themeColors.borderSubtle, backgroundColor: themeColors.backgroundSecondary }]}>
+              <View
+                style={[
+                  styles.loadingBox,
+                  {
+                    borderColor: themeColors.borderSubtle,
+                    backgroundColor: themeColors.backgroundSecondary,
+                  },
+                ]}>
                 <ActivityIndicator size="small" color={themeColors.secondary} />
               </View>
             ) : (
@@ -361,7 +549,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 name="category"
                 rules={{ required: 'Category is required' }}
                 render={({ field: { onChange, value } }) => (
-                  <View style={[styles.pickerContainer, { borderColor: themeColors.border, backgroundColor: themeColors.backgroundElevated }]}>
+                  <View
+                    style={[
+                      styles.pickerContainer,
+                      {
+                        borderColor: themeColors.border,
+                        backgroundColor: themeColors.backgroundElevated,
+                      },
+                    ]}>
                     <Picker
                       selectedValue={value}
                       onValueChange={onChange}
@@ -403,7 +598,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
                 return (
                   <TextInput
-                    style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: themeColors.backgroundElevated,
+                        borderColor: themeColors.border,
+                        color: themeColors.textPrimary,
+                      },
+                    ]}
                     placeholder="0.00"
                     placeholderTextColor={themeColors.textDisabled}
                     value={taxAmountText}
@@ -421,7 +623,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                         onChange(isNaN(parsed) ? undefined : parsed);
                       }
                     }}
-                    onBlur={(e) => {
+                    onBlur={e => {
                       if (taxAmountText.endsWith('.')) {
                         setTaxAmountText(taxAmountText.slice(0, -1));
                       }
@@ -448,7 +650,14 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
                 return (
                   <TextInput
-                    style={[styles.input, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
+                    style={[
+                      styles.input,
+                      {
+                        backgroundColor: themeColors.backgroundElevated,
+                        borderColor: themeColors.border,
+                        color: themeColors.textPrimary,
+                      },
+                    ]}
                     placeholder="e.g., 8.5"
                     placeholderTextColor={themeColors.textDisabled}
                     value={taxRateText}
@@ -466,7 +675,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                         onChange(isNaN(parsed) ? undefined : parsed);
                       }
                     }}
-                    onBlur={(e) => {
+                    onBlur={e => {
                       if (taxRateText.endsWith('.')) {
                         setTaxRateText(taxRateText.slice(0, -1));
                       }
@@ -490,7 +699,15 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               name="notes"
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextInput
-                  style={[styles.input, styles.textArea, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border, color: themeColors.textPrimary }]}
+                  style={[
+                    styles.input,
+                    styles.textArea,
+                    {
+                      backgroundColor: themeColors.backgroundElevated,
+                      borderColor: themeColors.border,
+                      color: themeColors.textPrimary,
+                    },
+                  ]}
                   placeholder="Add any additional notes here..."
                   placeholderTextColor={themeColors.textDisabled}
                   value={value}
@@ -516,19 +733,42 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               <ActivityIndicator color={themeColors.textInverse} />
             ) : (
               <>
-                <Icon name="checkmark-circle" size={24} color={themeColors.textInverse} style={styles.buttonIcon} />
-                <Text style={[styles.buttonText, { color: themeColors.textInverse }]}>SAVE EXPENSE</Text>
+                <Icon
+                  name="checkmark-circle"
+                  size={24}
+                  color={themeColors.textInverse}
+                  style={styles.buttonIcon}
+                />
+                <Text style={[styles.buttonText, { color: themeColors.textInverse }]}>
+                  SAVE EXPENSE
+                </Text>
               </>
             )}
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.cancelButton, { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border }]}
+            style={[
+              styles.button,
+              styles.cancelButton,
+              { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border },
+            ]}
             onPress={onCancel}
             disabled={isLoading}
             activeOpacity={0.8}>
-            <Icon name="close-circle" size={24} color={themeColors.textPrimary} style={styles.buttonIcon} />
-            <Text style={[styles.buttonText, styles.cancelButtonText, { color: themeColors.textPrimary }]}>CANCEL</Text>
+            <Icon
+              name="close-circle"
+              size={24}
+              color={themeColors.textPrimary}
+              style={styles.buttonIcon}
+            />
+            <Text
+              style={[
+                styles.buttonText,
+                styles.cancelButtonText,
+                { color: themeColors.textPrimary },
+              ]}>
+              CANCEL
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -654,6 +894,11 @@ const styles = StyleSheet.create({
   errorText: {
     ...textStyles.error,
     marginTop: spacing.xs,
+  },
+  hint: {
+    ...textStyles.helper,
+    marginTop: spacing.xs,
+    fontSize: 12,
   },
 
   // Buttons

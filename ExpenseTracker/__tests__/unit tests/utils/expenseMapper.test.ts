@@ -29,10 +29,12 @@ function createMockQueueItem(overrides: Partial<QueueItem> = {}): QueueItem {
 }
 
 // Helper to create mock ReceiptProcessingResult
-function createMockResult(overrides: Partial<ReceiptProcessingResult> = {}): ReceiptProcessingResult {
+function createMockResult(
+  overrides: Partial<ReceiptProcessingResult> = {},
+): ReceiptProcessingResult {
   return {
     merchant: 'Test Store',
-    amount: 50.00,
+    amount: 50.0,
     date: '2024-03-15',
     category: 5,
     confidence: 0.95,
@@ -83,7 +85,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: createMockResult({
             merchant: 'Store',
-            amount: 25.00,
+            amount: 25.0,
             date: '2024-03-15',
           }),
         });
@@ -91,7 +93,7 @@ describe('Expense Mapper', () => {
         const expense = mapQueueItemToExpense(queueItem);
 
         expect(expense.merchant).toBe('Store');
-        expect(expense.amount).toBe(25.00);
+        expect(expense.amount).toBe(25.0);
         expect(expense.date).toBe('2024-03-15');
         expect(expense.processed).toBe(true);
         expect(expense.verification_status).toBe('pending');
@@ -101,7 +103,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: {
             merchant: 'Store',
-            amount: 30.00,
+            amount: 30.0,
             date: '2024-03-15',
             confidence: 0.8,
             processingTime: 1000,
@@ -122,7 +124,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: createMockResult({
             merchant: '',
-            amount: 20.00,
+            amount: 20.0,
             date: '2024-03-15',
           }),
         });
@@ -147,7 +149,11 @@ describe('Expense Mapper', () => {
       });
 
       it('should set capture_method to ai_service for AI services', () => {
-        const services: Array<'openai' | 'anthropic' | 'gemini'> = ['openai', 'anthropic', 'gemini'];
+        const services: Array<'openai' | 'anthropic' | 'gemini'> = [
+          'openai',
+          'anthropic',
+          'gemini',
+        ];
 
         services.forEach(serviceId => {
           const queueItem = createMockQueueItem({
@@ -280,7 +286,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: createMockResult({
             merchant: 'Store',
-            amount: 50.00,
+            amount: 50.0,
             date: '2024-03-15',
             // No tax_type
           }),
@@ -312,7 +318,7 @@ describe('Expense Mapper', () => {
         expect(expense.verification_status).toBe('pending');
       });
 
-      it('should use today\'s date when no result', () => {
+      it("should use today's date when no result", () => {
         const queueItem = createMockQueueItem({
           result: undefined,
         });
@@ -341,7 +347,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: {
             merchant: undefined as any,
-            amount: 50.00,
+            amount: 50.0,
             date: '2024-03-15',
             category: 5,
             confidence: 0.5,
@@ -375,7 +381,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: {
             merchant: 'Store',
-            amount: 50.00,
+            amount: 50.0,
             date: undefined as any,
             category: 5,
             confidence: 0.5,
@@ -393,7 +399,7 @@ describe('Expense Mapper', () => {
         const queueItem = createMockQueueItem({
           result: {
             merchant: 'Store',
-            amount: 50.00,
+            amount: 50.0,
             date: '2024-03-15',
             category: undefined as any,
             confidence: 0.5,

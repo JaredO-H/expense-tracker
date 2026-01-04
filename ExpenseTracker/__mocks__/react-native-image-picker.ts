@@ -10,7 +10,7 @@ export const launchCamera = jest.fn(() =>
         fileName: 'mock-camera-image.jpg',
       },
     ],
-  })
+  }),
 );
 
 export const launchImageLibrary = jest.fn(() =>
@@ -25,7 +25,7 @@ export const launchImageLibrary = jest.fn(() =>
         fileName: 'mock-library-image.jpg',
       },
     ],
-  })
+  }),
 );
 
 export default {

@@ -6,8 +6,8 @@
 import TextRecognition, { TextBlock } from '@react-native-ml-kit/text-recognition';
 
 export interface MLKitResult {
-  text: string;           // Full recognized text
-  blocks: TextBlock[];    // Text blocks with positions
+  text: string; // Full recognized text
+  blocks: TextBlock[]; // Text blocks with positions
   processingTime: number; // Time taken to process in milliseconds
 }
 

@@ -16,9 +16,7 @@ interface ExtractionResult<T> {
 /**
  * Main parser function - Extract receipt data from ML Kit result
  */
-export async function parseReceipt(
-  mlKitResult: MLKitResult
-): Promise<ReceiptProcessingResult> {
+export async function parseReceipt(mlKitResult: MLKitResult): Promise<ReceiptProcessingResult> {
   console.log('[Parser] Starting receipt parsing...');
 
   const merchant = extractMerchant(mlKitResult.blocks, mlKitResult.text);
@@ -68,8 +66,8 @@ function extractMerchant(blocks: TextBlock[], fullText: string): ExtractionResul
   // Business name patterns
   const businessSuffixes = ['LLC', 'INC', 'CORP', 'LTD', 'CO', 'COMPANY', 'STORE', 'SHOP'];
   const excludePatterns = [
-    /^\d+$/,                           // Pure numbers
-    /\d{3}[-\s]?\d{3}[-\s]?\d{4}/,    // Phone numbers
+    /^\d+$/, // Pure numbers
+    /\d{3}[-\s]?\d{3}[-\s]?\d{4}/, // Phone numbers
     /\d+\s+[A-Z][a-z]+\s+(St|Ave|Rd|Blvd|Dr|Ln)/i, // Addresses
     /^(receipt|invoice|bill|order)$/i, // Generic words
   ];
@@ -105,7 +103,7 @@ function extractMerchant(blocks: TextBlock[], fullText: string): ExtractionResul
     }
 
     // Boost confidence for position (earlier = more likely)
-    const positionBonus = (1 - (sortedBlocks.indexOf(block) / sortedBlocks.length)) * 0.2;
+    const positionBonus = (1 - sortedBlocks.indexOf(block) / sortedBlocks.length) * 0.2;
     confidence += positionBonus;
 
     if (confidence > bestConfidence) {
@@ -145,9 +143,9 @@ function extractAmount(text: string): ExtractionResult<number> {
 
   // Currency patterns - matches $X.XX, X.XX, etc.
   const currencyPatterns = [
-    /\$\s*(\d+\.?\d{0,2})/,           // $10.50
-    /(\d+\.\d{2})/,                    // 10.50
-    /(\d+)/,                           // 10
+    /\$\s*(\d+\.?\d{0,2})/, // $10.50
+    /(\d+\.\d{2})/, // 10.50
+    /(\d+)/, // 10
   ];
 
   // Keywords that indicate total
@@ -231,10 +229,10 @@ function extractDate(text: string): ExtractionResult<string> {
 
   // Date patterns (MM/DD/YYYY, DD.MM.YYYY, YYYY-MM-DD, etc.)
   const datePatterns = [
-    { regex: /(\d{1,2})\/(\d{1,2})\/(\d{4})/, format: 'MM/DD/YYYY' },      // 12/25/2024
-    { regex: /(\d{1,2})\/(\d{1,2})\/(\d{2})/, format: 'MM/DD/YY' },        // 12/25/24
-    { regex: /(\d{1,2})[-.](\d{1,2})[-.](\d{4})/, format: 'DD-MM-YYYY' },  // 25-12-2024
-    { regex: /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/, format: 'YYYY-MM-DD' },  // 2024-12-25
+    { regex: /(\d{1,2})\/(\d{1,2})\/(\d{4})/, format: 'MM/DD/YYYY' }, // 12/25/2024
+    { regex: /(\d{1,2})\/(\d{1,2})\/(\d{2})/, format: 'MM/DD/YY' }, // 12/25/24
+    { regex: /(\d{1,2})[-.](\d{1,2})[-.](\d{4})/, format: 'DD-MM-YYYY' }, // 25-12-2024
+    { regex: /(\d{4})[-/](\d{1,2})[-/](\d{1,2})/, format: 'YYYY-MM-DD' }, // 2024-12-25
   ];
 
   let bestDate = '';

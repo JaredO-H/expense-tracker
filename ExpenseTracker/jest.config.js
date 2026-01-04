@@ -2,11 +2,7 @@ module.exports = {
   preset: 'react-native',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testMatch: ['**/__tests__/**/*.test.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
-  testPathIgnorePatterns: [
-    '/node_modules/',
-    '/android/',
-    '/ios/',
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '/android/', '/ios/'],
   transformIgnorePatterns: [
     'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-vector-icons|react-native-reanimated|react-native-gesture-handler|react-native-screens|react-native-safe-area-context)/)',
   ],

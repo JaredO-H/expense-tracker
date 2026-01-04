@@ -4,7 +4,15 @@
  */
 
 import { getDatabase } from './databaseInit';
-import { Trip, CreateTripModel, UpdateTripModel, Expense, CreateExpenseModel, UpdateExpenseModel, ExpenseCategory } from '../../types/database';
+import {
+  Trip,
+  CreateTripModel,
+  UpdateTripModel,
+  Expense,
+  CreateExpenseModel,
+  UpdateExpenseModel,
+  ExpenseCategory,
+} from '../../types/database';
 
 /**
  * Database Service Class
@@ -28,14 +36,15 @@ class DatabaseService {
       }
 
       const result = await db.executeSql(
-        `INSERT INTO trip (trip_name, start_date, end_date, destination, business_purpose)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO trip (trip_name, start_date, end_date, destination, business_purpose, default_currency)
+         VALUES (?, ?, ?, ?, ?, ?)`,
         [
           model.name,
           model.start_date,
           model.end_date,
           model.destination || null,
           model.purpose || null,
+          model.default_currency || 'USD',
         ],
       );
 
@@ -152,6 +161,10 @@ class DatabaseService {
         updates.push('business_purpose = ?');
         params.push(model.purpose);
       }
+      if (model.default_currency !== undefined) {
+        updates.push('default_currency = ?');
+        params.push(model.default_currency);
+      }
 
       if (updates.length === 0) {
         return existingTrip;
@@ -226,13 +239,13 @@ class DatabaseService {
       end_date: row.end_date,
       destination: row.destination,
       purpose: row.business_purpose,
+      default_currency: row.default_currency,
+      status: row.status,
+      notes: row.notes,
       created_at: row.created_at,
       updated_at: row.updated_at,
     };
   }
-
-
-
 
   /*
    * Expense Operations
@@ -259,7 +272,7 @@ class DatabaseService {
           model.category,
           model.ai_service_used || null,
           model.capture_method,
-          model.notes || null
+          model.notes || null,
         ],
       );
 
@@ -276,8 +289,7 @@ class DatabaseService {
       }
 
       return createdExpense;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error creating expense:', error);
       throw new Error(
         `Failed to create expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -286,8 +298,8 @@ class DatabaseService {
   }
 
   /*
-  * Get a trip by ID
-  */
+   * Get a trip by ID
+   */
   async getExpenseById(id: number): Promise<Expense | null> {
     try {
       const db = getDatabase();
@@ -307,8 +319,7 @@ class DatabaseService {
     }
   }
 
-  async getAllExpenses(trip_id? : number): Promise<Expense[]> {
-
+  async getAllExpenses(trip_id?: number): Promise<Expense[]> {
     try {
       const db = getDatabase();
 
@@ -330,8 +341,7 @@ class DatabaseService {
       }
 
       return expenses;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error getting all expenses:', error);
       throw new Error(
         `Failed to get expenses: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -433,8 +443,7 @@ class DatabaseService {
       }
 
       return updatedExpense;
-    }
-    catch (error) {
+    } catch (error) {
       console.error('Error updating expense:', error);
       throw new Error(
         `Failed to update expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -453,8 +462,7 @@ class DatabaseService {
       }
 
       await db.executeSql('DELETE FROM expense WHERE expense_id = ?', [id]);
-    }
-      catch (error) {
+    } catch (error) {
       console.error('Error deleting expense:', error);
       throw new Error(
         `Failed to delete expense: ${error instanceof Error ? error.message : 'Unknown error'}`,
@@ -465,28 +473,28 @@ class DatabaseService {
   /*
    Helper method to map database row to Trip object
    */
-   private mapExpenseFromDatabaseRow(row: any): Expense {
-     return {
-       id: row.expense_id,
-       trip_id: row.trip_id,
-       image_path: row.receipt_path,
-       merchant: row.merchant_name,
-       amount: row.total_amount,
-       tax_amount: row.tax_amount,
-       tax_type: row.tax_type,
-       tax_rate: row.tax_rate,
-       date: row.expense_date,
-       time: row.expense_time,
-       category: row.category_id,
-       processed: row.processing_status === 'complete' || row.processed === 1,
-       ai_service_used: row.ai_service_used,
-       capture_method: row.capture_method,
-       notes: row.notes,
-       verification_status: row.verification_status,
-       created_at: row.created_at,
-       updated_at: row.updated_at,
-     };
-   }
+  private mapExpenseFromDatabaseRow(row: any): Expense {
+    return {
+      id: row.expense_id,
+      trip_id: row.trip_id,
+      image_path: row.receipt_path,
+      merchant: row.merchant_name,
+      amount: row.total_amount,
+      tax_amount: row.tax_amount,
+      tax_type: row.tax_type,
+      tax_rate: row.tax_rate,
+      date: row.expense_date,
+      time: row.expense_time,
+      category: row.category_id,
+      processed: row.processing_status === 'complete' || row.processed === 1,
+      ai_service_used: row.ai_service_used,
+      capture_method: row.capture_method,
+      notes: row.notes,
+      verification_status: row.verification_status,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+    };
+  }
 
   /**
    * Category Operations
@@ -501,7 +509,7 @@ class DatabaseService {
 
       const result = await db.executeSql(
         'SELECT * FROM expense_category WHERE is_active = 1 ORDER BY sort_order ASC',
-        []
+        [],
       );
 
       const categories: ExpenseCategory[] = [];
@@ -546,7 +554,7 @@ class DatabaseService {
           COALESCE(SUM(total_amount), 0) as total_amount
          FROM expense
          WHERE trip_id = ?`,
-        [tripId]
+        [tripId],
       );
 
       const row = result[0].rows.item(0);
@@ -568,7 +576,9 @@ class DatabaseService {
   /**
    * Get statistics for all trips at once (optimized)
    */
-  async getAllTripsStatistics(): Promise<Map<number, { expenseCount: number; totalAmount: number }>> {
+  async getAllTripsStatistics(): Promise<
+    Map<number, { expenseCount: number; totalAmount: number }>
+  > {
     try {
       const db = getDatabase();
 
@@ -579,7 +589,7 @@ class DatabaseService {
           COALESCE(SUM(total_amount), 0) as total_amount
          FROM expense
          GROUP BY trip_id`,
-        []
+        [],
       );
 
       const statsMap = new Map<number, { expenseCount: number; totalAmount: number }>();
@@ -598,9 +608,7 @@ class DatabaseService {
       return new Map();
     }
   }
-
 }
-
 
 // Export singleton instance
 export default new DatabaseService();

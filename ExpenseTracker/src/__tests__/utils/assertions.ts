@@ -54,7 +54,10 @@ export const expectValidConfidenceScore = (score: number) => {
 /**
  * Assert that an API key format is valid
  */
-export const expectValidAPIKeyFormat = (apiKey: string, service: 'openai' | 'anthropic' | 'gemini') => {
+export const expectValidAPIKeyFormat = (
+  apiKey: string,
+  service: 'openai' | 'anthropic' | 'gemini',
+) => {
   expect(typeof apiKey).toBe('string');
   expect(apiKey.length).toBeGreaterThan(0);
 
@@ -99,7 +102,7 @@ export const expectCalledWithPartial = (mockFn: jest.Mock, partialArgs: any[]) =
         return Object.keys(arg).every(key => call[index]?.[key] === arg[key]);
       }
       return call[index] === arg;
-    })
+    }),
   );
   expect(matchingCall).toBeDefined();
 };

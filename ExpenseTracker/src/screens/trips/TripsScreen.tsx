@@ -21,7 +21,15 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { useTripStore } from '../../stores/tripStore';
 import { Trip } from '../../types/database';
 import { format, isPast, isFuture } from 'date-fns';
-import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles, shadows, screenStyles } from '../../styles';
+import {
+  colors as staticColors,
+  spacing,
+  borderRadius,
+  textStyles,
+  commonStyles,
+  shadows,
+  screenStyles,
+} from '../../styles';
 import databaseService from '../../services/database/databaseService';
 import { TripCard } from '../../components/cards/TripCard';
 import { cardEntrance } from '../../utils/animations';
@@ -51,7 +59,9 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
-  const [tripStats, setTripStats] = useState<Map<number, { expenseCount: number; totalAmount: number }>>(new Map());
+  const [tripStats, setTripStats] = useState<
+    Map<number, { expenseCount: number; totalAmount: number }>
+  >(new Map());
   const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
   const [cardAnimations] = useState<Map<number, Animated.Value>>(new Map());
   const [buttonOpacityAnims] = useState<Map<number, Animated.Value>>(new Map());
@@ -72,7 +82,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       loadTrips();
-    }, [loadTrips])
+    }, [loadTrips]),
   );
 
   useEffect(() => {
@@ -168,7 +178,10 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
             transform: [{ translateY: buttonTranslate }],
           }}>
           <TouchableOpacity
-            style={[styles.expandButton, { backgroundColor: colors.backgroundElevated, borderColor: colors.border }]}
+            style={[
+              styles.expandButton,
+              { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+            ]}
             onPress={toggleExpanded}
             activeOpacity={0.7}>
             <Animated.View style={{ transform: [{ rotate: arrowRotate }] }}>
@@ -192,8 +205,12 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
             <View style={styles.statItem}>
               <Icon name="receipt" size={20} color={colors.primary} />
               <View style={styles.statTextContainer}>
-                <Text style={[styles.statValue, { color: colors.textPrimary }]}>{stats.expenseCount}</Text>
-                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>{stats.expenseCount === 1 ? 'EXPENSE' : 'EXPENSES'}</Text>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
+                  {stats.expenseCount}
+                </Text>
+                <Text style={[styles.statLabel, { color: colors.textSecondary }]}>
+                  {stats.expenseCount === 1 ? 'EXPENSE' : 'EXPENSES'}
+                </Text>
               </View>
             </View>
 
@@ -202,7 +219,9 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
             <View style={styles.statItem}>
               <Icon name="cash" size={20} color={colors.accent1Dark} />
               <View style={styles.statTextContainer}>
-                <Text style={[styles.statValue, { color: colors.textPrimary }]}>${stats.totalAmount.toFixed(2)}</Text>
+                <Text style={[styles.statValue, { color: colors.textPrimary }]}>
+                  ${stats.totalAmount.toFixed(2)}
+                </Text>
                 <Text style={[styles.statLabel, { color: colors.textSecondary }]}>TOTAL SPENT</Text>
               </View>
             </View>
@@ -215,7 +234,9 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
                 <Icon name="information-circle-outline" size={16} color={colors.textSecondary} />
                 <Text style={[styles.purposeLabel, { color: colors.textSecondary }]}>PURPOSE</Text>
               </View>
-              <Text style={[styles.purposeText, { color: colors.textPrimary }]}>{trip.purpose}</Text>
+              <Text style={[styles.purposeText, { color: colors.textPrimary }]}>
+                {trip.purpose}
+              </Text>
             </View>
           )}
         </Animated.View>
@@ -225,35 +246,63 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 
   const renderEmptyState = () => (
     <View style={screenStyles.emptyStateContainer}>
-      <View style={[screenStyles.emptyStateIcon, { backgroundColor: colors.primaryLight, borderColor: colors.border }]}>
+      <View
+        style={[
+          screenStyles.emptyStateIcon,
+          { backgroundColor: colors.primaryLight, borderColor: colors.border },
+        ]}>
         <Icon name="airplane-outline" size={64} color={colors.primary} />
       </View>
-      <Text style={[screenStyles.emptyStateTitle, { color: colors.textPrimary }]}>No Trips Found</Text>
+      <Text style={[screenStyles.emptyStateTitle, { color: colors.textPrimary }]}>
+        No Trips Found
+      </Text>
       <Text style={[screenStyles.emptyStateText, { color: colors.textSecondary }]}>
         {searchQuery
           ? 'No trips match your search criteria'
           : 'Get started by creating your first business trip'}
       </Text>
       {!searchQuery && (
-        <TouchableOpacity style={[screenStyles.emptyStateButton, { backgroundColor: colors.primary, borderColor: colors.border }]} onPress={handleCreateTrip}>
-          <Icon name="add-circle" size={24} color={colors.textInverse} style={{ marginRight: spacing.sm }} />
-          <Text style={[screenStyles.emptyStateButtonText, { color: colors.textInverse }]}>CREATE TRIP</Text>
+        <TouchableOpacity
+          style={[
+            screenStyles.emptyStateButton,
+            { backgroundColor: colors.primary, borderColor: colors.border },
+          ]}
+          onPress={handleCreateTrip}>
+          <Icon
+            name="add-circle"
+            size={24}
+            color={colors.textInverse}
+            style={{ marginRight: spacing.sm }}
+          />
+          <Text style={[screenStyles.emptyStateButtonText, { color: colors.textInverse }]}>
+            CREATE TRIP
+          </Text>
         </TouchableOpacity>
       )}
     </View>
   );
 
   return (
-    <View style={[screenStyles.screenWithDecorations, styles.containerGray, { backgroundColor: colors.backgroundSecondary }]}>
+    <View
+      style={[
+        screenStyles.screenWithDecorations,
+        styles.containerGray,
+        { backgroundColor: colors.backgroundSecondary },
+      ]}>
       {/* Background geometric decorations */}
       <View style={[screenStyles.bgDecorCircleMedium, { backgroundColor: colors.accent1 }]} />
-      <View style={[screenStyles.bgDecorCircleLargeBottom, { backgroundColor: colors.secondary }]} />
+      <View
+        style={[screenStyles.bgDecorCircleLargeBottom, { backgroundColor: colors.secondary }]}
+      />
       <View style={[screenStyles.bgDecorSquare, { backgroundColor: colors.accent3 }]} />
 
       {/* Search Bar */}
       <View style={[styles.searchContainer, { borderBottomColor: colors.border }]}>
         <TextInput
-          style={[styles.searchInput, { backgroundColor: colors.backgroundTertiary, color: colors.textPrimary }]}
+          style={[
+            styles.searchInput,
+            { backgroundColor: colors.backgroundTertiary, color: colors.textPrimary },
+          ]}
           placeholder="Search trips by name, destination, or purpose..."
           value={searchQuery}
           onChangeText={setSearchQuery}
@@ -275,7 +324,9 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 
       {/* Floating Action Button */}
       <View style={[screenStyles.fabContainer, { backgroundColor: colors.primary }]}>
-        <TouchableOpacity style={[screenStyles.fabButton, { backgroundColor: colors.primary }]} onPress={handleCreateTrip}>
+        <TouchableOpacity
+          style={[screenStyles.fabButton, { backgroundColor: colors.primary }]}
+          onPress={handleCreateTrip}>
           <Text style={[screenStyles.fabIconText, { color: colors.textInverse }]}>+</Text>
         </TouchableOpacity>
       </View>
