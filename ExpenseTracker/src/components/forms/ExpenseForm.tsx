@@ -175,6 +175,21 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     }
   }, [selectedTripId, trips, setValue, expense]);
 
+  // Initialize text fields from expense values (only when expense changes)
+  useEffect(() => {
+    if (expense) {
+      if (expense.amount && expense.amount > 0) {
+        setAmountText(expense.amount.toString());
+      }
+      if (expense.tax_amount && expense.tax_amount > 0) {
+        setTaxAmountText(expense.tax_amount.toString());
+      }
+      if (expense.tax_rate && expense.tax_rate > 0) {
+        setTaxRateText(expense.tax_rate.toString());
+      }
+    }
+  }, [expense]);
+
   // Get currency symbol for display
   const getCurrencySymbol = (currencyCode: string): string => {
     const currency = CURRENCIES.find(c => c.value === currencyCode);
@@ -280,7 +295,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                       selectedValue={value}
                       onValueChange={onChange}
                       enabled={!isLoading}
-                      style={[styles.picker, { color: themeColors.textPrimary }]}>
+                      mode="dropdown"
+                      style={[styles.picker, { color: themeColors.textPrimary }]}
+                      dropdownIconColor={themeColors.textPrimary}>
                       <Picker.Item label="No trip (unassigned)" value={undefined} />
                       {trips.map(trip => (
                         <Picker.Item key={trip.id} label={trip.name} value={trip.id} />
@@ -349,56 +366,49 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                 required: 'Amount is required',
                 min: { value: 0.01, message: 'Amount must be greater than 0.00' },
               }}
-              render={({ field: { onChange, onBlur, value } }) => {
-                // Initialize amountText from value if not set
-                if (amountText === '' && value > 0) {
-                  setAmountText(value.toString());
-                }
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View
+                  style={[
+                    styles.amountInputContainer,
+                    {
+                      borderColor: themeColors.border,
+                      backgroundColor: themeColors.backgroundElevated,
+                    },
+                  ]}>
+                  <TextInput
+                    style={[styles.amountInput, { color: themeColors.textPrimary }]}
+                    placeholder="0.00"
+                    placeholderTextColor={themeColors.textDisabled}
+                    value={amountText || (value > 0 ? value.toString() : '')}
+                    onChangeText={text => {
+                      // Remove non-numeric characters except decimal point
+                      const cleaned = text.replace(/[^0-9.]/g, '');
+                      // Allow only one decimal point
+                      const parts = cleaned.split('.');
+                      if (parts.length > 2) return;
 
-                return (
-                  <View
-                    style={[
-                      styles.amountInputContainer,
-                      {
-                        borderColor: themeColors.border,
-                        backgroundColor: themeColors.accent1Light,
-                      },
-                    ]}>
-                    <TextInput
-                      style={[styles.amountInput, { color: themeColors.textPrimary }]}
-                      placeholder="0.00"
-                      placeholderTextColor={themeColors.textDisabled}
-                      value={amountText}
-                      onChangeText={text => {
-                        // Remove non-numeric characters except decimal point
-                        const cleaned = text.replace(/[^0-9.]/g, '');
-                        // Allow only one decimal point
-                        const parts = cleaned.split('.');
-                        if (parts.length > 2) return;
+                      setAmountText(cleaned);
 
-                        setAmountText(cleaned);
-
-                        // Update form value
-                        if (cleaned === '' || cleaned === '.') {
-                          onChange(0);
-                        } else {
-                          const parsed = parseFloat(cleaned);
-                          onChange(isNaN(parsed) ? 0 : parsed);
-                        }
-                      }}
-                      onBlur={e => {
-                        // Clean up trailing decimal on blur
-                        if (amountText.endsWith('.')) {
-                          setAmountText(amountText.slice(0, -1));
-                        }
-                        onBlur(e);
-                      }}
-                      editable={!isLoading}
-                      keyboardType="decimal-pad"
-                    />
-                  </View>
-                );
-              }}
+                      // Update form value
+                      if (cleaned === '' || cleaned === '.') {
+                        onChange(0);
+                      } else {
+                        const parsed = parseFloat(cleaned);
+                        onChange(isNaN(parsed) ? 0 : parsed);
+                      }
+                    }}
+                    onBlur={e => {
+                      // Clean up trailing decimal on blur
+                      if (amountText.endsWith('.')) {
+                        setAmountText(amountText.slice(0, -1));
+                      }
+                      onBlur(e);
+                    }}
+                    editable={!isLoading}
+                    keyboardType="decimal-pad"
+                  />
+                </View>
+              )}
             />
             {errors.amount && (
               <Text style={[styles.errorText, { color: themeColors.error }]}>
@@ -429,7 +439,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                     selectedValue={value}
                     onValueChange={onChange}
                     enabled={!isLoading}
-                    style={[styles.picker, { color: themeColors.textPrimary }]}>
+                    mode="dropdown"
+                    style={[styles.picker, { color: themeColors.textPrimary }]}
+                    dropdownIconColor={themeColors.textPrimary}>
                     {CURRENCIES.map(currency => (
                       <Picker.Item
                         key={currency.value}
@@ -561,7 +573,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                       selectedValue={value}
                       onValueChange={onChange}
                       enabled={!isLoading}
-                      style={[styles.picker, { color: themeColors.textPrimary }]}>
+                      mode="dropdown"
+                      style={[styles.picker, { color: themeColors.textPrimary }]}
+                      dropdownIconColor={themeColors.textPrimary}>
                       {categories.map(cat => (
                         <Picker.Item key={cat.id} label={cat.name} value={cat.id} />
                       ))}
@@ -590,50 +604,43 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                   return true;
                 },
               }}
-              render={({ field: { onChange, onBlur, value } }) => {
-                // Initialize taxAmountText from value if not set
-                if (taxAmountText === '' && value && value > 0) {
-                  setTaxAmountText(value.toString());
-                }
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: themeColors.backgroundElevated,
+                      borderColor: themeColors.border,
+                      color: themeColors.textPrimary,
+                    },
+                  ]}
+                  placeholder="0.00"
+                  placeholderTextColor={themeColors.textDisabled}
+                  value={taxAmountText || (value && value > 0 ? value.toString() : '')}
+                  onChangeText={text => {
+                    const cleaned = text.replace(/[^0-9.]/g, '');
+                    const parts = cleaned.split('.');
+                    if (parts.length > 2) return;
 
-                return (
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        backgroundColor: themeColors.backgroundElevated,
-                        borderColor: themeColors.border,
-                        color: themeColors.textPrimary,
-                      },
-                    ]}
-                    placeholder="0.00"
-                    placeholderTextColor={themeColors.textDisabled}
-                    value={taxAmountText}
-                    onChangeText={text => {
-                      const cleaned = text.replace(/[^0-9.]/g, '');
-                      const parts = cleaned.split('.');
-                      if (parts.length > 2) return;
+                    setTaxAmountText(cleaned);
 
-                      setTaxAmountText(cleaned);
-
-                      if (cleaned === '' || cleaned === '.') {
-                        onChange(undefined);
-                      } else {
-                        const parsed = parseFloat(cleaned);
-                        onChange(isNaN(parsed) ? undefined : parsed);
-                      }
-                    }}
-                    onBlur={e => {
-                      if (taxAmountText.endsWith('.')) {
-                        setTaxAmountText(taxAmountText.slice(0, -1));
-                      }
-                      onBlur(e);
-                    }}
-                    editable={!isLoading}
-                    keyboardType="decimal-pad"
-                  />
-                );
-              }}
+                    if (cleaned === '' || cleaned === '.') {
+                      onChange(undefined);
+                    } else {
+                      const parsed = parseFloat(cleaned);
+                      onChange(isNaN(parsed) ? undefined : parsed);
+                    }
+                  }}
+                  onBlur={e => {
+                    if (taxAmountText.endsWith('.')) {
+                      setTaxAmountText(taxAmountText.slice(0, -1));
+                    }
+                    onBlur(e);
+                  }}
+                  editable={!isLoading}
+                  keyboardType="decimal-pad"
+                />
+              )}
             />
           </View>
 
@@ -642,50 +649,43 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             <Controller
               control={control}
               name="tax_rate"
-              render={({ field: { onChange, onBlur, value } }) => {
-                // Initialize taxRateText from value if not set
-                if (taxRateText === '' && value && value > 0) {
-                  setTaxRateText(value.toString());
-                }
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: themeColors.backgroundElevated,
+                      borderColor: themeColors.border,
+                      color: themeColors.textPrimary,
+                    },
+                  ]}
+                  placeholder="e.g., 8.5"
+                  placeholderTextColor={themeColors.textDisabled}
+                  value={taxRateText || (value && value > 0 ? value.toString() : '')}
+                  onChangeText={text => {
+                    const cleaned = text.replace(/[^0-9.]/g, '');
+                    const parts = cleaned.split('.');
+                    if (parts.length > 2) return;
 
-                return (
-                  <TextInput
-                    style={[
-                      styles.input,
-                      {
-                        backgroundColor: themeColors.backgroundElevated,
-                        borderColor: themeColors.border,
-                        color: themeColors.textPrimary,
-                      },
-                    ]}
-                    placeholder="e.g., 8.5"
-                    placeholderTextColor={themeColors.textDisabled}
-                    value={taxRateText}
-                    onChangeText={text => {
-                      const cleaned = text.replace(/[^0-9.]/g, '');
-                      const parts = cleaned.split('.');
-                      if (parts.length > 2) return;
+                    setTaxRateText(cleaned);
 
-                      setTaxRateText(cleaned);
-
-                      if (cleaned === '' || cleaned === '.') {
-                        onChange(undefined);
-                      } else {
-                        const parsed = parseFloat(cleaned);
-                        onChange(isNaN(parsed) ? undefined : parsed);
-                      }
-                    }}
-                    onBlur={e => {
-                      if (taxRateText.endsWith('.')) {
-                        setTaxRateText(taxRateText.slice(0, -1));
-                      }
-                      onBlur(e);
-                    }}
-                    editable={!isLoading}
-                    keyboardType="decimal-pad"
-                  />
-                );
-              }}
+                    if (cleaned === '' || cleaned === '.') {
+                      onChange(undefined);
+                    } else {
+                      const parsed = parseFloat(cleaned);
+                      onChange(isNaN(parsed) ? undefined : parsed);
+                    }
+                  }}
+                  onBlur={e => {
+                    if (taxRateText.endsWith('.')) {
+                      setTaxRateText(taxRateText.slice(0, -1));
+                    }
+                    onBlur(e);
+                  }}
+                  editable={!isLoading}
+                  keyboardType="decimal-pad"
+                />
+              )}
             />
           </View>
         </View>

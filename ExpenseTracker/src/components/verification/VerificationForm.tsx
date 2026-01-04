@@ -23,8 +23,21 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { CreateExpenseModel, TaxType } from '../../types/database';
 import { QueueItem } from '../../services/queue/processingQueue';
 import { useCategoryStore } from '../../stores/categoryStore';
+import { useTripStore } from '../../stores/tripStore';
 import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
+
+const CURRENCIES = [
+  { label: 'US Dollar (USD)', value: 'USD', symbol: '$' },
+  { label: 'Canadian Dollar (CAD)', value: 'CAD', symbol: 'CA$' },
+  { label: 'Euro (EUR)', value: 'EUR', symbol: '€' },
+  { label: 'British Pound (GBP)', value: 'GBP', symbol: '£' },
+  { label: 'Japanese Yen (JPY)', value: 'JPY', symbol: '¥' },
+  { label: 'Australian Dollar (AUD)', value: 'AUD', symbol: 'A$' },
+  { label: 'Swiss Franc (CHF)', value: 'CHF', symbol: 'CHF' },
+  { label: 'Indian Rupee (INR)', value: 'INR', symbol: '₹' },
+  { label: 'Vietnamese Dong (VND)', value: 'VND', symbol: '₫' },
+];
 
 interface VerificationFormProps {
   queueItem: QueueItem;
@@ -35,8 +48,10 @@ interface VerificationFormProps {
 }
 
 interface FormData {
+  trip_id?: number;
   merchant: string;
   amount: number;
+  currency: string;
   date: string;
   category: number;
   tax_amount?: number;
@@ -52,8 +67,10 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
   isLoading = false,
 }) => {
   const { categories, fetchCategories } = useCategoryStore();
+  const { trips, fetchTrips } = useTripStore();
   const { colors: themeColors } = useTheme();
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [tripsLoading, setTripsLoading] = useState(true);
 
   // Determine processing method for display
   const getProcessingMethod = () => {
@@ -93,14 +110,31 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
     loadCategories();
   }, [fetchCategories]);
 
+  useEffect(() => {
+    const loadTrips = async () => {
+      try {
+        await fetchTrips();
+      } catch (error) {
+        console.error('Failed to load trips:', error);
+      } finally {
+        setTripsLoading(false);
+      }
+    };
+    loadTrips();
+  }, [fetchTrips]);
+
   const {
     control,
     handleSubmit,
     formState: { errors },
+    watch,
+    setValue,
   } = useForm<FormData>({
     defaultValues: {
+      trip_id: initialData.trip_id || undefined,
       merchant: initialData.merchant || '',
       amount: initialData.amount || 0,
+      currency: initialData.currency || 'USD',
       date: initialData.date || format(new Date(), 'yyyy-MM-dd'),
       category: initialData.category || 8,
       tax_amount: initialData.tax_amount,
@@ -109,12 +143,26 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
     },
   });
 
+  // Watch for trip changes and update currency if trip has a default currency
+  const selectedTripId = watch('trip_id');
+
+  useEffect(() => {
+    if (selectedTripId) {
+      const selectedTrip = trips.find(t => t.id === selectedTripId);
+      if (selectedTrip?.default_currency) {
+        setValue('currency', selectedTrip.default_currency);
+      }
+    }
+  }, [selectedTripId, trips, setValue]);
+
   const onFormSubmit = async (data: FormData) => {
     // Build complete expense model
     const expenseData: CreateExpenseModel = {
       ...initialData,
+      trip_id: data.trip_id,
       merchant: data.merchant,
       amount: data.amount,
+      currency: data.currency,
       date: data.date,
       category: data.category,
       tax_amount: data.tax_amount,
@@ -151,6 +199,86 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
           <Text style={[styles.processingText, { color: processingMethod.color }]}>
             {processingMethod.label}
           </Text>
+        </View>
+
+        {/* Trip Selection */}
+        <View style={styles.fieldContainer}>
+          <Text style={[styles.label, { color: themeColors.textPrimary }]}>Trip (Optional)</Text>
+          {tripsLoading ? (
+            <ActivityIndicator size="small" color={themeColors.primary} />
+          ) : (
+            <Controller
+              control={control}
+              name="trip_id"
+              render={({ field: { onChange, value } }) => (
+                <View
+                  style={[
+                    styles.pickerContainer,
+                    { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border },
+                  ]}>
+                  <Picker
+                    selectedValue={value}
+                    onValueChange={onChange}
+                    enabled={!isLoading}
+                    mode="dropdown"
+                    style={[styles.picker, { color: themeColors.textPrimary }]}
+                    dropdownIconColor={themeColors.textPrimary}>
+                    <Picker.Item
+                      label="No trip (unassigned)"
+                      value={undefined}
+                    />
+                    {trips.map(trip => (
+                      <Picker.Item
+                        key={trip.id}
+                        label={trip.name}
+                        value={trip.id}
+                      />
+                    ))}
+                  </Picker>
+                </View>
+              )}
+            />
+          )}
+        </View>
+
+        {/* Currency */}
+        <View style={styles.fieldContainer}>
+          <Text style={[styles.label, { color: themeColors.textPrimary }]}>
+            Currency <Text style={[styles.required, { color: themeColors.error }]}>*</Text>
+          </Text>
+          <Controller
+            control={control}
+            name="currency"
+            rules={{ required: 'Currency is required' }}
+            render={({ field: { onChange, value } }) => (
+              <View
+                style={[
+                  styles.pickerContainer,
+                  { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border },
+                ]}>
+                <Picker
+                  selectedValue={value}
+                  onValueChange={onChange}
+                  enabled={!isLoading}
+                  mode="dropdown"
+                  style={[styles.picker, { color: themeColors.textPrimary }]}
+                  dropdownIconColor={themeColors.textPrimary}>
+                  {CURRENCIES.map(currency => (
+                    <Picker.Item
+                      key={currency.value}
+                      label={currency.label}
+                      value={currency.value}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            )}
+          />
+          {errors.currency && (
+            <Text style={[styles.errorText, { color: themeColors.error }]}>
+              {errors.currency.message}
+            </Text>
+          )}
         </View>
 
         {/* Merchant Name */}
@@ -295,13 +423,14 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
                     selectedValue={value}
                     onValueChange={onChange}
                     enabled={!isLoading}
-                    style={[styles.picker, { color: themeColors.textPrimary }]}>
+                    mode="dropdown"
+                    style={[styles.picker, { color: themeColors.textPrimary }]}
+                    dropdownIconColor={themeColors.textPrimary}>
                     {categories.map(category => (
                       <Picker.Item
                         key={category.id}
                         label={category.name}
                         value={category.id}
-                        color={themeColors.textPrimary}
                       />
                     ))}
                   </Picker>
@@ -372,21 +501,21 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
                   selectedValue={value}
                   onValueChange={onChange}
                   enabled={!isLoading}
-                  style={[styles.picker, { color: themeColors.textPrimary }]}>
-                  <Picker.Item label="None" value={undefined} color={themeColors.textPrimary} />
-                  <Picker.Item label="GST" value={TaxType.GST} color={themeColors.textPrimary} />
-                  <Picker.Item label="HST" value={TaxType.HST} color={themeColors.textPrimary} />
-                  <Picker.Item label="PST" value={TaxType.PST} color={themeColors.textPrimary} />
-                  <Picker.Item label="VAT" value={TaxType.VAT} color={themeColors.textPrimary} />
+                  mode="dropdown"
+                  style={[styles.picker, { color: themeColors.textPrimary }]}
+                  dropdownIconColor={themeColors.textPrimary}>
+                  <Picker.Item label="None" value={undefined} />
+                  <Picker.Item label="GST" value={TaxType.GST} />
+                  <Picker.Item label="HST" value={TaxType.HST} />
+                  <Picker.Item label="PST" value={TaxType.PST} />
+                  <Picker.Item label="VAT" value={TaxType.VAT} />
                   <Picker.Item
                     label="Sales Tax"
                     value={TaxType.SALES_TAX}
-                    color={themeColors.textPrimary}
                   />
                   <Picker.Item
                     label="Other"
                     value={TaxType.OTHER}
-                    color={themeColors.textPrimary}
                   />
                 </Picker>
               </View>
@@ -517,10 +646,13 @@ const styles = StyleSheet.create({
   pickerContainer: {
     backgroundColor: colors.backgroundTertiary,
     borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
     overflow: 'hidden',
   },
   picker: {
-    ...textStyles.body,
+    fontSize: textStyles.body.fontSize,
+    fontWeight: textStyles.body.fontWeight,
   },
   buttonContainer: {
     flexDirection: 'row',
