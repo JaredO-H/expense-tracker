@@ -43,6 +43,7 @@ const CURRENCIES = [
   { label: 'Japanese Yen (JPY)', value: 'JPY', symbol: '¥' },
   { label: 'Australian Dollar (AUD)', value: 'AUD', symbol: 'A$' },
   { label: 'Swiss Franc (CHF)', value: 'CHF', symbol: 'CHF' },
+  { label: 'Singapore Dollar (SGD)', value: 'SGD', symbol: 'S$' },
   { label: 'Indian Rupee (INR)', value: 'INR', symbol: '₹' },
   { label: 'Vietnamese Dong (VND)', value: 'VND', symbol: '₫' },
 ];
