@@ -16,9 +16,12 @@ import {
   Alert,
   Animated,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
+import { Picker } from '@react-native-picker/picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { useCategoryStore } from '../../stores/categoryStore';
+import { useTripStore } from '../../stores/tripStore';
 import { Expense } from '../../types/database';
 import { format } from 'date-fns';
 import {
@@ -28,18 +31,25 @@ import {
   screenStyles,
   getPatternByIndex,
 } from '../../styles';
-import { float } from '../../utils/animations';
+import { float, cardEntrance } from '../../utils/animations';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface ExpensesScreenProps {
   navigation: any;
+  route?: {
+    params?: {
+      tripId?: number;
+    };
+  };
 }
 
-export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) => {
+export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, route }) => {
   const { expenses, fetchExpenses, error, clearError } = useExpenseStore();
   const { categories, fetchCategories } = useCategoryStore();
+  const { trips, fetchTrips } = useTripStore();
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTripId, setSelectedTripId] = useState<number | undefined>(route?.params?.tripId);
   const [refreshing, setRefreshing] = useState(false);
   const [fabMenuOpen, setFabMenuOpen] = useState(false);
   const [fabRotation] = useState(new Animated.Value(0));
@@ -50,27 +60,34 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   const [floatAnim1] = useState(new Animated.Value(0));
   const [floatAnim2] = useState(new Animated.Value(0));
 
+  // Expense card entrance animations
+  const [cardAnimations] = useState<Map<number, { opacity: Animated.Value; translate: Animated.Value }>>(new Map());
+
   const loadExpenses = useCallback(async () => {
     try {
       await fetchExpenses();
       await fetchCategories();
+      await fetchTrips();
     } catch (err) {
       console.error('Failed to load expenses:', err);
     }
-  }, [fetchExpenses, fetchCategories]);
+  }, [fetchExpenses, fetchCategories, fetchTrips]);
 
   useEffect(() => {
     loadExpenses();
   }, [loadExpenses]);
 
-  // Start floating animations
-  useEffect(() => {
-    float(floatAnim1, 15, 4000).start();
-    float(floatAnim2, 20, 5000).start();
-  }, []);
+  // Replay floating animations each time screen comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      // Clear card animations so they replay for each card
+      cardAnimations.clear();
 
-  // Card animations disabled for now
-  // TODO: Re-enable with safer animation approach
+      // Start floating animations
+      float(floatAnim1, 15, 4000).start();
+      float(floatAnim2, 20, 5000).start();
+    }, []),
+  );
 
   useEffect(() => {
     if (error) {
@@ -86,15 +103,27 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
   }, [loadExpenses]);
 
   const filteredExpenses = (expenses || []).filter(expense => {
-    if (!searchQuery) {
-      return true;
+    // Filter by trip
+    if (selectedTripId !== undefined) {
+      // Show only expenses matching the selected trip (including unassigned if "unassigned" is selected)
+      if (selectedTripId === -1 && expense.trip_id !== null) {
+        return false; // Skip expenses that have a trip when "unassigned" is selected
+      } else if (selectedTripId !== -1 && expense.trip_id !== selectedTripId) {
+        return false; // Skip expenses that don't match the selected trip
+      }
     }
-    const query = searchQuery.toLowerCase();
-    return (
-      expense.merchant?.toLowerCase().includes(query) ||
-      expense.category?.toString().includes(query) ||
-      expense.notes?.toLowerCase().includes(query)
-    );
+
+    // Filter by search query
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      return (
+        expense.merchant?.toLowerCase().includes(query) ||
+        expense.category?.toString().includes(query) ||
+        expense.notes?.toLowerCase().includes(query)
+      );
+    }
+
+    return true;
   });
 
   const handleCreateExpense = () => {
@@ -162,8 +191,23 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
     const categoryColor = getCategoryColor(expense.category);
     const pattern = getPatternByIndex(expense.category);
 
+    // Get or create animation values for this card
+    if (!cardAnimations.has(expense.id)) {
+      const opacityAnim = new Animated.Value(0);
+      const translateAnim = new Animated.Value(30);
+      cardAnimations.set(expense.id, { opacity: opacityAnim, translate: translateAnim });
+      // Trigger staggered entrance animation
+      const delay = index * 80; // Stagger delay
+      cardEntrance(opacityAnim, translateAnim, delay).start();
+    }
+    const { opacity, translate } = cardAnimations.get(expense.id)!;
+
     return (
-      <View>
+      <Animated.View
+        style={{
+          opacity,
+          transform: [{ translateY: translate }],
+        }}>
         <TouchableOpacity
           style={[
             screenStyles.listItemCard,
@@ -239,7 +283,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
             </View>
           )}
         </TouchableOpacity>
-      </View>
+      </Animated.View>
     );
   };
 
@@ -307,7 +351,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
       />
 
       {/* Header Section */}
-      <View style={[screenStyles.headerSection, { backgroundColor: colors.backgroundSecondary }]}>
+      <View style={[styles.headerContainer, { borderBottomColor: colors.border }]}>
         {/* Processing Queue Button */}
         <TouchableOpacity
           style={[
@@ -324,52 +368,43 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
           <Icon name="chevron-forward" size={20} color={colors.whiteOverlay80} />
         </TouchableOpacity>
 
-        {/* Search Bar - Bold Memphis style */}
+        {/* Trip Filter */}
         <View
           style={[
-            screenStyles.memphisSearchBar,
+            styles.tripFilterContainer,
             { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
           ]}>
-          <View style={screenStyles.searchIconContainer}>
-            <Icon name="search" size={22} color={colors.textSecondary} />
-          </View>
-          <TextInput
-            style={[screenStyles.searchInputField, { color: colors.textPrimary }]}
-            placeholder="Search expenses..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholderTextColor={colors.textDisabled}
+          <Icon
+            name="airplane-outline"
+            size={20}
+            color={colors.textSecondary}
+            style={styles.tripFilterIcon}
           />
-          {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Icon name="close-circle" size={22} color={colors.textSecondary} />
-            </TouchableOpacity>
-          )}
+          <Picker
+            selectedValue={selectedTripId}
+            onValueChange={setSelectedTripId}
+            mode="dropdown"
+            style={[styles.tripPicker, { color: colors.textPrimary }]}
+            dropdownIconColor={colors.textPrimary}>
+            <Picker.Item label="All Trips" value={undefined} />
+            <Picker.Item label="Unassigned" value={-1} />
+            {trips.map(trip => (
+              <Picker.Item key={trip.id} label={trip.name} value={trip.id} />
+            ))}
+          </Picker>
         </View>
 
-        {/* Stats Row */}
-        <View style={screenStyles.statsRow}>
-          <View
-            style={[
-              screenStyles.statBox,
-              { backgroundColor: colors.primaryLight, borderColor: colors.border },
-            ]}>
-            <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
-              {filteredExpenses.length}
-            </Text>
-            <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>EXPENSES</Text>
-          </View>
-          <View
-            style={[
-              screenStyles.statBox,
-              { backgroundColor: colors.secondaryLight, borderColor: colors.border },
-            ]}>
-            <Text style={[screenStyles.statValue, { color: colors.textPrimary }]}>
-              ${filteredExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0).toFixed(0)}
-            </Text>
-            <Text style={[screenStyles.statLabel, { color: colors.textSecondary }]}>TOTAL</Text>
-          </View>
-        </View>
+        {/* Search Bar */}
+        <TextInput
+          style={[
+            styles.searchInput,
+            { backgroundColor: colors.backgroundTertiary, color: colors.textPrimary },
+          ]}
+          placeholder="Search expenses..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholderTextColor={colors.textDisabled}
+        />
       </View>
 
       {/* Expense List */}
@@ -491,6 +526,33 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation }) =>
 };
 
 const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: 'transparent',
+    padding: spacing.base,
+    borderBottomWidth: 3,
+  },
+  searchInput: {
+    backgroundColor: staticColors.backgroundTertiary,
+    borderRadius: 12,
+    padding: spacing.md,
+    ...textStyles.body,
+  },
+  tripFilterContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 3,
+    borderRadius: 12,
+    paddingLeft: spacing.md,
+    marginBottom: spacing.md,
+    overflow: 'hidden',
+  },
+  tripFilterIcon: {
+    marginRight: spacing.xs,
+  },
+  tripPicker: {
+    flex: 1,
+    height: 50,
+  },
   amountText: {
     ...textStyles.amountSmall,
     color: staticColors.primary,

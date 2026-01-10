@@ -14,7 +14,7 @@ import {
   Animated,
   Switch,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {
@@ -34,13 +34,19 @@ export const SettingsScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const { isDarkMode, toggleDarkMode, colors } = useTheme();
 
-  // Entrance animations for option cards (now 4 items including theme toggle)
-  const [optionAnims] = useState(() => createAnimatedValues(4, 0));
+  // Entrance animations for option cards (5 items: dark mode toggle + 3 settings + info card)
+  const [optionAnims] = useState(() => createAnimatedValues(5, 0));
 
-  useEffect(() => {
-    // Trigger staggered entrance
-    staggeredFadeIn(optionAnims, 150, 600).start();
-  }, []);
+  // Replay animations each time screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Reset animations
+      optionAnims.forEach(anim => anim.setValue(0));
+
+      // Trigger staggered entrance
+      staggeredFadeIn(optionAnims, 150, 600).start();
+    }, [optionAnims]),
+  );
 
   const settingsOptions = [
     {
@@ -79,22 +85,6 @@ export const SettingsScreen: React.FC = () => {
         style={styles.scrollView}
         contentContainerStyle={screenStyles.scrollViewContent}
         showsVerticalScrollIndicator={false}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={[styles.headerDecor, { backgroundColor: colors.primary }]} />
-          <View
-            style={[
-              styles.headerIcon,
-              { backgroundColor: colors.primaryLight, borderColor: colors.border },
-            ]}>
-            <Icon name="cog" size={40} color={colors.primary} />
-          </View>
-          <Text style={[styles.headerTitle, { color: colors.textPrimary }]}>Settings</Text>
-          <Text style={[styles.headerSubtitle, { color: colors.textSecondary }]}>
-            Configure your expense tracker
-          </Text>
-        </View>
-
         {/* Settings Options */}
         <View style={styles.optionsContainer}>
           {/* Dark Mode Toggle */}
@@ -200,15 +190,29 @@ export const SettingsScreen: React.FC = () => {
         </View>
 
         {/* App Information Card */}
-        <View
-          style={[
-            styles.infoCard,
-            {
-              backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.accent3Light,
-              borderColor: colors.accent3,
-            },
-          ]}>
-          <View style={[styles.infoDecor, { backgroundColor: colors.accent3 }]} />
+        <Animated.View
+          style={{
+            opacity: optionAnims[4] || 1,
+            transform: [
+              {
+                translateY: optionAnims[4]
+                  ? optionAnims[4].interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [30, 0],
+                    })
+                  : 0,
+              },
+            ],
+          }}>
+          <View
+            style={[
+              styles.infoCard,
+              {
+                backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.accent3Light,
+                borderColor: colors.accent3,
+              },
+            ]}>
+            <View style={[styles.infoDecor, { backgroundColor: colors.accent3 }]} />
 
           <View style={styles.infoHeader}>
             <View
@@ -231,6 +235,7 @@ export const SettingsScreen: React.FC = () => {
             </View>
           </View>
         </View>
+        </Animated.View>
       </ScrollView>
     </View>
   );
@@ -241,44 +246,6 @@ const styles = StyleSheet.create({
   // ScrollView basic style
   scrollView: {
     flex: 1,
-  },
-
-  // Header - Settings-specific centered header with icon
-  header: {
-    marginBottom: spacing.xxl,
-    alignItems: 'center',
-    position: 'relative',
-  },
-  headerDecor: {
-    position: 'absolute',
-    top: 0,
-    left: '50%',
-    marginLeft: -2,
-    width: 4,
-    height: 80,
-    backgroundColor: staticColors.primary,
-  },
-  headerIcon: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: staticColors.primaryLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: spacing.md,
-    borderWidth: 3,
-    borderColor: staticColors.border,
-    ...shadows.medium,
-  },
-  headerTitle: {
-    ...textStyles.h1,
-    marginBottom: spacing.xs,
-    textAlign: 'center',
-  },
-  headerSubtitle: {
-    ...textStyles.body,
-    color: staticColors.textSecondary,
-    textAlign: 'center',
   },
 
   // Options Container

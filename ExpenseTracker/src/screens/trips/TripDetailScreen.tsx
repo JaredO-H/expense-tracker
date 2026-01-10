@@ -244,7 +244,7 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
           {!loadingStats && tripStats.expenseCount === 0 && (
             <TouchableOpacity
               style={[styles.addExpensePrompt, { backgroundColor: colors.backgroundTertiary }]}
-              onPress={() => navigation.navigate('CreateExpense')}>
+              onPress={() => navigation.navigate('CreateExpense', { tripId: trip.id })}>
               <Text style={[styles.addExpenseText, { color: colors.textSecondary }]}>
                 No expenses yet. Tap to add one.
               </Text>

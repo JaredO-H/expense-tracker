@@ -30,6 +30,7 @@ const CURRENCIES = [
   { label: 'Japanese Yen (JPY)', value: 'JPY' },
   { label: 'Australian Dollar (AUD)', value: 'AUD' },
   { label: 'Swiss Franc (CHF)', value: 'CHF' },
+  { label: 'Singapore Dollar (SGD)', value: 'SGD' },
   { label: 'Indian Rupee (INR)', value: 'INR' },
   { label: 'Vietnamese Dong (VND)', value: 'VND' },
 ];
@@ -80,6 +81,7 @@ export const TripForm: React.FC<TripFormProps> = ({
     formState: { errors },
     watch,
     setValue,
+    reset,
   } = useForm<TripFormData>({
     defaultValues: {
       name: trip?.name || '',
@@ -92,6 +94,20 @@ export const TripForm: React.FC<TripFormProps> = ({
   });
 
   const startDate = watch('start_date');
+
+  // Reset form when trip prop changes (important for edit mode)
+  useEffect(() => {
+    if (trip) {
+      reset({
+        name: trip.name || '',
+        start_date: trip.start_date || format(new Date(), 'yyyy-MM-dd'),
+        end_date: trip.end_date || format(new Date(Date.now() + 86400000), 'yyyy-MM-dd'),
+        destination: trip.destination || '',
+        purpose: trip.purpose || '',
+        default_currency: trip.default_currency || 'USD',
+      });
+    }
+  }, [trip, reset]);
 
   // Validate that end date is not before start date
   useEffect(() => {
@@ -388,13 +404,14 @@ export const TripForm: React.FC<TripFormProps> = ({
                   selectedValue={value}
                   onValueChange={onChange}
                   style={[styles.picker, { color: themeColors.textPrimary }]}
-                  enabled={!isLoading}>
+                  enabled={!isLoading}
+                  mode="dropdown"
+                  dropdownIconColor={themeColors.textPrimary}>
                   {CURRENCIES.map(currency => (
                     <Picker.Item
                       key={currency.value}
                       label={currency.label}
                       value={currency.value}
-                      color={themeColors.textPrimary}
                     />
                   ))}
                 </Picker>

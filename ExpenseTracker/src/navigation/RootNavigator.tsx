@@ -95,14 +95,7 @@ const MainTabs: React.FC = () => {
           title: 'Expenses',
           tabBarLabel: 'Expenses',
           tabBarIcon: ({ color, size }) => <Icon name="receipt" size={size} color={color} />,
-          headerShown: true,
-          headerStyle: {
-            backgroundColor: colors.primary,
-          },
-          headerTintColor: colors.textInverse,
-          headerTitleStyle: {
-            fontWeight: '600',
-          },
+          headerShown: false,
         }}
       />
       <Tab.Screen
@@ -118,7 +111,7 @@ const MainTabs: React.FC = () => {
           },
           headerTintColor: colors.textInverse,
           headerTitleStyle: {
-            fontWeight: '600',
+            fontWeight: '800',
           },
         }}
       />

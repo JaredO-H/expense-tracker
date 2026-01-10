@@ -15,20 +15,21 @@ import { useTheme } from '../../contexts/ThemeContext';
 interface TripCardProps {
   trip: Trip | null;
   onPress?: () => void;
+  animationTrigger?: number; // Change this value to trigger re-animation
 }
 
-export const TripCard: React.FC<TripCardProps> = ({ trip, onPress }) => {
+export const TripCard: React.FC<TripCardProps> = ({ trip, onPress, animationTrigger }) => {
   const { colors } = useTheme();
   // Entrance animation
   const [opacityAnim] = useState(new Animated.Value(0));
   const [translateAnim] = useState(new Animated.Value(30));
 
   useEffect(() => {
-    // Trigger entrance animation when trip changes
+    // Trigger entrance animation when trip changes or animationTrigger changes
     opacityAnim.setValue(0);
     translateAnim.setValue(30);
     cardEntrance(opacityAnim, translateAnim, 0).start();
-  }, [trip?.id]);
+  }, [trip?.id, animationTrigger]);
 
   if (!trip) {
     return (

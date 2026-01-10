@@ -59,6 +59,7 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+  const [animationTrigger, setAnimationTrigger] = useState(0);
   const [tripStats, setTripStats] = useState<
     Map<number, { expenseCount: number; totalAmount: number }>
   >(new Map());
@@ -82,6 +83,17 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       loadTrips();
+
+      // Trigger TripCard animations
+      setAnimationTrigger(prev => prev + 1);
+
+      // Reset all entrance animations so they replay
+      buttonOpacityAnims.clear();
+      buttonTranslateAnims.clear();
+
+      // Close all expanded cards and reset their animations
+      setExpandedCards(new Set());
+      cardAnimations.forEach(anim => anim.setValue(0));
     }, [loadTrips]),
   );
 
@@ -169,7 +181,11 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
 
     return (
       <View style={styles.tripCardWrapper}>
-        <TripCard trip={trip} onPress={() => handleTripPress(trip)} />
+        <TripCard
+          trip={trip}
+          onPress={() => handleTripPress(trip)}
+          animationTrigger={animationTrigger}
+        />
 
         {/* Expand/Collapse Arrow Button with entrance animation */}
         <Animated.View
@@ -362,7 +378,7 @@ const styles = StyleSheet.create({
   // Expand Button - unique interaction element
   expandButton: {
     position: 'absolute',
-    bottom: spacing.sm,
+    bottom: spacing.base,
     left: '50%',
     marginLeft: -20,
     width: 40,
@@ -381,7 +397,7 @@ const styles = StyleSheet.create({
   statsFooter: {
     overflow: 'hidden',
     backgroundColor: staticColors.backgroundElevated,
-    marginTop: -spacing.sm,
+    marginTop: -spacing.lg,
     marginHorizontal: spacing.sm,
     borderRadius: borderRadius.lg,
     borderWidth: 3,
@@ -389,6 +405,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
+    zIndex: -1,
     ...shadows.medium,
   },
   statsFooterContent: {

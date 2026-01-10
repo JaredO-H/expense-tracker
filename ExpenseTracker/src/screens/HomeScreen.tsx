@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
   Animated,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { TripCard } from '../components/cards/TripCard';
@@ -30,6 +30,7 @@ export const HomeScreen: React.FC = () => {
   const { trips, fetchTrips } = useTripStore();
   const { colors } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
+  const [animationTrigger, setAnimationTrigger] = useState(0);
   const [fadeAnim] = useState(new Animated.Value(0));
 
   // Floating background animations
@@ -49,41 +50,53 @@ export const HomeScreen: React.FC = () => {
         console.error('Failed to load trips:', error);
       } finally {
         setIsLoading(false);
-        // Fade in animation
-        Animated.timing(fadeAnim, {
-          toValue: 1,
-          duration: 600,
-          useNativeDriver: true,
-        }).start();
-
-        // Staggered button animations
-        Animated.sequence([
-          Animated.delay(200),
-          Animated.parallel([
-            Animated.timing(button1Anim, {
-              toValue: 1,
-              duration: 500,
-              useNativeDriver: true,
-            }),
-            Animated.timing(button2Anim, {
-              toValue: 1,
-              duration: 500,
-              delay: 150,
-              useNativeDriver: true,
-            }),
-          ]),
-        ]).start();
       }
     };
     loadTrips();
   }, [fetchTrips]);
 
-  // Start floating animations
-  useEffect(() => {
-    float(floatAnim1, 20, 4500).start();
-    float(floatAnim2, 15, 5000).start();
-    float(floatAnim3, 18, 3800).start();
-  }, []);
+  // Replay animations each time screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      // Trigger TripCard animation
+      setAnimationTrigger(prev => prev + 1);
+
+      // Reset animations
+      fadeAnim.setValue(0);
+      button1Anim.setValue(0);
+      button2Anim.setValue(0);
+
+      // Fade in animation
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 600,
+        useNativeDriver: true,
+      }).start();
+
+      // Staggered button animations
+      Animated.sequence([
+        Animated.delay(200),
+        Animated.parallel([
+          Animated.timing(button1Anim, {
+            toValue: 1,
+            duration: 500,
+            useNativeDriver: true,
+          }),
+          Animated.timing(button2Anim, {
+            toValue: 1,
+            duration: 500,
+            delay: 150,
+            useNativeDriver: true,
+          }),
+        ]),
+      ]).start();
+
+      // Start floating animations
+      float(floatAnim1, 20, 4500).start();
+      float(floatAnim2, 15, 5000).start();
+      float(floatAnim3, 18, 3800).start();
+    }, []),
+  );
 
   // Get the current or most recent active trip
   const getCurrentTrip = () => {
@@ -184,7 +197,11 @@ export const HomeScreen: React.FC = () => {
 
           {/* Current Trip Card */}
           <View style={screenStyles.section}>
-            <TripCard trip={currentTrip} onPress={currentTrip ? handleTripPress : undefined} />
+            <TripCard
+              trip={currentTrip}
+              onPress={currentTrip ? handleTripPress : undefined}
+              animationTrigger={animationTrigger}
+            />
           </View>
 
           {/* Quick Actions Section */}

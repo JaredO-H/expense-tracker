@@ -38,7 +38,7 @@ export const ExpenseNavigator: React.FC = () => {
         name="ExpensesList"
         component={ExpensesScreen}
         options={{
-          headerShown: false,
+           title: 'My Expenses',
         }}
       />
       <Stack.Screen

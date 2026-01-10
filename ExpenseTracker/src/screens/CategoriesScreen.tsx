@@ -14,6 +14,7 @@ import {
   Animated,
   ActivityIndicator,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useCategoryStore } from '../stores/categoryStore';
 import { useExpenseStore } from '../stores/expenseStore';
@@ -56,18 +57,20 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
     loadData();
   }, [fetchCategories, fetchExpenses]);
 
-  // Initialize and trigger entrance animations when categories load
-  useEffect(() => {
-    if (!isLoading && categories.length > 0) {
-      // Create animated values for each category
-      const newAnims = categories.map(() => new Animated.Value(0));
-      entranceAnims.length = 0;
-      entranceAnims.push(...newAnims);
+  // Replay entrance animations each time screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      if (!isLoading && categories.length > 0) {
+        // Create animated values for each category
+        const newAnims = categories.map(() => new Animated.Value(0));
+        entranceAnims.length = 0;
+        entranceAnims.push(...newAnims);
 
-      // Trigger staggered entrance
-      staggeredFadeIn(newAnims, 120, 600).start();
-    }
-  }, [isLoading, categories.length]);
+        // Trigger staggered entrance
+        staggeredFadeIn(newAnims, 120, 600).start();
+      }
+    }, [isLoading, categories.length]),
+  );
 
   const getCategoryStats = (categoryId: number) => {
     const categoryExpenses = (expenses || []).filter(exp => exp.category === categoryId);
