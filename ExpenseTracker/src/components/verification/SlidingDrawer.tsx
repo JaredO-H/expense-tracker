@@ -141,7 +141,11 @@ export const SlidingDrawer: React.FC<SlidingDrawerProps> = ({
         <Animated.View
           style={[
             styles.drawer,
-            { backgroundColor: isDarkMode ? colors.backgroundSecondary : colors.whiteOverlay80 },
+            {
+              backgroundColor: isDarkMode
+                ? 'rgba(36, 40, 59, 0.8)' // 80% opacity to match light mode
+                : colors.whiteOverlay80,
+            },
             animatedDrawerStyle,
           ]}>
           {/* Drag handle */}
@@ -168,7 +172,6 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     height: SCREEN_HEIGHT,
-    backgroundColor: colors.whiteOverlay80,
     borderTopLeftRadius: borderRadius.xl,
     borderTopRightRadius: borderRadius.xl,
     ...shadows.xl,

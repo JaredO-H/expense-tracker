@@ -41,6 +41,11 @@ export type TimeoutCallback = (
   waitingTime: number,
 ) => Promise<'continue' | 'offline'>;
 
+export type FailureCallback = (
+  itemId: string,
+  error: string,
+) => Promise<'offline' | 'manual' | 'retry'>;
+
 const QUEUE_STORAGE_KEY = '@ExpenseTracker:ProcessingQueue';
 const MAX_CONCURRENT = 2;
 const MAX_RETRIES = 3;
@@ -56,12 +61,20 @@ class ProcessingQueue {
 
   private listeners: Array<() => void> = [];
   private timeoutCallback?: TimeoutCallback;
+  private failureCallback?: FailureCallback;
 
   /**
    * Set callback for timeout events
    */
   setTimeoutCallback(callback: TimeoutCallback): void {
     this.timeoutCallback = callback;
+  }
+
+  /**
+   * Set callback for failure events
+   */
+  setFailureCallback(callback: FailureCallback): void {
+    this.failureCallback = callback;
   }
 
   //Initialize queue from storage
@@ -259,23 +272,69 @@ class ProcessingQueue {
             item.error = 'Offline processing failed. Please try manual entry.';
           }
         } else {
-          // AI processing failed after all retries - try offline OCR as fallback
-          console.log(
-            `[Queue] AI processing exhausted retries. Attempting offline OCR fallback for ${item.id}`,
-          );
+          // AI processing failed after all retries - ask user what to do
+          console.log(`[Queue] AI processing exhausted retries for ${item.id}`);
 
-          try {
-            const offlineResult = await this.processWithOfflineOCR(item.imageUri);
-            item.status = 'completed';
-            item.result = offlineResult;
-            item.serviceId = 'mlkit' as any;
-            item.processedAt = new Date();
-            item.error = undefined;
-            console.log(`[Queue] Offline OCR successful for receipt ${item.id}`);
-          } catch (ocrError) {
-            console.error(`[Queue] Offline OCR also failed for ${item.id}:`, ocrError);
+          // Call failure callback if available to let user choose
+          if (this.failureCallback) {
+            try {
+              const errorMessage =
+                error instanceof Error ? error.message : 'Processing failed. No internet connection?';
+              const userChoice = await this.failureCallback(item.id, errorMessage);
+
+              if (userChoice === 'offline') {
+                // User chose offline OCR
+                console.log(`[Queue] User chose offline OCR for ${item.id}`);
+                try {
+                  const offlineResult = await this.processWithOfflineOCR(item.imageUri);
+                  item.status = 'completed';
+                  item.result = offlineResult;
+                  item.serviceId = 'mlkit' as any;
+                  item.processedAt = new Date();
+                  item.error = undefined;
+                  console.log(`[Queue] Offline OCR successful for receipt ${item.id}`);
+                } catch (ocrError) {
+                  console.error(`[Queue] Offline OCR also failed for ${item.id}:`, ocrError);
+                  item.status = 'failed';
+                  item.error = 'Offline processing failed. Please try manual entry.';
+                }
+              } else if (userChoice === 'manual') {
+                // User chose manual entry - create empty result for manual verification
+                console.log(`[Queue] User chose manual entry for ${item.id}`);
+                item.status = 'completed';
+                item.result = {
+                  merchant: '',
+                  amount: 0,
+                  date: new Date().toISOString().split('T')[0],
+                  time: '',
+                  category: 1,
+                  confidence: 0,
+                  notes: 'Manual entry',
+                  processingTime: 0,
+                };
+                item.processedAt = new Date();
+                item.error = undefined;
+                console.log(`[Queue] Created empty result for manual entry for ${item.id}`);
+              } else if (userChoice === 'retry') {
+                // User chose to retry later - reset retry count and mark as pending
+                console.log(`[Queue] User chose to retry later for ${item.id}`);
+                item.status = 'pending';
+                item.retryCount = 0;
+                item.priority = 'normal';
+              }
+            } catch (callbackError) {
+              console.error(`[Queue] Failure callback error:`, callbackError);
+              // If callback fails, mark as failed
+              item.status = 'failed';
+              item.error =
+                error instanceof Error ? error.message : 'Processing failed. Please try again.';
+            }
+          } else {
+            // No callback available, mark as failed
+            console.log(`[Queue] No failure callback, marking as failed for ${item.id}`);
             item.status = 'failed';
-            item.error = 'Both AI and offline processing failed. Please try manual entry.';
+            item.error =
+              error instanceof Error ? error.message : 'Processing failed. Please try again.';
           }
         }
       } else {

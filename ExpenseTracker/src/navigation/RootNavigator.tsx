@@ -24,8 +24,11 @@ import { ExportScreen } from '../screens/exports/ExportScreen';
 import { GeneralSettingsScreen } from '../screens/settings/GeneralSettingsScreen';
 import { useTheme } from '../contexts/ThemeContext';
 
+import { NavigatorScreenParams } from '@react-navigation/native';
+import { ExpenseStackParamList } from './ExpenseNavigator';
+
 export type RootStackParamList = {
-  MainTabs: undefined;
+  MainTabs: NavigatorScreenParams<AppTabParamList> | undefined;
   Camera: undefined;
   CreateExpense: { tripId?: number } | undefined;
   TripDetail: { tripId: number };
@@ -40,7 +43,7 @@ export type RootStackParamList = {
 export type AppTabParamList = {
   HomeTab: undefined;
   TripsTab: undefined;
-  ExpensesTab: undefined;
+  ExpensesTab: NavigatorScreenParams<ExpenseStackParamList>;
   SettingsTab: undefined;
 };
 

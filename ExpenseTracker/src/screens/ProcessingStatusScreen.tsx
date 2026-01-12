@@ -15,23 +15,30 @@ import {
   RefreshControl,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { processingQueue, QueueItem } from '../services/queue/processingQueue';
 import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
 import { AI_SERVICE_CONFIGS } from '../types/aiService';
 import { useTheme } from '../contexts/ThemeContext';
 import { ProcessingTimeoutDialog } from '../components/ocr/ProcessingTimeoutDialog';
+import { ProcessingOptionsDialog } from '../components/ocr/ProcessingOptionsDialog';
+import { RootStackParamList } from '../navigation/RootNavigator';
 
 export const ProcessingStatusScreen: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { colors, themeVersion } = useTheme();
   const [queueItems, setQueueItems] = useState<QueueItem[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [timeoutDialogVisible, setTimeoutDialogVisible] = useState(false);
-  const [timeoutItemId, setTimeoutItemId] = useState<string | null>(null);
   const [timeoutWaitingTime, setTimeoutWaitingTime] = useState(0);
   const [timeoutResolve, setTimeoutResolve] = useState<
     ((value: 'continue' | 'offline') => void) | null
+  >(null);
+  const [optionsDialogVisible, setOptionsDialogVisible] = useState(false);
+  const [failedItemId, setFailedItemId] = useState<string | null>(null);
+  const [failureResolve, setFailureResolve] = useState<
+    ((value: 'offline' | 'manual' | 'retry') => void) | null
   >(null);
 
   /**
@@ -51,13 +58,22 @@ export const ProcessingStatusScreen: React.FC = () => {
     loadQueueItems();
 
     // Set up timeout callback for processing queue
-    processingQueue.setTimeoutCallback(async (itemId: string, waitingTime: number) => {
+    processingQueue.setTimeoutCallback(async (_itemId: string, waitingTime: number) => {
       // Return a promise that will be resolved when user makes a choice
       return new Promise<'continue' | 'offline'>(resolve => {
-        setTimeoutItemId(itemId);
         setTimeoutWaitingTime(waitingTime);
         setTimeoutResolve(() => resolve);
         setTimeoutDialogVisible(true);
+      });
+    });
+
+    // Set up failure callback for processing queue
+    processingQueue.setFailureCallback(async (itemId: string, _error: string) => {
+      // Return a promise that will be resolved when user makes a choice
+      return new Promise<'offline' | 'manual' | 'retry'>(resolve => {
+        setFailedItemId(itemId);
+        setFailureResolve(() => resolve);
+        setOptionsDialogVisible(true);
       });
     });
 
@@ -87,7 +103,6 @@ export const ProcessingStatusScreen: React.FC = () => {
     if (timeoutResolve) {
       timeoutResolve('continue');
       setTimeoutDialogVisible(false);
-      setTimeoutItemId(null);
       setTimeoutResolve(null);
     }
   };
@@ -99,9 +114,61 @@ export const ProcessingStatusScreen: React.FC = () => {
     if (timeoutResolve) {
       timeoutResolve('offline');
       setTimeoutDialogVisible(false);
-      setTimeoutItemId(null);
       setTimeoutResolve(null);
     }
+  };
+
+  /**
+   * Handle user choosing offline OCR from options dialog
+   */
+  const handleSelectOfflineOCR = () => {
+    if (failureResolve) {
+      failureResolve('offline');
+      setOptionsDialogVisible(false);
+      setFailedItemId(null);
+      setFailureResolve(null);
+    }
+  };
+
+  /**
+   * Handle user choosing manual entry from options dialog
+   */
+  const handleSelectManual = () => {
+    if (failureResolve) {
+      const itemId = failedItemId;
+      failureResolve('manual');
+      setOptionsDialogVisible(false);
+      setFailedItemId(null);
+      setFailureResolve(null);
+
+      // After dialog closes and item is processed, navigate to verification screen
+      // Use setTimeout to ensure the queue has been updated
+      setTimeout(() => {
+        if (itemId) {
+          navigation.navigate('ReceiptVerification', { queueItemId: itemId });
+        }
+      }, 500);
+    }
+  };
+
+  /**
+   * Handle user choosing to retry later from options dialog
+   */
+  const handleSelectRetryLater = () => {
+    if (failureResolve) {
+      failureResolve('retry');
+      setOptionsDialogVisible(false);
+      setFailedItemId(null);
+      setFailureResolve(null);
+    }
+  };
+
+  /**
+   * Handle closing options dialog
+   */
+  const handleCloseOptionsDialog = () => {
+    // Default to retry later if user cancels
+    handleSelectRetryLater();
   };
 
   /**
@@ -165,7 +232,7 @@ export const ProcessingStatusScreen: React.FC = () => {
    */
   const handleVerifyItem = (item: QueueItem) => {
     if (item.status === 'completed' && item.result) {
-      navigation.navigate('ReceiptVerification' as never, { queueItemId: item.id } as never);
+      navigation.navigate('ReceiptVerification', { queueItemId: item.id });
     }
   };
 
@@ -463,6 +530,15 @@ export const ProcessingStatusScreen: React.FC = () => {
         onContinueWaiting={handleContinueWaiting}
         onSwitchToOffline={handleSwitchToOffline}
         waitingTime={timeoutWaitingTime}
+      />
+
+      {/* Processing Options Dialog */}
+      <ProcessingOptionsDialog
+        visible={optionsDialogVisible}
+        onClose={handleCloseOptionsDialog}
+        onSelectOfflineOCR={handleSelectOfflineOCR}
+        onSelectManual={handleSelectManual}
+        onSelectRetryLater={handleSelectRetryLater}
       />
     </View>
   );

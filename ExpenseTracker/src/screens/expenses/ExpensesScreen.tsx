@@ -49,7 +49,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
   const { trips, fetchTrips } = useTripStore();
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTripId, setSelectedTripId] = useState<number | undefined>(route?.params?.tripId);
+  const [selectedTripId, setSelectedTripId] = useState<number | null>(route?.params?.tripId ?? null);
   const [refreshing, setRefreshing] = useState(false);
   const [fabMenuOpen, setFabMenuOpen] = useState(false);
   const [fabRotation] = useState(new Animated.Value(0));
@@ -76,6 +76,13 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
   useEffect(() => {
     loadExpenses();
   }, [loadExpenses]);
+
+  // Sync selectedTripId with route params when they change
+  useEffect(() => {
+    if (route?.params?.tripId !== undefined) {
+      setSelectedTripId(route.params.tripId);
+    }
+  }, [route?.params?.tripId]);
 
   // Replay floating animations each time screen comes into focus
   useFocusEffect(
@@ -104,7 +111,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
 
   const filteredExpenses = (expenses || []).filter(expense => {
     // Filter by trip
-    if (selectedTripId !== undefined) {
+    if (selectedTripId !== null) {
       // Show only expenses matching the selected trip (including unassigned if "unassigned" is selected)
       if (selectedTripId === -1 && expense.trip_id !== null) {
         return false; // Skip expenses that have a trip when "unassigned" is selected
@@ -386,7 +393,7 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
             mode="dropdown"
             style={[styles.tripPicker, { color: colors.textPrimary }]}
             dropdownIconColor={colors.textPrimary}>
-            <Picker.Item label="All Trips" value={undefined} />
+            <Picker.Item label="All Trips" value={null} />
             <Picker.Item label="Unassigned" value={-1} />
             {trips.map(trip => (
               <Picker.Item key={trip.id} label={trip.name} value={trip.id} />

@@ -12,7 +12,7 @@ import { CameraScreen } from '../screens/CameraScreen';
 import { useTheme } from '../contexts/ThemeContext';
 
 export type ExpenseStackParamList = {
-  ExpensesList: undefined;
+  ExpensesList: { tripId?: number } | undefined;
   ExpenseDetail: { expenseId: number };
   CreateExpense: undefined;
   Camera: undefined;

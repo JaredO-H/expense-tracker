@@ -20,7 +20,6 @@ import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
 import { format } from 'date-fns';
 import {
-  colors as staticColors,
   spacing,
   textStyles,
   commonStyles,
@@ -211,7 +210,13 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
             {tripStats.expenseCount > 0 && (
               <TouchableOpacity
                 style={styles.viewExpensesButton}
-                onPress={() => navigation.navigate('ExpensesTab', { tripId: trip.id })}>
+                onPress={() => navigation.navigate('MainTabs', {
+                  screen: 'ExpensesTab',
+                  params: {
+                    screen: 'ExpensesList',
+                    params: { tripId: trip.id }
+                  }
+                })}>
                 <Text style={[styles.viewExpensesButtonText, { color: colors.primary }]}>
                   View Expenses →
                 </Text>
