@@ -20,6 +20,7 @@ import { AIServiceHelp } from '../screens/settings/AIServiceHelp';
 import { SettingsScreen } from '../screens/settings/SettingsScreen';
 import { ProcessingStatusScreen } from '../screens/ProcessingStatusScreen';
 import { ReceiptVerificationScreen } from '../screens/verification/ReceiptVerificationScreen';
+import { ReceiptImageViewerScreen } from '../screens/common/ReceiptImageViewerScreen';
 import { ExportScreen } from '../screens/exports/ExportScreen';
 import { GeneralSettingsScreen } from '../screens/settings/GeneralSettingsScreen';
 import { useTheme } from '../contexts/ThemeContext';
@@ -38,6 +39,7 @@ export type RootStackParamList = {
   AIServiceHelp: undefined;
   ProcessingStatus: undefined;
   ReceiptVerification: { queueItemId: string };
+  ReceiptImageViewer: { imagePath: string };
 };
 
 export type AppTabParamList = {
@@ -225,6 +227,14 @@ export const RootNavigator: React.FC = () => {
         <Stack.Screen
           name="ReceiptVerification"
           component={ReceiptVerificationScreen}
+          options={{
+            presentation: 'fullScreenModal',
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="ReceiptImageViewer"
+          component={ReceiptImageViewerScreen}
           options={{
             presentation: 'fullScreenModal',
             headerShown: false,

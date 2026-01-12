@@ -34,6 +34,8 @@ import { useTheme } from '../../contexts/ThemeContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { getDateFormat } from '../../utils/generalSettings';
 import { formatDateToDisplay, parseDisplayToISO } from '../../utils/dateFormatHelpers';
+import { ReceiptImagePicker } from './ReceiptImagePicker';
+import fileService from '../../services/storage/fileService';
 
 const CURRENCIES = [
   { label: 'US Dollar (USD)', value: 'USD', symbol: '$' },
@@ -143,6 +145,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     formState: { errors },
     watch,
     setValue,
+    getValues,
   } = useForm<ExpenseFormData>({
     defaultValues: {
       trip_id: expense?.trip_id || initialTripId || undefined,
@@ -231,6 +234,24 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       capture_method: data.capture_method,
       notes: data.notes,
     });
+  };
+
+  const handleCancel = async () => {
+    const currentImagePath = getValues('image_path');
+
+    // If user added an image but is canceling, clean it up
+    // For create mode: any image is new and should be deleted
+    // For edit mode: only delete if image differs from original
+    if (currentImagePath && (!expense || expense.image_path !== currentImagePath)) {
+      try {
+        await fileService.deleteReceiptImage(currentImagePath);
+      } catch (error) {
+        console.error('Failed to cleanup image on cancel:', error);
+        // Continue with cancel even if cleanup fails
+      }
+    }
+
+    onCancel();
   };
 
   return (
@@ -723,6 +744,22 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
           </View>
         </View>
 
+        {/* Receipt Image (Optional) */}
+        <View style={styles.section}>
+          <Text style={screenStyles.sectionTitle}>RECEIPT IMAGE (OPTIONAL)</Text>
+          <Controller
+            control={control}
+            name="image_path"
+            render={({ field: { onChange, value } }) => (
+              <ReceiptImagePicker
+                value={value}
+                onChange={onChange}
+                editable={!isLoading}
+              />
+            )}
+          />
+        </View>
+
         {/* Action Buttons */}
         <View style={styles.buttonContainer}>
           <TouchableOpacity
@@ -753,7 +790,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               styles.cancelButton,
               { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border },
             ]}
-            onPress={onCancel}
+            onPress={handleCancel}
             disabled={isLoading}
             activeOpacity={0.8}>
             <Icon

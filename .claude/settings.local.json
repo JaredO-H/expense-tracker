@@ -61,7 +61,8 @@
       "Bash(taskkill:*)",
       "Bash(./gradlew.bat installDebug:*)",
       "Bash(../gradlew.bat assembleRelease)",
-      "Bash(npx eslint:*)"
+      "Bash(npx eslint:*)",
+      "Bash(git push:*)"
     ]
   }
 }

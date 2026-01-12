@@ -18,6 +18,7 @@ import { useExpenseStore } from '../../stores/expenseStore';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
 import { CreateExpenseModel } from '../../types/database';
 import { format } from 'date-fns';
+import fileService from '../../services/storage/fileService';
 import {
   colors as staticColors,
   spacing,
@@ -61,11 +62,25 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
       return;
     }
 
+    const originalImagePath = expense.image_path;
+    const newImagePath = data.image_path;
+
     try {
       await updateExpense({
         id: expense.id,
         ...data,
       });
+
+      // Clean up replaced image after successful save
+      if (originalImagePath && newImagePath !== originalImagePath) {
+        try {
+          await fileService.deleteReceiptImage(originalImagePath);
+        } catch (error) {
+          console.error('Failed to cleanup old image:', error);
+          // Continue even if cleanup fails
+        }
+      }
+
       setIsEditing(false);
       Alert.alert('Success', 'Expense updated successfully');
     } catch (error) {
@@ -85,6 +100,16 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
         style: 'destructive',
         onPress: async () => {
           try {
+            // Delete expense image first if it exists
+            if (expense.image_path) {
+              try {
+                await fileService.deleteReceiptImage(expense.image_path);
+              } catch (error) {
+                console.error('Failed to cleanup image:', error);
+                // Continue with deletion even if image cleanup fails
+              }
+            }
+
             await deleteExpense(expense.id);
             Alert.alert('Success', 'Expense deleted successfully', [
               { text: 'OK', onPress: () => navigation.goBack() },
