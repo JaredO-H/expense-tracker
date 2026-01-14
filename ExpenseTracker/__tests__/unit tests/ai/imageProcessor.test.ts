@@ -208,6 +208,76 @@ describe('Image Processor', () => {
         expect(mockImageResizer.createResizedImage).toHaveBeenCalledTimes(2);
       });
 
+      it('should use processed URI (not original) in compression loop', async () => {
+        // This test verifies the bug fix where the compression loop
+        // now uses the already-processed image instead of the original
+        mockImageResizer.createResizedImage
+          .mockResolvedValueOnce({
+            uri: 'file://resized-first.jpg',
+            path: '/path/to/resized-first.jpg',
+            name: 'resized-first.jpg',
+            size: 1.5 * 1024 * 1024,
+            width: 2048,
+            height: 1536,
+          })
+          .mockResolvedValueOnce({
+            uri: 'file://resized-second.jpg',
+            path: '/path/to/resized-second.jpg',
+            name: 'resized-second.jpg',
+            size: 800 * 1024,
+            width: 2048,
+            height: 1536,
+          });
+
+        mockRNFS.stat
+          .mockResolvedValueOnce({
+            size: 3 * 1024 * 1024, // Original: 3MB
+            isFile: () => true,
+          } as any)
+          .mockResolvedValueOnce({
+            size: 1.5 * 1024 * 1024, // After first resize: 1.5MB (still too large)
+            isFile: () => true,
+          } as any)
+          .mockResolvedValueOnce({
+            size: 800 * 1024, // After second resize: 800KB (acceptable)
+            isFile: () => true,
+          } as any)
+          .mockResolvedValue({
+            size: 800 * 1024, // Final stat
+            isFile: () => true,
+          } as any);
+
+        await processImageForAI('file://original-image.jpg');
+
+        // First call should use original image
+        expect(mockImageResizer.createResizedImage).toHaveBeenNthCalledWith(
+          1,
+          'file://original-image.jpg',
+          expect.any(Number),
+          expect.any(Number),
+          'JPEG',
+          85, // initial quality
+          expect.any(Number),
+          undefined,
+          false,
+          { mode: 'contain' },
+        );
+
+        // Second call should use the processed image (file://resized-first.jpg), NOT the original
+        expect(mockImageResizer.createResizedImage).toHaveBeenNthCalledWith(
+          2,
+          'file://resized-first.jpg', // Should use processed URI, not original
+          expect.any(Number),
+          expect.any(Number),
+          'JPEG',
+          75, // reduced quality
+          expect.any(Number),
+          undefined,
+          false,
+          { mode: 'contain' },
+        );
+      });
+
       it('should clean up temporary files', async () => {
         mockRNFS.stat.mockResolvedValue({
           size: 3 * 1024 * 1024,

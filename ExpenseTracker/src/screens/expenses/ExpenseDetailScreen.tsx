@@ -13,6 +13,7 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { ExpenseForm } from '../../components/forms/ExpenseForm';
@@ -25,8 +26,11 @@ import {
   textStyles,
   commonStyles,
   screenStyles,
+  borderRadius,
+  shadows,
 } from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface ExpenseDetailScreenProps {
   route: any;
@@ -38,8 +42,23 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
   const { expenses, updateExpense, deleteExpense, isLoading } = useExpenseStore();
   const { colors, themeVersion } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
+  const [imageExists, setImageExists] = useState(false);
 
   const expense = expenses.find(t => t.id === expenseId);
+
+  // Verify receipt image exists
+  useEffect(() => {
+    const verifyImage = async () => {
+      if (expense?.image_path) {
+        const exists = await fileService.getReceiptImage(expense.image_path);
+        setImageExists(!!exists);
+      } else {
+        setImageExists(false);
+      }
+    };
+
+    verifyImage();
+  }, [expense?.image_path]);
 
   useEffect(() => {
     if (!expense) {
@@ -85,6 +104,12 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
       Alert.alert('Success', 'Expense updated successfully');
     } catch (error) {
       Alert.alert('Error', error instanceof Error ? error.message : 'Failed to update expense');
+    }
+  };
+
+  const handleViewImage = () => {
+    if (expense?.image_path && imageExists) {
+      navigation.navigate('ReceiptImageViewer' as never, { imagePath: expense.image_path } as never);
     }
   };
 
@@ -253,6 +278,41 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
           )}
         </View>
 
+        {/* Receipt Image Card */}
+        {expense.image_path && imageExists && (
+          <View
+            style={[
+              styles.card,
+              { backgroundColor: colors.backgroundElevated, borderColor: colors.border },
+            ]}>
+            <Text style={[screenStyles.sectionTitle, { color: colors.textSecondary }]}>
+              Receipt Image
+            </Text>
+            <View style={styles.receiptImageContainer}>
+              {/* Thumbnail */}
+              <View style={[styles.thumbnailContainer, { borderColor: colors.border }]}>
+                <Image
+                  source={{ uri: `file://${expense.image_path}` }}
+                  style={styles.thumbnail}
+                  resizeMode="cover"
+                />
+              </View>
+
+              {/* View Button */}
+              <View style={styles.receiptActionsContainer}>
+                <TouchableOpacity
+                  style={styles.receiptActionButton}
+                  onPress={handleViewImage}>
+                  <Icon name="eye-outline" size={24} color={colors.primary} />
+                  <Text style={[styles.receiptActionText, { color: colors.primary }]}>
+                    View Full Size
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        )}
+
         {/* Metadata Card */}
         <View
           style={[
@@ -356,5 +416,41 @@ const styles = StyleSheet.create({
   deleteButtonText: {
     ...textStyles.button,
     color: staticColors.errorDark,
+  },
+
+  // Receipt Image Styles
+  receiptImageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: spacing.md,
+  },
+  thumbnailContainer: {
+    width: 100,
+    height: 100,
+    borderRadius: borderRadius.sm,
+    borderWidth: 2,
+    overflow: 'hidden',
+    ...shadows.small,
+  },
+  thumbnail: {
+    width: '100%',
+    height: '100%',
+  },
+  receiptActionsContainer: {
+    flex: 1,
+    marginLeft: spacing.lg,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  receiptActionButton: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+  },
+  receiptActionText: {
+    ...textStyles.label,
+    fontSize: 14,
+    marginTop: spacing.xs,
+    fontWeight: '700',
   },
 });

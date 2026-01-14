@@ -29,6 +29,21 @@ const DEFAULT_OPTIONS: Required<ImageProcessingOptions> = {
 };
 
 /**
+ * Normalize URI by removing file:// prefix if present
+ * Ensures consistent file path handling across platforms
+ */
+function normalizeUri(uri: string): string {
+  return uri.replace(/^file:\/\//, '');
+}
+
+/**
+ * Ensure URI has file:// prefix for ImageResizer
+ */
+function ensureFilePrefix(uri: string): string {
+  return uri.startsWith('file://') ? uri : `file://${uri}`;
+}
+
+/**
  * Process image for AI service transmission
  * Handles compression, resizing, and base64 encoding
  */
@@ -39,8 +54,8 @@ export async function processImageForAI(
   try {
     const opts = { ...DEFAULT_OPTIONS, ...options };
 
-    // Remove file:// prefix if present
-    const filePath = imageUri.replace('file://', '');
+    // Normalize the input URI for file operations
+    const filePath = normalizeUri(imageUri);
 
     // Get original file size
     const fileInfo = await RNFS.stat(filePath);
@@ -53,9 +68,9 @@ export async function processImageForAI(
     let currentQuality = opts.quality;
 
     if (originalSizeKB > opts.targetSizeKB) {
-      // Resize and compress the image
+      // Resize and compress the image (ImageResizer needs file:// prefix)
       const resizeResult = await ImageResizer.createResizedImage(
-        imageUri,
+        ensureFilePrefix(imageUri),
         opts.maxWidth,
         opts.maxHeight,
         'JPEG',
@@ -69,7 +84,7 @@ export async function processImageForAI(
       processedUri = resizeResult.uri;
 
       // Check if we need further compression
-      const resizedInfo = await RNFS.stat(resizeResult.uri.replace('file://', ''));
+      const resizedInfo = await RNFS.stat(normalizeUri(resizeResult.uri));
       let resizedSizeKB = resizedInfo.size / 1024;
 
       // Iteratively reduce quality if still too large
@@ -77,7 +92,7 @@ export async function processImageForAI(
         currentQuality -= 10;
 
         const recompressed = await ImageResizer.createResizedImage(
-          imageUri,
+          ensureFilePrefix(processedUri),
           opts.maxWidth,
           opts.maxHeight,
           'JPEG',
@@ -89,12 +104,12 @@ export async function processImageForAI(
         );
 
         // Clean up previous file
-        if (processedUri !== imageUri) {
-          await RNFS.unlink(processedUri.replace('file://', '')).catch(() => {});
+        if (normalizeUri(processedUri) !== normalizeUri(imageUri)) {
+          await RNFS.unlink(normalizeUri(processedUri)).catch(() => {});
         }
 
         processedUri = recompressed.uri;
-        const info = await RNFS.stat(recompressed.uri.replace('file://', ''));
+        const info = await RNFS.stat(normalizeUri(recompressed.uri));
         resizedSizeKB = info.size / 1024;
       }
 
@@ -104,14 +119,14 @@ export async function processImageForAI(
     }
 
     // Convert to base64
-    const base64Data = await RNFS.readFile(processedUri.replace('file://', ''), 'base64');
+    const base64Data = await RNFS.readFile(normalizeUri(processedUri), 'base64');
 
     // Get final image dimensions
-    const finalInfo = await RNFS.stat(processedUri.replace('file://', ''));
+    const finalInfo = await RNFS.stat(normalizeUri(processedUri));
 
     // Clean up temporary file if we created one
-    if (processedUri !== imageUri) {
-      await RNFS.unlink(processedUri.replace('file://', '')).catch(() => {});
+    if (normalizeUri(processedUri) !== normalizeUri(imageUri)) {
+      await RNFS.unlink(normalizeUri(processedUri)).catch(() => {});
     }
 
     return {
@@ -135,7 +150,7 @@ export async function validateImageQuality(imageUri: string): Promise<{
   reason?: string;
 }> {
   try {
-    const filePath = imageUri.replace('file://', '');
+    const filePath = normalizeUri(imageUri);
     const fileInfo = await RNFS.stat(filePath);
 
     // Check file size - must be between 10KB and 10MB

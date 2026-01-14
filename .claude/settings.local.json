@@ -62,7 +62,15 @@
       "Bash(./gradlew.bat installDebug:*)",
       "Bash(../gradlew.bat assembleRelease)",
       "Bash(npx eslint:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(gradlew assembleRelease:*)",
+      "Bash(.gradlew.bat assembleRelease:*)",
+      "Bash(cmd /c gradlew.bat assembleRelease)",
+      "Bash(npx react-native:*)",
+      "Bash(.gradlew.bat clean:*)",
+      "Bash(cmd /c \"cd /d C:\\\\Expense Tracker\\\\ExpenseTracker\\\\android && gradlew.bat clean\")",
+      "Bash(ls:*)",
+      "Bash(powershell -Command \"Set-Location ''C:\\\\Expense Tracker\\\\ExpenseTracker\\\\android''; .\\\\gradlew.bat assembleRelease\")"
     ]
   }
 }
