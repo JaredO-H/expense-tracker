@@ -37,6 +37,7 @@ export const ProcessingStatusScreen: React.FC = () => {
   >(null);
   const [optionsDialogVisible, setOptionsDialogVisible] = useState(false);
   const [failedItemId, setFailedItemId] = useState<string | null>(null);
+  const [failedItemError, setFailedItemError] = useState<string | null>(null);
   const [failureResolve, setFailureResolve] = useState<
     ((value: 'offline' | 'manual' | 'retry') => void) | null
   >(null);
@@ -68,10 +69,11 @@ export const ProcessingStatusScreen: React.FC = () => {
     });
 
     // Set up failure callback for processing queue
-    processingQueue.setFailureCallback(async (itemId: string, _error: string) => {
+    processingQueue.setFailureCallback(async (itemId: string, error: string) => {
       // Return a promise that will be resolved when user makes a choice
       return new Promise<'offline' | 'manual' | 'retry'>(resolve => {
         setFailedItemId(itemId);
+        setFailedItemError(error);
         setFailureResolve(() => resolve);
         setOptionsDialogVisible(true);
       });
@@ -126,6 +128,7 @@ export const ProcessingStatusScreen: React.FC = () => {
       failureResolve('offline');
       setOptionsDialogVisible(false);
       setFailedItemId(null);
+      setFailedItemError(null);
       setFailureResolve(null);
     }
   };
@@ -139,6 +142,7 @@ export const ProcessingStatusScreen: React.FC = () => {
       failureResolve('manual');
       setOptionsDialogVisible(false);
       setFailedItemId(null);
+      setFailedItemError(null);
       setFailureResolve(null);
 
       // After dialog closes and item is processed, navigate to verification screen
@@ -159,6 +163,7 @@ export const ProcessingStatusScreen: React.FC = () => {
       failureResolve('retry');
       setOptionsDialogVisible(false);
       setFailedItemId(null);
+      setFailedItemError(null);
       setFailureResolve(null);
     }
   };
@@ -539,6 +544,7 @@ export const ProcessingStatusScreen: React.FC = () => {
         onSelectOfflineOCR={handleSelectOfflineOCR}
         onSelectManual={handleSelectManual}
         onSelectRetryLater={handleSelectRetryLater}
+        errorMessage={failedItemError || undefined}
       />
     </View>
   );

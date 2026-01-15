@@ -14,6 +14,7 @@ export interface ProcessingOptionsDialogProps {
   onSelectOfflineOCR: () => void;
   onSelectManual: () => void;
   onSelectRetryLater: () => void;
+  errorMessage?: string;
 }
 
 export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = ({
@@ -22,6 +23,7 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
   onSelectOfflineOCR,
   onSelectManual,
   onSelectRetryLater,
+  errorMessage,
 }) => {
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
@@ -32,6 +34,17 @@ export const ProcessingOptionsDialog: React.FC<ProcessingOptionsDialogProps> = (
             <Text style={styles.title}>AI Processing Failed</Text>
             <Text style={styles.message}>How would you like to proceed with this receipt?</Text>
           </View>
+
+          {/* Error Details */}
+          {errorMessage && (
+            <View style={styles.errorContainer}>
+              <View style={styles.errorHeader}>
+                <Icon name="alert-circle" size={20} color={colors.error} />
+                <Text style={styles.errorTitle}>Error Details</Text>
+              </View>
+              <Text style={styles.errorMessage}>{errorMessage}</Text>
+            </View>
+          )}
 
           {/* Option 1: Try Offline OCR */}
           <TouchableOpacity style={styles.option} onPress={onSelectOfflineOCR} activeOpacity={0.7}>
@@ -122,6 +135,30 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  errorContainer: {
+    backgroundColor: colors.errorBackground || 'rgba(220, 38, 38, 0.1)',
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.error,
+  },
+  errorHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+    gap: spacing.xs,
+  },
+  errorTitle: {
+    ...textStyles.body,
+    color: colors.error,
+    fontWeight: '600',
+  },
+  errorMessage: {
+    ...textStyles.caption,
+    color: colors.textSecondary,
+    lineHeight: 18,
   },
   option: {
     flexDirection: 'row',
