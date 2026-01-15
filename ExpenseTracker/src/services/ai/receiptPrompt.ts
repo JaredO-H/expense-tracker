@@ -24,7 +24,7 @@ CRITICAL REQUIREMENTS:
 2. Extract merchant name exactly as printed on receipt
 3. Parse total amount as a number (no currency symbols or commas)
 4. Identify tax information if present (amount, type, and rate)
-5. Date must be in YYYY-MM-DD format
+5. Date must be in YYYY-MM-DD format if visible on receipt, otherwise use null
 6. Time in HH:MM:SS format (24-hour) if visible, otherwise null
 7. Classify expense category based on merchant type:
    - "meal": Restaurants, cafes, food delivery, grocery stores
@@ -42,7 +42,7 @@ VALIDATION RULES:
 - tax_amount must be less than or equal to amount
 - tax_rate must be between 0 and 100 (percentage)
 - confidence must be between 0.0 and 1.0
-- date must be valid and not in the future
+- date must be valid and not in the future (if provided, otherwise null is acceptable)
 
 Return the JSON object immediately without any preamble or explanation.`;
 

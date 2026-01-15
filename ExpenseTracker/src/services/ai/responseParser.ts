@@ -92,13 +92,13 @@ export function validateReceiptData(data: ParsedReceiptData): ValidationResult {
     }
   }
 
-  // Validate date
-  if (!data.date) {
-    errors.push('Date is required');
-  } else if (!isValidDate(data.date)) {
-    errors.push('Invalid date format. Expected YYYY-MM-DD');
-  } else if (isFutureDate(data.date)) {
-    errors.push('Date cannot be in the future');
+  // Validate date (optional)
+  if (data.date) {
+    if (!isValidDate(data.date)) {
+      errors.push('Invalid date format. Expected YYYY-MM-DD');
+    } else if (isFutureDate(data.date)) {
+      errors.push('Date cannot be in the future');
+    }
   }
 
   // Validate time (if present)
@@ -207,9 +207,16 @@ function sanitizeReceiptData(data: ParsedReceiptData): ParsedReceiptData {
     sanitized.tax_type = data.tax_type.trim().toUpperCase();
   }
 
-  // Sanitize date (ensure YYYY-MM-DD format)
+  // Sanitize date (ensure YYYY-MM-DD format, default to current date if missing)
   if (data.date) {
     sanitized.date = normalizeDate(data.date);
+  } else {
+    // Default to current date if not provided
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    sanitized.date = `${year}-${month}-${day}`;
   }
 
   // Sanitize time
