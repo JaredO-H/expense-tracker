@@ -318,7 +318,7 @@ describe('Response Parser', () => {
     });
 
     describe('date validation', () => {
-      it('should reject missing date', () => {
+      it('should accept missing date (will be defaulted to current date)', () => {
         const data: ParsedReceiptData = {
           merchant: 'Test Store',
           amount: 50.0,
@@ -326,8 +326,7 @@ describe('Response Parser', () => {
 
         const result = validateReceiptData(data);
 
-        expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('Date is required');
+        expect(result.isValid).toBe(true);
       });
 
       it('should accept valid ISO date format', () => {
@@ -381,7 +380,7 @@ describe('Response Parser', () => {
         expect(result.errors).toContain('Invalid date format. Expected YYYY-MM-DD');
       });
 
-      it('should reject future dates', () => {
+      it('should reject dates more than 1 day in the future', () => {
         const futureDate = new Date();
         futureDate.setDate(futureDate.getDate() + 10);
         const futureDateStr = futureDate.toISOString().split('T')[0];
@@ -395,7 +394,23 @@ describe('Response Parser', () => {
         const result = validateReceiptData(data);
 
         expect(result.isValid).toBe(false);
-        expect(result.errors).toContain('Date cannot be in the future');
+        expect(result.errors).toContain('Date cannot be more than 1 day in the future');
+      });
+
+      it('should accept dates 1 day in the future (timezone tolerance)', () => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+        const data: ParsedReceiptData = {
+          merchant: 'Test Store',
+          amount: 50.0,
+          date: tomorrowStr,
+        };
+
+        const result = validateReceiptData(data);
+
+        expect(result.isValid).toBe(true);
       });
 
       it("should accept today's date", () => {

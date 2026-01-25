@@ -213,8 +213,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
       return;
     }
 
-    if (expenseDate > today) {
-      Alert.alert('Validation Error', 'Date cannot be in the future');
+    // Allow dates up to 1 day in the future to account for timezone differences
+    const maxAllowedDate = new Date(today);
+    maxAllowedDate.setDate(maxAllowedDate.getDate() + 1);
+
+    if (expenseDate > maxAllowedDate) {
+      Alert.alert('Validation Error', 'Date cannot be more than 1 day in the future');
       return;
     }
 

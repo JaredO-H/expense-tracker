@@ -70,7 +70,8 @@
       "Bash(.gradlew.bat clean:*)",
       "Bash(cmd /c \"cd /d C:\\\\Expense Tracker\\\\ExpenseTracker\\\\android && gradlew.bat clean\")",
       "Bash(ls:*)",
-      "Bash(powershell -Command \"Set-Location ''C:\\\\Expense Tracker\\\\ExpenseTracker\\\\android''; .\\\\gradlew.bat assembleRelease\")"
+      "Bash(powershell -Command \"Set-Location ''C:\\\\Expense Tracker\\\\ExpenseTracker\\\\android''; .\\\\gradlew.bat assembleRelease\")",
+      "Bash(xargs ls:*)"
     ]
   }
 }

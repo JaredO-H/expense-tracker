@@ -42,7 +42,7 @@ VALIDATION RULES:
 - tax_amount must be less than or equal to amount
 - tax_rate must be between 0 and 100 (percentage)
 - confidence must be between 0.0 and 1.0
-- date must be valid and not in the future (if provided, otherwise null is acceptable)
+- date must be valid and can be up to 1 day in the future to account for timezone differences (if provided, otherwise null is acceptable)
 
 Return the JSON object immediately without any preamble or explanation.`;
 

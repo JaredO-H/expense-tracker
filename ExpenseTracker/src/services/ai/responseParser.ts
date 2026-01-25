@@ -97,7 +97,7 @@ export function validateReceiptData(data: ParsedReceiptData): ValidationResult {
     if (!isValidDate(data.date)) {
       errors.push('Invalid date format. Expected YYYY-MM-DD');
     } else if (isFutureDate(data.date)) {
-      errors.push('Date cannot be in the future');
+      errors.push('Date cannot be more than 1 day in the future');
     }
   }
 
@@ -262,14 +262,18 @@ function isValidDate(dateStr: string): boolean {
 }
 
 /**
- * Check if date is in the future
+ * Check if date is in the future (allowing +1 day for timezone differences)
  */
 function isFutureDate(dateStr: string): boolean {
   const date = new Date(dateStr);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  return date > today;
+  // Allow dates up to 1 day in the future to account for timezone differences
+  const maxAllowedDate = new Date(today);
+  maxAllowedDate.setDate(maxAllowedDate.getDate() + 1);
+
+  return date > maxAllowedDate;
 }
 
 /**
