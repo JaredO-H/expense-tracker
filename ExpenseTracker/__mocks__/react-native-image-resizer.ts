@@ -9,12 +9,12 @@ export interface ResizeResult {
 
 const createImage = jest.fn(
   (
-    uri: string,
+    _uri: string,
     width: number,
     height: number,
-    format: string,
+    _format: string,
     quality: number,
-    rotation?: number,
+    _rotation?: number,
     outputPath?: string,
   ): Promise<ResizeResult> => {
     // Mock implementation that simulates image compression

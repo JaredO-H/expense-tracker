@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
+import { StyleSheet, TouchableOpacity, StatusBar } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -22,7 +22,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ReceiptImageViewer'>;
 
 export const ReceiptImageViewerScreen: React.FC<Props> = ({ route, navigation }) => {
   const { imagePath } = route.params;
-  const { colors: themeColors } = useTheme();
+  useTheme();
 
   const handleClose = () => {
     navigation.goBack();

@@ -6,7 +6,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
+import { colors, spacing, borderRadius, textStyles } from '../../styles';
 
 export interface ProcessingOptionsDialogProps {
   visible: boolean;
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   errorContainer: {
-    backgroundColor: colors.errorBackground || 'rgba(220, 38, 38, 0.1)',
+    backgroundColor: colors.errorLight || 'rgba(220, 38, 38, 0.1)',
     borderRadius: borderRadius.md,
     padding: spacing.md,
     marginBottom: spacing.lg,

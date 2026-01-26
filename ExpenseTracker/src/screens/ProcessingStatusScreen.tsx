@@ -183,7 +183,7 @@ export const ProcessingStatusScreen: React.FC = () => {
     try {
       await processingQueue.retryItem(item.id);
       Alert.alert('Retry Queued', 'The receipt will be processed again.');
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to retry processing.');
     }
   };

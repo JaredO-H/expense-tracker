@@ -243,7 +243,7 @@ export const hasEnoughSpace = async (requiredBytes: number): Promise<boolean> =>
   try {
     const freeSpace = await RNFS.getFSInfo();
     return freeSpace.freeSpace > requiredBytes;
-  } catch (error) {
+  } catch {
     // If we can't determine, assume there's enough space
     return true;
   }

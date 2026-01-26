@@ -19,12 +19,7 @@ import { useTripStore } from '../../stores/tripStore';
 import { TripForm } from '../../components/forms/TripForm';
 import { CreateTripModel } from '../../types/database';
 import { format } from 'date-fns';
-import {
-  spacing,
-  textStyles,
-  commonStyles,
-  screenStyles,
-} from '../../styles';
+import { spacing, textStyles, commonStyles, screenStyles } from '../../styles';
 import databaseService from '../../services/database/databaseService';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -210,13 +205,15 @@ export const TripDetailScreen: React.FC<TripDetailScreenProps> = ({ route, navig
             {tripStats.expenseCount > 0 && (
               <TouchableOpacity
                 style={styles.viewExpensesButton}
-                onPress={() => navigation.navigate('MainTabs', {
-                  screen: 'ExpensesTab',
-                  params: {
-                    screen: 'ExpensesList',
-                    params: { tripId: trip.id }
-                  }
-                })}>
+                onPress={() =>
+                  navigation.navigate('MainTabs', {
+                    screen: 'ExpensesTab',
+                    params: {
+                      screen: 'ExpensesList',
+                      params: { tripId: trip.id },
+                    },
+                  })
+                }>
                 <Text style={[styles.viewExpensesButtonText, { color: colors.primary }]}>
                   View Expenses →
                 </Text>

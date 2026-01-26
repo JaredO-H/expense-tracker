@@ -124,9 +124,11 @@ export class CSVExportService implements ExportService {
   /**
    * Format amount from cents to currency string
    */
-  private formatCurrency(cents: number): string {
+  /* Unused helper - may be used for future enhancements
+  private _formatCurrency(cents: number): string {
     return `$${(cents / 100).toFixed(2)}`;
   }
+  */
 
   /**
    * Estimate file size based on expense count

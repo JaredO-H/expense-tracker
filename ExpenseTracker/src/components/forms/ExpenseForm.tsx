@@ -168,7 +168,6 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
 
   // Watch for trip changes and update currency if trip has a default currency
   const selectedTripId = watch('trip_id');
-  const selectedCurrency = watch('currency');
 
   useEffect(() => {
     if (selectedTripId && !expense) {
@@ -194,11 +193,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
     }
   }, [expense]);
 
-  // Get currency symbol for display
-  const getCurrencySymbol = (currencyCode: string): string => {
-    const currency = CURRENCIES.find(c => c.value === currencyCode);
-    return currency?.symbol || currencyCode;
-  };
+  // Get currency symbol for display (for future use)
+  // const getCurrencySymbol = (currencyCode: string): string => {
+  //   const currency = CURRENCIES.find(c => c.value === currencyCode);
+  //   return currency?.symbol || currencyCode;
+  // };
 
   const onFormSubmit = (data: ExpenseFormData) => {
     // Date is already in ISO format from form state (converted in onChangeText handler)
@@ -318,6 +317,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                       },
                     ]}>
                     <Picker
+                      testID="trip-picker"
                       selectedValue={value}
                       onValueChange={onChange}
                       enabled={!isLoading}
@@ -402,6 +402,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                     },
                   ]}>
                   <TextInput
+                    testID="amount-input"
                     style={[styles.amountInput, { color: themeColors.textPrimary }]}
                     placeholder="0.00"
                     placeholderTextColor={themeColors.textDisabled}
@@ -423,12 +424,12 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                         onChange(isNaN(parsed) ? 0 : parsed);
                       }
                     }}
-                    onBlur={e => {
+                    onBlur={() => {
                       // Clean up trailing decimal on blur
                       if (amountText.endsWith('.')) {
                         setAmountText(amountText.slice(0, -1));
                       }
-                      onBlur(e);
+                      onBlur();
                     }}
                     editable={!isLoading}
                     keyboardType="decimal-pad"
@@ -596,6 +597,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                       },
                     ]}>
                     <Picker
+                      testID="category-picker"
                       selectedValue={value}
                       onValueChange={onChange}
                       enabled={!isLoading}
@@ -624,8 +626,9 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
               name="tax_amount"
               rules={{
                 validate: value => {
-                  if (value === undefined || value === null || value === '') return true;
+                  if (value === undefined || value === null) return true;
                   const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                  if (isNaN(numValue)) return true;
                   if (numValue < 0) return 'Tax amount cannot be negative';
                   return true;
                 },
@@ -657,11 +660,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                       onChange(isNaN(parsed) ? undefined : parsed);
                     }
                   }}
-                  onBlur={e => {
+                  onBlur={() => {
                     if (taxAmountText.endsWith('.')) {
                       setTaxAmountText(taxAmountText.slice(0, -1));
                     }
-                    onBlur(e);
+                    onBlur();
                   }}
                   editable={!isLoading}
                   keyboardType="decimal-pad"
@@ -702,11 +705,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
                       onChange(isNaN(parsed) ? undefined : parsed);
                     }
                   }}
-                  onBlur={e => {
+                  onBlur={() => {
                     if (taxRateText.endsWith('.')) {
                       setTaxRateText(taxRateText.slice(0, -1));
                     }
-                    onBlur(e);
+                    onBlur();
                   }}
                   editable={!isLoading}
                   keyboardType="decimal-pad"
@@ -755,11 +758,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             control={control}
             name="image_path"
             render={({ field: { onChange, value } }) => (
-              <ReceiptImagePicker
-                value={value}
-                onChange={onChange}
-                editable={!isLoading}
-              />
+              <ReceiptImagePicker value={value} onChange={onChange} editable={!isLoading} />
             )}
           />
         </View>
@@ -772,7 +771,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
             disabled={isLoading}
             activeOpacity={0.8}>
             {isLoading ? (
-              <ActivityIndicator color={themeColors.textInverse} />
+              <ActivityIndicator testID="loading-indicator" color={themeColors.textInverse} />
             ) : (
               <>
                 <Icon

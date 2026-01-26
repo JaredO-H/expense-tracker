@@ -215,7 +215,10 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
                 <View
                   style={[
                     styles.pickerContainer,
-                    { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border },
+                    {
+                      backgroundColor: themeColors.backgroundElevated,
+                      borderColor: themeColors.border,
+                    },
                   ]}>
                   <Picker
                     selectedValue={value}
@@ -224,16 +227,9 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
                     mode="dropdown"
                     style={[styles.picker, { color: themeColors.textPrimary }]}
                     dropdownIconColor={themeColors.textPrimary}>
-                    <Picker.Item
-                      label="No trip (unassigned)"
-                      value={undefined}
-                    />
+                    <Picker.Item label="No trip (unassigned)" value={undefined} />
                     {trips.map(trip => (
-                      <Picker.Item
-                        key={trip.id}
-                        label={trip.name}
-                        value={trip.id}
-                      />
+                      <Picker.Item key={trip.id} label={trip.name} value={trip.id} />
                     ))}
                   </Picker>
                 </View>
@@ -255,7 +251,10 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
               <View
                 style={[
                   styles.pickerContainer,
-                  { backgroundColor: themeColors.backgroundElevated, borderColor: themeColors.border },
+                  {
+                    backgroundColor: themeColors.backgroundElevated,
+                    borderColor: themeColors.border,
+                  },
                 ]}>
                 <Picker
                   selectedValue={value}
@@ -428,11 +427,7 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
                     style={[styles.picker, { color: themeColors.textPrimary }]}
                     dropdownIconColor={themeColors.textPrimary}>
                     {categories.map(category => (
-                      <Picker.Item
-                        key={category.id}
-                        label={category.name}
-                        value={category.id}
-                      />
+                      <Picker.Item key={category.id} label={category.name} value={category.id} />
                     ))}
                   </Picker>
                 </View>
@@ -451,11 +446,12 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
             rules={{
               validate: value => {
                 // Allow empty/null values (field is optional)
-                if (value === undefined || value === null || value === '') {
+                if (value === undefined || value === null) {
                   return true;
                 }
                 // If a value is provided, ensure it's not negative
                 const numValue = typeof value === 'string' ? parseFloat(value) : value;
+                if (isNaN(numValue)) return true;
                 if (numValue < 0) {
                   return 'Tax amount cannot be negative';
                 }
@@ -510,14 +506,8 @@ export const VerificationForm: React.FC<VerificationFormProps> = ({
                   <Picker.Item label="HST" value={TaxType.HST} />
                   <Picker.Item label="PST" value={TaxType.PST} />
                   <Picker.Item label="VAT" value={TaxType.VAT} />
-                  <Picker.Item
-                    label="Sales Tax"
-                    value={TaxType.SALES_TAX}
-                  />
-                  <Picker.Item
-                    label="Other"
-                    value={TaxType.OTHER}
-                  />
+                  <Picker.Item label="Sales Tax" value={TaxType.SALES_TAX} />
+                  <Picker.Item label="Other" value={TaxType.OTHER} />
                 </Picker>
               </View>
             )}

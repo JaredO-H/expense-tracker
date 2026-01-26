@@ -3,11 +3,7 @@
  * Validates offline text recognition using ML Kit
  */
 
-import {
-  recognizeText,
-  isMLKitAvailable,
-  MLKitResult,
-} from '../../../src/services/ocr/mlKitService';
+import { recognizeText, isMLKitAvailable } from '../../../src/services/ocr/mlKitService';
 import TextRecognition, { TextBlock } from '@react-native-ml-kit/text-recognition';
 
 // Mock ML Kit module
@@ -20,15 +16,27 @@ describe('ML Kit Service', () => {
   const mockTextBlocks: TextBlock[] = [
     {
       text: 'STARBUCKS',
-      frame: { x: 10, y: 20, width: 100, height: 30 },
-      cornerPoints: [],
+      frame: { left: 10, top: 20, width: 100, height: 30 },
+      cornerPoints: [
+        { x: 10, y: 20 },
+        { x: 110, y: 20 },
+        { x: 110, y: 50 },
+        { x: 10, y: 50 },
+      ],
       lines: [],
+      recognizedLanguages: [],
     },
     {
       text: 'Total: $15.50',
-      frame: { x: 10, y: 60, width: 120, height: 30 },
-      cornerPoints: [],
+      frame: { left: 10, top: 60, width: 120, height: 30 },
+      cornerPoints: [
+        { x: 10, y: 60 },
+        { x: 130, y: 60 },
+        { x: 130, y: 90 },
+        { x: 10, y: 90 },
+      ],
       lines: [],
+      recognizedLanguages: [],
     },
   ];
 
@@ -193,7 +201,7 @@ describe('ML Kit Service', () => {
         const startTime = Date.now();
         try {
           await recognizeText('file://receipt.jpg');
-        } catch (error) {
+        } catch {
           const endTime = Date.now();
           const elapsed = endTime - startTime;
           expect(elapsed).toBeGreaterThanOrEqual(0);
@@ -206,8 +214,8 @@ describe('ML Kit Service', () => {
         const result = await recognizeText('file://receipt.jpg');
 
         expect(result.blocks[0].frame).toBeDefined();
-        expect(result.blocks[0].frame.x).toBe(10);
-        expect(result.blocks[0].frame.y).toBe(20);
+        expect(result.blocks[0].frame?.left).toBe(10);
+        expect(result.blocks[0].frame?.top).toBe(20);
       });
 
       it('should preserve block text', async () => {
@@ -282,15 +290,27 @@ Thank you!`;
         blocks: [
           {
             text: 'WALMART',
-            frame: { x: 0, y: 0, width: 100, height: 30 },
-            cornerPoints: [],
+            frame: { left: 0, top: 0, width: 100, height: 30 },
+            cornerPoints: [
+              { x: 0, y: 0 },
+              { x: 100, y: 0 },
+              { x: 100, y: 30 },
+              { x: 0, y: 30 },
+            ],
             lines: [],
+            recognizedLanguages: [],
           },
           {
             text: 'Total $11.64',
-            frame: { x: 0, y: 200, width: 150, height: 30 },
-            cornerPoints: [],
+            frame: { left: 0, top: 200, width: 150, height: 30 },
+            cornerPoints: [
+              { x: 0, y: 200 },
+              { x: 150, y: 200 },
+              { x: 150, y: 230 },
+              { x: 0, y: 230 },
+            ],
             lines: [],
+            recognizedLanguages: [],
           },
         ],
       });
@@ -309,15 +329,27 @@ Thank you!`;
         blocks: [
           {
             text: 'STORE',
-            frame: { x: 0, y: 0, width: 50, height: 20 },
-            cornerPoints: [],
+            frame: { left: 0, top: 0, width: 50, height: 20 },
+            cornerPoints: [
+              { x: 0, y: 0 },
+              { x: 50, y: 0 },
+              { x: 50, y: 20 },
+              { x: 0, y: 20 },
+            ],
             lines: [],
+            recognizedLanguages: [],
           },
           {
             text: 'Total: $5.00',
-            frame: { x: 0, y: 100, width: 80, height: 20 },
-            cornerPoints: [],
+            frame: { left: 0, top: 100, width: 80, height: 20 },
+            cornerPoints: [
+              { x: 0, y: 100 },
+              { x: 80, y: 100 },
+              { x: 80, y: 120 },
+              { x: 0, y: 120 },
+            ],
             lines: [],
+            recognizedLanguages: [],
           },
         ],
       });

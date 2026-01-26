@@ -1,6 +1,16 @@
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { ThemeProvider } from '../../contexts/ThemeContext';
+
+// Custom render function that includes theme provider
+export const renderWithTheme = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <ThemeProvider>{children}</ThemeProvider>
+  );
+
+  return render(ui, { wrapper: Wrapper, ...options });
+};
 
 // Custom render function that includes common providers
 export const renderWithNavigation = (
@@ -9,6 +19,17 @@ export const renderWithNavigation = (
 ) => {
   const Wrapper = ({ children }: { children: React.ReactNode }) => (
     <NavigationContainer>{children}</NavigationContainer>
+  );
+
+  return render(ui, { wrapper: Wrapper, ...options });
+};
+
+// Custom render function that includes both navigation and theme
+export const renderWithProviders = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
+  const Wrapper = ({ children }: { children: React.ReactNode }) => (
+    <ThemeProvider>
+      <NavigationContainer>{children}</NavigationContainer>
+    </ThemeProvider>
   );
 
   return render(ui, { wrapper: Wrapper, ...options });

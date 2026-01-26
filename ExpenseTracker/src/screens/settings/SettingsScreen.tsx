@@ -4,7 +4,7 @@
  * Refactored to use centralized screenStyles
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -214,27 +214,27 @@ export const SettingsScreen: React.FC = () => {
             ]}>
             <View style={[styles.infoDecor, { backgroundColor: colors.accent3 }]} />
 
-          <View style={styles.infoHeader}>
-            <View
-              style={[
-                styles.infoIconContainer,
-                { backgroundColor: colors.backgroundElevated, borderColor: colors.accent3 },
-              ]}>
-              <Icon name="information-circle" size={32} color={colors.accent3Dark} />
+            <View style={styles.infoHeader}>
+              <View
+                style={[
+                  styles.infoIconContainer,
+                  { backgroundColor: colors.backgroundElevated, borderColor: colors.accent3 },
+                ]}>
+                <Icon name="information-circle" size={32} color={colors.accent3Dark} />
+              </View>
+              <Text style={[styles.infoTitle, { color: colors.textPrimary }]}>ABOUT THIS APP</Text>
             </View>
-            <Text style={[styles.infoTitle, { color: colors.textPrimary }]}>ABOUT THIS APP</Text>
-          </View>
 
-          <View style={[styles.infoDivider, { backgroundColor: colors.accent3 }]} />
+            <View style={[styles.infoDivider, { backgroundColor: colors.accent3 }]} />
 
-          <View style={styles.infoContent}>
-            <View style={styles.infoRow}>
-              <Icon name="apps" size={20} color={colors.textSecondary} />
-              <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Version</Text>
-              <Text style={[styles.infoValue, { color: colors.textPrimary }]}>0.0.1</Text>
+            <View style={styles.infoContent}>
+              <View style={styles.infoRow}>
+                <Icon name="apps" size={20} color={colors.textSecondary} />
+                <Text style={[styles.infoLabel, { color: colors.textSecondary }]}>Version</Text>
+                <Text style={[styles.infoValue, { color: colors.textPrimary }]}>0.0.1</Text>
+              </View>
             </View>
           </View>
-        </View>
         </Animated.View>
       </ScrollView>
     </View>

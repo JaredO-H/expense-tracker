@@ -49,7 +49,9 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
   const { trips, fetchTrips } = useTripStore();
   const { colors } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedTripId, setSelectedTripId] = useState<number | null>(route?.params?.tripId ?? null);
+  const [selectedTripId, setSelectedTripId] = useState<number | null>(
+    route?.params?.tripId ?? null,
+  );
   const [refreshing, setRefreshing] = useState(false);
   const [fabMenuOpen, setFabMenuOpen] = useState(false);
   const [fabRotation] = useState(new Animated.Value(0));
@@ -61,7 +63,9 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
   const [floatAnim2] = useState(new Animated.Value(0));
 
   // Expense card entrance animations
-  const [cardAnimations] = useState<Map<number, { opacity: Animated.Value; translate: Animated.Value }>>(new Map());
+  const [cardAnimations] = useState<
+    Map<number, { opacity: Animated.Value; translate: Animated.Value }>
+  >(new Map());
 
   const loadExpenses = useCallback(async () => {
     try {
@@ -93,6 +97,8 @@ export const ExpensesScreen: React.FC<ExpensesScreenProps> = ({ navigation, rout
       // Start floating animations
       float(floatAnim1, 15, 4000).start();
       float(floatAnim2, 20, 5000).start();
+      // Animation refs are stable and don't need to be in dependencies
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
 

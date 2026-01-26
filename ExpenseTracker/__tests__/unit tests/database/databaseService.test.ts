@@ -5,12 +5,7 @@
 
 import databaseService from '../../../src/services/database/databaseService';
 import { getDatabase } from '../../../src/services/database/databaseInit';
-import {
-  CreateTripModel,
-  UpdateTripModel,
-  CreateExpenseModel,
-  UpdateExpenseModel,
-} from '../../../src/types/database';
+import { CreateTripModel, UpdateTripModel, CreateExpenseModel } from '../../../src/types/database';
 
 // Mock database init
 jest.mock('../../../src/services/database/databaseInit');
@@ -50,7 +45,7 @@ describe('Database Service', () => {
               // Select created trip
               rows: {
                 length: 1,
-                item: (i: number) => ({
+                item: (_i: number) => ({
                   trip_id: 1,
                   trip_name: 'Business Trip to NYC',
                   start_date: '2024-03-01',
@@ -581,7 +576,7 @@ describe('Database Service', () => {
           },
         ]);
 
-        const expenses = await databaseService.getAllExpenses(1);
+        await databaseService.getAllExpenses(1);
 
         expect(mockDb.executeSql).toHaveBeenCalledWith(
           expect.stringContaining('WHERE trip_id = ?'),

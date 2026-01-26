@@ -6,12 +6,7 @@
 import React, { useState } from 'react';
 import { View, Image, StyleSheet, ActivityIndicator, Text, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withTiming,
-} from 'react-native-reanimated';
+import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { colors, spacing, textStyles, commonStyles } from '../../styles';
 
@@ -31,7 +26,7 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
+  // const [imageSize, setImageSize] = useState({ width: 0, height: 0 });
 
   // Shared values for zoom and pan
   const scale = useSharedValue(1);
@@ -42,9 +37,9 @@ export const ReceiptImageViewer: React.FC<ReceiptImageViewerProps> = ({
   const savedTranslateY = useSharedValue(0);
 
   // Handle image load
-  const handleImageLoad = (event: any) => {
-    const { width, height } = event.nativeEvent.source;
-    setImageSize({ width, height });
+  const handleImageLoad = (_event: any) => {
+    // const { width, height } = event.nativeEvent.source;
+    // setImageSize({ width, height });
     setIsLoading(false);
   };
 

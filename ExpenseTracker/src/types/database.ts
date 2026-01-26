@@ -59,6 +59,30 @@ export interface Expense {
   updated_at: string;
 }
 
+// Extended types with joined data
+export interface ExpenseWithDetails extends Expense {
+  trip_name?: string;
+  trip_destination?: string;
+  trip_start_date?: string;
+  trip_end_date?: string;
+  category_name: string;
+  category_icon?: string;
+}
+
+export interface TripWithStats extends Trip {
+  expense_count: number;
+  total_amount: number;
+}
+
+export interface CategoryBreakdown {
+  category_id: number;
+  category_name: string;
+  category_icon?: string;
+  expense_count: number;
+  total_amount: number;
+  avg_amount: number;
+}
+
 // Input types for creating new records (without id and timestamps)
 export interface CreateTripModel {
   name: string;
@@ -82,8 +106,10 @@ export interface CreateExpenseModel {
   time?: string;
   category: number;
   notes?: string;
+  processed?: boolean;
   ai_service_used?: string;
   capture_method?: string; // 'ai_service', 'offline_ocr', 'manual';
+  verification_status?: string; // 'pending', 'verified', 'edited'
 }
 
 // Update types (all fields optional except id)

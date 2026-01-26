@@ -95,6 +95,8 @@ export const HomeScreen: React.FC = () => {
       float(floatAnim1, 20, 4500).start();
       float(floatAnim2, 15, 5000).start();
       float(floatAnim3, 18, 3800).start();
+      // Animation refs are stable and don't need to be in dependencies
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []),
   );
 

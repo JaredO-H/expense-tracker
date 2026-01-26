@@ -3,12 +3,7 @@
  * Validates queue management, async processing, retry logic, and fallback mechanisms
  */
 
-import {
-  processingQueue,
-  QueueItem,
-  QueueItemStatus,
-  QueuePriority,
-} from '../../../src/services/queue/processingQueue';
+import { processingQueue } from '../../../src/services/queue/processingQueue';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as imageProcessor from '../../../src/services/ai/imageProcessor';
 import * as aiServiceClient from '../../../src/services/ai/aiServiceClient';
@@ -60,6 +55,7 @@ describe('Processing Queue', () => {
       width: 1000,
       height: 1500,
       size: 50000,
+      quality: 0.8,
     });
 
     mockAIServiceClient.processReceiptWithAI.mockResolvedValue(mockSuccessResult);
@@ -67,6 +63,7 @@ describe('Processing Queue', () => {
     mockMLKitService.recognizeText.mockResolvedValue({
       text: 'Mock OCR Text\nTest Store\nTotal: $50.00',
       blocks: [],
+      processingTime: 100,
     });
 
     mockReceiptParser.parseReceipt.mockResolvedValue({
@@ -232,8 +229,6 @@ describe('Processing Queue', () => {
         // Wait for processing to complete
         await new Promise(resolve => setTimeout(resolve, 100));
 
-        const initialCount = processingQueue.getAllItems().length;
-
         await processingQueue.clearCompleted();
 
         const remainingItems = processingQueue.getAllItems();
@@ -254,7 +249,7 @@ describe('Processing Queue', () => {
   describe('Processing', () => {
     describe('successful processing', () => {
       it('should process item with AI service', async () => {
-        const id = await processingQueue.addItem('file://test.jpg', 'openai');
+        await processingQueue.addItem('file://test.jpg', 'openai');
 
         // Wait for processing
         await new Promise(resolve => setTimeout(resolve, 100));
@@ -308,7 +303,7 @@ describe('Processing Queue', () => {
       it('should process immediate priority first', async () => {
         // Mock AI service to track call order
         const callOrder: string[] = [];
-        mockAIServiceClient.processReceiptWithAI.mockImplementation(async (serviceId, image) => {
+        mockAIServiceClient.processReceiptWithAI.mockImplementation(async (_serviceId, image) => {
           callOrder.push(image);
           return mockSuccessResult;
         });
@@ -355,7 +350,7 @@ describe('Processing Queue', () => {
         // Wait for retry
         await new Promise(resolve => setTimeout(resolve, 200));
 
-        const item = processingQueue.getItem(id);
+        processingQueue.getItem(id);
 
         // Should have been retried and may succeed
         expect(mockAIServiceClient.processReceiptWithAI).toHaveBeenCalled();

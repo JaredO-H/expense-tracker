@@ -7,7 +7,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Modal, ActivityIndicator } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { colors as staticColors, spacing, borderRadius, textStyles } from '../../styles';
+import { spacing, borderRadius, textStyles } from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 
 export interface ProcessingTimeoutDialogProps {
@@ -99,7 +99,8 @@ export const ProcessingTimeoutDialog: React.FC<ProcessingTimeoutDialogProps> = (
             ]}>
             <Icon name="information-circle-outline" size={20} color={colors.info} />
             <Text style={[styles.infoText, { color: colors.textSecondary }]}>
-              AI processing typically takes 10-30 seconds depending on image quality and server load.
+              AI processing typically takes 10-30 seconds depending on image quality and server
+              load.
             </Text>
           </View>
         </View>

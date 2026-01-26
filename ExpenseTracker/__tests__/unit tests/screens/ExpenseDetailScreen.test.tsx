@@ -54,7 +54,7 @@ jest.mock('../../../src/utils/generalSettings', () => ({
 
 // Mock date-fns
 jest.mock('date-fns', () => ({
-  format: jest.fn((date, formatStr) => {
+  format: jest.fn((_date, formatStr) => {
     if (formatStr === 'MMMM dd, yyyy') return 'March 15, 2024';
     if (formatStr === 'MMM dd, yyyy HH:mm') return 'Mar 15, 2024 14:30';
     return '2024-03-15';
@@ -117,9 +117,7 @@ describe('ExpenseDetailScreen', () => {
 
     // Mock trip store
     mockUseTripStore.mockReturnValue({
-      trips: [
-        { id: 1, name: 'Business Trip', start_date: '2024-03-01', end_date: '2024-03-05' },
-      ],
+      trips: [{ id: 1, name: 'Business Trip', start_date: '2024-03-01', end_date: '2024-03-05' }],
       fetchTrips: jest.fn().mockResolvedValue(undefined),
     } as any);
 
@@ -139,8 +137,8 @@ describe('ExpenseDetailScreen', () => {
 
   describe('Receipt Image Display', () => {
     it('should display receipt image card when expense has image and file exists', async () => {
-      const { getByText, getByTestId } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+      const { getByText } = render(
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -158,7 +156,7 @@ describe('ExpenseDetailScreen', () => {
       } as any);
 
       const { queryByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -171,7 +169,7 @@ describe('ExpenseDetailScreen', () => {
       (fileService.getReceiptImage as jest.Mock).mockResolvedValue(false);
 
       const { queryByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -189,7 +187,7 @@ describe('ExpenseDetailScreen', () => {
 
     it('should display thumbnail with correct URI', async () => {
       const { UNSAFE_getByType } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -202,7 +200,7 @@ describe('ExpenseDetailScreen', () => {
   describe('Receipt Image Navigation', () => {
     it('should navigate to ReceiptImageViewer when View Full Size is pressed', async () => {
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -210,17 +208,16 @@ describe('ExpenseDetailScreen', () => {
         fireEvent.press(viewButton);
       });
 
-      expect(mockNavigation.navigate).toHaveBeenCalledWith(
-        'ReceiptImageViewer',
-        { imagePath: '/path/to/receipt.jpg' }
-      );
+      expect(mockNavigation.navigate).toHaveBeenCalledWith('ReceiptImageViewer', {
+        imagePath: '/path/to/receipt.jpg',
+      });
     });
 
     it('should not navigate if image does not exist', async () => {
       (fileService.getReceiptImage as jest.Mock).mockResolvedValue(false);
 
       const { queryByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -234,7 +231,7 @@ describe('ExpenseDetailScreen', () => {
   describe('Expense Information Display', () => {
     it('should display all expense information', async () => {
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -260,7 +257,7 @@ describe('ExpenseDetailScreen', () => {
   describe('Edit and Delete Actions', () => {
     it('should show edit button', async () => {
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -270,7 +267,7 @@ describe('ExpenseDetailScreen', () => {
 
     it('should show delete button', async () => {
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -280,7 +277,7 @@ describe('ExpenseDetailScreen', () => {
 
     it('should switch to edit mode when edit button is pressed', async () => {
       const { getByText, queryByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       let editButton;
@@ -301,7 +298,7 @@ describe('ExpenseDetailScreen', () => {
 
     it('should show confirmation alert when delete button is pressed', async () => {
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -312,7 +309,7 @@ describe('ExpenseDetailScreen', () => {
       expect(Alert.alert).toHaveBeenCalledWith(
         'Delete Expense',
         'Are you sure you want to delete "Starbucks"?',
-        expect.any(Array)
+        expect.any(Array),
       );
     });
   });
@@ -337,7 +334,7 @@ describe('ExpenseDetailScreen', () => {
               text: 'OK',
               onPress: expect.any(Function),
             }),
-          ])
+          ]),
         );
       });
     });
@@ -351,7 +348,7 @@ describe('ExpenseDetailScreen', () => {
       } as any);
 
       const { UNSAFE_getByType } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       // Should show ActivityIndicator when expense not found
@@ -370,7 +367,7 @@ describe('ExpenseDetailScreen', () => {
       } as any);
 
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {
@@ -395,9 +392,7 @@ describe('ExpenseDetailScreen', () => {
     });
 
     it('should continue deletion even if image cleanup fails', async () => {
-      (fileService.deleteReceiptImage as jest.Mock).mockRejectedValue(
-        new Error('File not found')
-      );
+      (fileService.deleteReceiptImage as jest.Mock).mockRejectedValue(new Error('File not found'));
 
       const mockDeleteExpense = jest.fn().mockResolvedValue(undefined);
       mockUseExpenseStore.mockReturnValue({
@@ -408,7 +403,7 @@ describe('ExpenseDetailScreen', () => {
       } as any);
 
       const { getByText } = render(
-        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />
+        <ExpenseDetailScreen route={mockRoute} navigation={mockNavigation} />,
       );
 
       await waitFor(() => {

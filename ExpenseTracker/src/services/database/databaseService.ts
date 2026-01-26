@@ -12,6 +12,9 @@ import {
   CreateExpenseModel,
   UpdateExpenseModel,
   ExpenseCategory,
+  ExpenseWithDetails,
+  TripWithStats,
+  CategoryBreakdown,
 } from '../../types/database';
 
 /**
@@ -120,6 +123,50 @@ class DatabaseService {
       console.error('Error getting all trips:', error);
       throw new Error(
         `Failed to get trips: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Get all trips with expense statistics (count and total amount)
+   * Uses LEFT JOIN to include trips with no expenses
+   */
+  async getAllTripsWithStats(
+    status?: 'active' | 'completed' | 'archived',
+  ): Promise<TripWithStats[]> {
+    try {
+      const db = getDatabase();
+
+      let query = `
+        SELECT
+          t.*,
+          COUNT(e.expense_id) as expense_count,
+          COALESCE(SUM(e.total_amount), 0) as total_amount
+        FROM trip t
+        LEFT JOIN expense e ON t.trip_id = e.trip_id
+      `;
+
+      const params: string[] = [];
+
+      if (status) {
+        query += ' WHERE t.status = ?';
+        params.push(status);
+      }
+
+      query += ' GROUP BY t.trip_id ORDER BY t.start_date DESC';
+
+      const result = await db.executeSql(query, params);
+
+      const trips: TripWithStats[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        trips.push(this.mapTripWithStatsFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return trips;
+    } catch (error) {
+      console.error('Error getting trips with stats:', error);
+      throw new Error(
+        `Failed to get trips with stats: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -247,6 +294,28 @@ class DatabaseService {
     };
   }
 
+  /**
+   * Helper method to map database row with JOIN data to TripWithStats object
+   */
+  private mapTripWithStatsFromDatabaseRow(row: any): TripWithStats {
+    return {
+      id: row.trip_id,
+      name: row.trip_name,
+      start_date: row.start_date,
+      end_date: row.end_date,
+      destination: row.destination,
+      purpose: row.business_purpose,
+      default_currency: row.default_currency,
+      status: row.status,
+      notes: row.notes,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      // Aggregated statistics
+      expense_count: row.expense_count,
+      total_amount: parseFloat(row.total_amount) || 0,
+    };
+  }
+
   /*
    * Expense Operations
    */
@@ -331,7 +400,7 @@ class DatabaseService {
         params.push(trip_id.toString());
       }
 
-      //query += ` ORDER BY date DESC`;
+      query += ' ORDER BY expense_date DESC';
 
       const result = await db.executeSql(query, params);
 
@@ -345,6 +414,186 @@ class DatabaseService {
       console.error('Error getting all expenses:', error);
       throw new Error(
         `Failed to get expenses: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Get all expenses with joined trip and category details
+   * Uses JOIN to avoid N+1 query problem
+   */
+  async getAllExpensesWithDetails(trip_id?: number): Promise<ExpenseWithDetails[]> {
+    try {
+      const db = getDatabase();
+
+      let query = `
+        SELECT
+          e.*,
+          t.trip_name,
+          t.destination as trip_destination,
+          t.start_date as trip_start_date,
+          t.end_date as trip_end_date,
+          c.category_name,
+          c.icon_name as category_icon
+        FROM expense e
+        LEFT JOIN trip t ON e.trip_id = t.trip_id
+        INNER JOIN expense_category c ON e.category_id = c.category_id
+      `;
+
+      const params: string[] = [];
+
+      if (trip_id) {
+        query += ' WHERE e.trip_id = ?';
+        params.push(trip_id.toString());
+      }
+
+      query += ' ORDER BY e.expense_date DESC';
+
+      const result = await db.executeSql(query, params);
+
+      const expenses: ExpenseWithDetails[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        expenses.push(this.mapExpenseWithDetailsFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return expenses;
+    } catch (error) {
+      console.error('Error getting expenses with details:', error);
+      throw new Error(
+        `Failed to get expenses with details: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Get a single expense with all related details
+   * Uses JOIN to fetch trip and category info in one query
+   */
+  async getExpenseWithDetails(id: number): Promise<ExpenseWithDetails | null> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `SELECT
+          e.*,
+          t.trip_name,
+          t.destination as trip_destination,
+          t.start_date as trip_start_date,
+          t.end_date as trip_end_date,
+          c.category_name,
+          c.icon_name as category_icon
+        FROM expense e
+        LEFT JOIN trip t ON e.trip_id = t.trip_id
+        INNER JOIN expense_category c ON e.category_id = c.category_id
+        WHERE e.expense_id = ?`,
+        [id],
+      );
+
+      if (result[0].rows.length === 0) {
+        return null;
+      }
+
+      return this.mapExpenseWithDetailsFromDatabaseRow(result[0].rows.item(0));
+    } catch (error) {
+      console.error('Error getting expense with details:', error);
+      throw new Error(
+        `Failed to get expense with details: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Search expenses across merchant name, category, and notes
+   * Uses JOIN to enable filtering on related tables
+   */
+  async searchExpenses(searchTerm: string, tripId?: number): Promise<ExpenseWithDetails[]> {
+    try {
+      const db = getDatabase();
+
+      let query = `
+        SELECT
+          e.*,
+          t.trip_name,
+          t.destination as trip_destination,
+          t.start_date as trip_start_date,
+          t.end_date as trip_end_date,
+          c.category_name,
+          c.icon_name as category_icon
+        FROM expense e
+        LEFT JOIN trip t ON e.trip_id = t.trip_id
+        INNER JOIN expense_category c ON e.category_id = c.category_id
+        WHERE (
+          e.merchant_name LIKE ?
+          OR c.category_name LIKE ?
+          OR e.notes LIKE ?
+        )
+      `;
+
+      const params: string[] = [
+        `%${searchTerm}%`,
+        `%${searchTerm}%`,
+        `%${searchTerm}%`,
+      ];
+
+      if (tripId) {
+        query += ' AND e.trip_id = ?';
+        params.push(tripId.toString());
+      }
+
+      query += ' ORDER BY e.expense_date DESC';
+
+      const result = await db.executeSql(query, params);
+
+      const expenses: ExpenseWithDetails[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        expenses.push(this.mapExpenseWithDetailsFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return expenses;
+    } catch (error) {
+      console.error('Error searching expenses:', error);
+      throw new Error(
+        `Failed to search expenses: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
+   * Get expense data for export (CSV/PDF)
+   * Optimized query with all necessary joined data for export formatting
+   */
+  async getExpenseDataForExport(tripId: number): Promise<ExpenseWithDetails[]> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `SELECT
+          e.*,
+          t.trip_name,
+          t.destination as trip_destination,
+          t.start_date as trip_start_date,
+          t.end_date as trip_end_date,
+          t.default_currency,
+          c.category_name,
+          c.icon_name as category_icon
+        FROM expense e
+        LEFT JOIN trip t ON e.trip_id = t.trip_id
+        INNER JOIN expense_category c ON e.category_id = c.category_id
+        WHERE e.trip_id = ?
+        ORDER BY e.expense_date ASC, e.expense_time ASC`,
+        [tripId],
+      );
+
+      const expenses: ExpenseWithDetails[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        expenses.push(this.mapExpenseWithDetailsFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return expenses;
+    } catch (error) {
+      console.error('Error getting expense data for export:', error);
+      throw new Error(
+        `Failed to get expense data for export: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
     }
   }
@@ -497,6 +746,40 @@ class DatabaseService {
   }
 
   /**
+   * Helper method to map database row with JOIN data to ExpenseWithDetails object
+   */
+  private mapExpenseWithDetailsFromDatabaseRow(row: any): ExpenseWithDetails {
+    return {
+      id: row.expense_id,
+      trip_id: row.trip_id,
+      image_path: row.receipt_path,
+      merchant: row.merchant_name,
+      amount: row.total_amount,
+      tax_amount: row.tax_amount,
+      tax_type: row.tax_type,
+      tax_rate: row.tax_rate,
+      date: row.expense_date,
+      time: row.expense_time,
+      category: row.category_id,
+      processed: row.processing_status === 'complete' || row.processed === 1,
+      ai_service_used: row.ai_service_used,
+      capture_method: row.capture_method,
+      notes: row.notes,
+      verification_status: row.verification_status,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      // Joined fields from trip table
+      trip_name: row.trip_name,
+      trip_destination: row.trip_destination,
+      trip_start_date: row.trip_start_date,
+      trip_end_date: row.trip_end_date,
+      // Joined fields from category table
+      category_name: row.category_name,
+      category_icon: row.category_icon,
+    };
+  }
+
+  /**
    * Category Operations
    */
 
@@ -527,6 +810,45 @@ class DatabaseService {
   }
 
   /**
+   * Get category breakdown with expense statistics for a trip
+   * Uses JOIN and GROUP BY to aggregate expense data by category
+   */
+  async getCategoryBreakdown(tripId: number): Promise<CategoryBreakdown[]> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `SELECT
+          c.category_id,
+          c.category_name,
+          c.icon_name as category_icon,
+          COUNT(e.expense_id) as expense_count,
+          COALESCE(SUM(e.total_amount), 0) as total_amount,
+          COALESCE(AVG(e.total_amount), 0) as avg_amount
+        FROM expense_category c
+        LEFT JOIN expense e ON c.category_id = e.category_id AND e.trip_id = ?
+        WHERE c.is_active = 1
+        GROUP BY c.category_id
+        HAVING expense_count > 0
+        ORDER BY total_amount DESC`,
+        [tripId],
+      );
+
+      const breakdown: CategoryBreakdown[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        breakdown.push(this.mapCategoryBreakdownFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return breakdown;
+    } catch (error) {
+      console.error('Error getting category breakdown:', error);
+      throw new Error(
+        `Failed to get category breakdown: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
+    }
+  }
+
+  /**
    * Helper method to map database row to ExpenseCategory object
    */
   private mapCategoryFromDatabaseRow(row: any): ExpenseCategory {
@@ -538,6 +860,20 @@ class DatabaseService {
       sort_order: row.sort_order,
       is_active: row.is_active === 1,
       created_at: row.created_at,
+    };
+  }
+
+  /**
+   * Helper method to map database row with JOIN data to CategoryBreakdown object
+   */
+  private mapCategoryBreakdownFromDatabaseRow(row: any): CategoryBreakdown {
+    return {
+      category_id: row.category_id,
+      category_name: row.category_name,
+      category_icon: row.category_icon,
+      expense_count: row.expense_count,
+      total_amount: parseFloat(row.total_amount) || 0,
+      avg_amount: parseFloat(row.avg_amount) || 0,
     };
   }
 
@@ -606,6 +942,45 @@ class DatabaseService {
     } catch (error) {
       console.error('Error getting all trips statistics:', error);
       return new Map();
+    }
+  }
+
+  /**
+   * Get expenses that need processing with their trip and category details
+   * Uses JOIN to avoid N+1 queries when displaying processing queue
+   */
+  async getProcessingQueueWithDetails(): Promise<ExpenseWithDetails[]> {
+    try {
+      const db = getDatabase();
+
+      const result = await db.executeSql(
+        `SELECT
+          e.*,
+          t.trip_name,
+          t.destination as trip_destination,
+          t.start_date as trip_start_date,
+          t.end_date as trip_end_date,
+          c.category_name,
+          c.icon_name as category_icon
+        FROM expense e
+        LEFT JOIN trip t ON e.trip_id = t.trip_id
+        INNER JOIN expense_category c ON e.category_id = c.category_id
+        WHERE e.processing_status = 'pending' OR e.verification_status = 'pending'
+        ORDER BY e.created_at ASC`,
+        [],
+      );
+
+      const expenses: ExpenseWithDetails[] = [];
+      for (let i = 0; i < result[0].rows.length; i++) {
+        expenses.push(this.mapExpenseWithDetailsFromDatabaseRow(result[0].rows.item(i)));
+      }
+
+      return expenses;
+    } catch (error) {
+      console.error('Error getting processing queue with details:', error);
+      throw new Error(
+        `Failed to get processing queue: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
     }
   }
 }

@@ -2,6 +2,7 @@
  * Test to verify the test setup is working correctly
  */
 
+/* global jest, describe, it, expect */
 import { createMockExpense, createMockTrip, createMockOCRText } from './utils/mockFactories';
 import {
   expectValidAmountCents,
@@ -9,6 +10,10 @@ import {
   expectValidConfidenceScore,
 } from './utils/assertions';
 import * as fixtures from './fixtures';
+import * as Keychain from 'react-native-keychain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import SQLite from 'react-native-sqlite-storage';
+import axios from 'axios';
 
 describe('Test Setup Verification', () => {
   describe('Mock Factories', () => {
@@ -17,20 +22,20 @@ describe('Test Setup Verification', () => {
 
       expect(expense).toBeDefined();
       expect(expense.id).toBeGreaterThan(0);
-      expect(expense.merchant_name).toBe('Test Merchant');
-      expect(expense.amount_cents).toBe(5000);
-      expectValidAmountCents(expense.amount_cents);
-      expectValidISODate(expense.transaction_date);
+      expect(expense.merchant).toBe('Test Merchant');
+      expect(expense.amount).toBe(5000);
+      expectValidAmountCents(expense.amount);
+      expectValidISODate(expense.date);
     });
 
     it('should create a mock expense with overrides', () => {
       const expense = createMockExpense({
-        merchant_name: 'Custom Merchant',
-        amount_cents: 10000,
+        merchant: 'Custom Merchant',
+        amount: 10000,
       });
 
-      expect(expense.merchant_name).toBe('Custom Merchant');
-      expect(expense.amount_cents).toBe(10000);
+      expect(expense.merchant).toBe('Custom Merchant');
+      expect(expense.amount).toBe(10000);
     });
 
     it('should create a valid mock trip', () => {
@@ -38,7 +43,7 @@ describe('Test Setup Verification', () => {
 
       expect(trip).toBeDefined();
       expect(trip.id).toBeGreaterThan(0);
-      expect(trip.trip_name).toBe('Test Trip');
+      expect(trip.name).toBe('Test Trip');
       expectValidISODate(trip.start_date);
       expectValidISODate(trip.end_date);
     });
@@ -109,24 +114,20 @@ describe('Test Setup Verification', () => {
 
   describe('Mocked Modules', () => {
     it('should have mocked react-native-keychain', () => {
-      const Keychain = require('react-native-keychain');
       expect(Keychain.setGenericPassword).toBeDefined();
       expect(Keychain.getGenericPassword).toBeDefined();
     });
 
     it('should have mocked AsyncStorage', () => {
-      const AsyncStorage = require('@react-native-async-storage/async-storage').default;
       expect(AsyncStorage.setItem).toBeDefined();
       expect(AsyncStorage.getItem).toBeDefined();
     });
 
     it('should have mocked SQLite', () => {
-      const SQLite = require('react-native-sqlite-storage').default;
       expect(SQLite.openDatabase).toBeDefined();
     });
 
     it('should have mocked axios', () => {
-      const axios = require('axios').default;
       expect(axios.get).toBeDefined();
       expect(axios.post).toBeDefined();
     });

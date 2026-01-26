@@ -29,6 +29,8 @@ export const TripCard: React.FC<TripCardProps> = ({ trip, onPress, animationTrig
     opacityAnim.setValue(0);
     translateAnim.setValue(30);
     cardEntrance(opacityAnim, translateAnim, 0).start();
+    // Animation refs are stable and don't need to be in dependencies
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trip?.id, animationTrigger]);
 
   if (!trip) {

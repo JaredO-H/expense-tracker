@@ -21,5 +21,18 @@ module.exports = {
         '@typescript-eslint/no-require-imports': 'off',
       },
     },
+    {
+      files: ['jest.setup.js', 'jest.config.js'],
+      env: {
+        jest: true,
+        node: true,
+      },
+    },
+    {
+      files: ['**/__tests__/**/*', '**/*.test.ts', '**/*.test.tsx'],
+      env: {
+        jest: true,
+      },
+    },
   ],
 };

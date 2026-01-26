@@ -3,7 +3,7 @@
  * Allows users to export trip expenses in various formats
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -28,7 +28,6 @@ import {
   deleteReceiptImages,
 } from '../../services/export/fileManager';
 import databaseService from '../../services/database/databaseService';
-import { colors as staticColors } from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 
 type RootStackParamList = {
@@ -39,7 +38,7 @@ type Props = NativeStackScreenProps<RootStackParamList, 'ExportScreen'>;
 
 export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
   const { tripId } = route.params;
-  const { colors, themeVersion } = useTheme();
+  const { colors } = useTheme();
 
   const [trip, setTrip] = useState<Trip | null>(null);
   const [expenses, setExpenses] = useState<Expense[]>([]);
@@ -48,15 +47,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
   const [loading, setLoading] = useState(false);
   const [estimatedSize, setEstimatedSize] = useState<number>(0);
 
-  useEffect(() => {
-    loadTripData();
-  }, [tripId]);
-
-  useEffect(() => {
-    updateEstimatedSize();
-  }, [selectedFormat, includeReceipts, expenses]);
-
-  const loadTripData = async () => {
+  const loadTripData = useCallback(async () => {
     try {
       setLoading(true);
       const tripData = await databaseService.getTripById(tripId);
@@ -75,9 +66,9 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [tripId, navigation]);
 
-  const updateEstimatedSize = () => {
+  const updateEstimatedSize = useCallback(() => {
     if (expenses.length === 0) return;
 
     let size = 0;
@@ -93,7 +84,15 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
         break;
     }
     setEstimatedSize(size);
-  };
+  }, [expenses, selectedFormat, includeReceipts]);
+
+  useEffect(() => {
+    loadTripData();
+  }, [loadTripData]);
+
+  useEffect(() => {
+    updateEstimatedSize();
+  }, [updateEstimatedSize]);
 
   const handleExport = async () => {
     if (!trip || expenses.length === 0) {
@@ -117,19 +116,14 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
         case ExportFormat.EXCEL:
           result = await excelExportService.generateExport(trip, expenses, options);
           break;
+        case ExportFormat.PDF:
+          result = await pdfExportService.generateExport(trip, expenses, options);
+          break;
       }
 
-      if (!result.success || !result.filePath) {
-        Alert.alert('Export Failed', result.error || 'Unknown error occurred');
+      if (!result || !result.success || !result.filePath) {
+        Alert.alert('Export Failed', result?.error || 'Unknown error occurred');
         return;
-      }
-
-      if (options.includeReceipts) {
-        pdfResult = await pdfExportService.generateExport(trip, expenses, options);
-        if (!pdfResult.success || !pdfResult.filePath) {
-          Alert.alert('PDF Export Failed', pdfResult.error || 'Unknown error occurred');
-          return;
-        }
       }
 
       // Show success and offer actions
@@ -215,7 +209,7 @@ export const ExportScreen: React.FC<Props> = ({ route, navigation }) => {
                   `Deleted ${deletedCount} receipt image(s) and freed up ${formatFileSize(storageSize)}`,
                 );
                 navigation.goBack();
-              } catch (error) {
+              } catch {
                 Alert.alert('Error', 'Failed to delete some receipt images');
               }
             },

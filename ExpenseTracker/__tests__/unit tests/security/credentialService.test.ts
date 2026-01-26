@@ -182,7 +182,7 @@ describe('Credential Service', () => {
         username: 'openai',
         password: '',
         service: 'test',
-        storage: 'test',
+        storage: 'KC' as any,
       });
 
       const apiKey = await CredentialService.getAPIKey('openai');
@@ -237,7 +237,7 @@ describe('Credential Service', () => {
     });
 
     it('should handle deleting non-existent key', async () => {
-      const result = await CredentialService.deleteAPIKey('openai');
+      await CredentialService.deleteAPIKey('openai');
 
       // Should still attempt deletion and return result
       expect(mockKeychain.resetGenericPassword).toHaveBeenCalled();

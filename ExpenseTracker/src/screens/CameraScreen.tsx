@@ -21,7 +21,7 @@ type CameraMode = 'capture' | 'preview';
 export const CameraScreen: React.FC = () => {
   const navigation = useNavigation();
   const { selectedAIService } = useSettingsStore();
-  const { colors } = useTheme(); // Theme hook for consistency, though camera uses black background
+  useTheme(); // Theme hook for consistency, though camera uses black background
 
   const [mode, setMode] = useState<CameraMode>('capture');
   const [capturedImageUri, setCapturedImageUri] = useState<string | null>(null);

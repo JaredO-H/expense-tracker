@@ -675,6 +675,52 @@ export const screenStyles = StyleSheet.create({
     color: colors.textSecondary,
   } as TextStyle,
 
+  /**
+   * Horizontal stat box layout
+   * Icon and text side by side
+   */
+  statBoxHorizontal: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.backgroundElevated,
+    padding: spacing.md,
+    borderRadius: borderRadius.md,
+    borderWidth: 3,
+    borderColor: colors.border,
+  },
+
+  /**
+   * Icon circle for stat displays
+   * Circular icon container
+   */
+  statIconCircle: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: spacing.md,
+  },
+
+  /**
+   * Text container for stats
+   * Groups value and label
+   */
+  statTextContainer: {
+    flex: 1,
+  },
+
+  /**
+   * Decorative section divider line
+   * Horizontal line with border
+   */
+  sectionLine: {
+    height: 0,
+    borderBottomWidth: 3,
+    borderBottomColor: colors.border,
+    marginVertical: spacing.base,
+  },
+
   // ============================================================================
   // 9. INFO BANNER PATTERNS
   // ============================================================================
@@ -742,6 +788,32 @@ export const screenStyles = StyleSheet.create({
     color: colors.textPrimary,
     flex: 1,
     lineHeight: 22,
+  } as TextStyle,
+
+  /**
+   * Info banner text container
+   * Groups title and subtitle
+   */
+  infoBannerTextContainer: {
+    flex: 1,
+  },
+
+  /**
+   * Info banner title text
+   */
+  infoBannerTitle: {
+    ...textStyles.h6,
+    color: colors.textPrimary,
+    marginBottom: 2,
+  } as TextStyle,
+
+  /**
+   * Info banner subtitle text
+   */
+  infoBannerSubtitle: {
+    ...textStyles.bodySmall,
+    color: colors.textSecondary,
+    lineHeight: 18,
   } as TextStyle,
 
   /**

@@ -279,7 +279,9 @@ class ProcessingQueue {
           if (this.failureCallback) {
             try {
               const errorMessage =
-                error instanceof Error ? error.message : 'Processing failed. No internet connection?';
+                error instanceof Error
+                  ? error.message
+                  : 'Processing failed. No internet connection?';
               const userChoice = await this.failureCallback(item.id, errorMessage);
 
               if (userChoice === 'offline') {

@@ -7,7 +7,6 @@ import {
   processImageForAI,
   validateImageQuality,
   estimateProcessingCost,
-  ProcessedImage,
   ImageProcessingOptions,
 } from '../../../src/services/ai/imageProcessor';
 import RNFS from 'react-native-fs';

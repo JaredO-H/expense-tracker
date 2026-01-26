@@ -3,7 +3,12 @@ const mockTables: Record<string, any[]> = {};
 
 const mockTransaction = {
   executeSql: jest.fn(
-    (sql: string, params: any[] = [], successCallback?: Function, errorCallback?: Function) => {
+    (
+      sql: string,
+      params: any[] = [],
+      successCallback?: (...args: any[]) => void,
+      errorCallback?: (...args: any[]) => void,
+    ) => {
       try {
         // Simple SQL parsing for mock behavior
         const sqlLower = sql.toLowerCase();
@@ -79,7 +84,7 @@ const mockTransaction = {
 };
 
 const mockDatabase = {
-  transaction: jest.fn((callback: Function) => {
+  transaction: jest.fn((callback: (tx: any) => void) => {
     callback(mockTransaction);
     return Promise.resolve();
   }),
@@ -89,8 +94,8 @@ const mockDatabase = {
       mockTransaction.executeSql(
         sql,
         params,
-        (tx: any, results: any) => resolve([results]),
-        (tx: any, error: any) => reject(error),
+        (_tx: any, results: any) => resolve([results]),
+        (_tx: any, error: any) => reject(error),
       );
     });
   }),
@@ -101,11 +106,11 @@ const mockDatabase = {
 const SQLite = {
   openDatabase: jest.fn(() => mockDatabase),
 
-  enablePromise: jest.fn((enable: boolean) => {
+  enablePromise: jest.fn((_enable: boolean) => {
     // No-op for mock
   }),
 
-  DEBUG: jest.fn((debug: boolean) => {
+  DEBUG: jest.fn((_debug: boolean) => {
     // No-op for mock
   }),
 

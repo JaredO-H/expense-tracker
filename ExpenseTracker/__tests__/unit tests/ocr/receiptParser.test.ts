@@ -9,13 +9,18 @@ import { TextBlock } from '@react-native-ml-kit/text-recognition';
 import * as fixtures from '../../../src/__tests__/fixtures';
 
 // Helper to create mock TextBlock
-function createMockTextBlock(text: string, y: number = 0): TextBlock {
+function createMockTextBlock(text: string, top: number = 0): TextBlock {
   return {
     text,
     lines: [],
-    frame: { x: 0, y, width: 100, height: 20 },
+    frame: { left: 0, top, width: 100, height: 20 },
     recognizedLanguages: [],
-    cornerPoints: [],
+    cornerPoints: [
+      { x: 0, y: top },
+      { x: 100, y: top },
+      { x: 100, y: top + 20 },
+      { x: 0, y: top + 20 },
+    ],
   };
 }
 
@@ -100,7 +105,7 @@ describe('Receipt Parser', () => {
       expect(result).toBeDefined();
       // May extract store name or store number
       expect(result.merchant).toBeDefined();
-      expect(result.merchant.length).toBeGreaterThan(0);
+      expect(result.merchant!.length).toBeGreaterThan(0);
       expect(result.amount).toBeGreaterThan(0);
       expect(result.tax_amount).toBeDefined();
     });
@@ -238,7 +243,7 @@ describe('Receipt Parser', () => {
 
       // Should ideally skip address, but may not always
       expect(result.merchant).toBeDefined();
-      expect(result.merchant.length).toBeGreaterThan(0);
+      expect(result.merchant!.length).toBeGreaterThan(0);
     });
 
     it('should handle empty text blocks', async () => {
@@ -259,7 +264,7 @@ describe('Receipt Parser', () => {
 
       // Empty blocks should be filtered out
       expect(result.merchant).toBeDefined();
-      expect(result.merchant.length).toBeGreaterThan(0);
+      expect(result.merchant!.length).toBeGreaterThan(0);
     });
 
     it('should use fallback for unrecognizable text', async () => {

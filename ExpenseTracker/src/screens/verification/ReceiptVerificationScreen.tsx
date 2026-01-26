@@ -29,7 +29,8 @@ interface ReceiptVerificationScreenProps {
 export const ReceiptVerificationScreen: React.FC<ReceiptVerificationScreenProps> = ({ route }) => {
   const navigation = useNavigation();
   const { createExpense } = useExpenseStore();
-  const { colors, themeVersion } = useTheme(); // Theme hook for consistency, child components handle their own theming
+  // Theme hook for consistency, child components handle their own theming
+  useTheme();
 
   const [queueItem, setQueueItem] = useState<QueueItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);

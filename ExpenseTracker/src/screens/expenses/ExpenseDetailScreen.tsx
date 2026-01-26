@@ -40,7 +40,7 @@ interface ExpenseDetailScreenProps {
 export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route, navigation }) => {
   const { expenseId } = route.params;
   const { expenses, updateExpense, deleteExpense, isLoading } = useExpenseStore();
-  const { colors, themeVersion } = useTheme();
+  const { colors } = useTheme();
   const [isEditing, setIsEditing] = useState(false);
   const [imageExists, setImageExists] = useState(false);
 
@@ -109,7 +109,10 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
   const handleViewImage = () => {
     if (expense?.image_path && imageExists) {
-      navigation.navigate('ReceiptImageViewer' as never, { imagePath: expense.image_path } as never);
+      navigation.navigate(
+        'ReceiptImageViewer' as never,
+        { imagePath: expense.image_path } as never,
+      );
     }
   };
 
@@ -300,9 +303,7 @@ export const ExpenseDetailScreen: React.FC<ExpenseDetailScreenProps> = ({ route,
 
               {/* View Button */}
               <View style={styles.receiptActionsContainer}>
-                <TouchableOpacity
-                  style={styles.receiptActionButton}
-                  onPress={handleViewImage}>
+                <TouchableOpacity style={styles.receiptActionButton} onPress={handleViewImage}>
                   <Icon name="eye-outline" size={24} color={colors.primary} />
                   <Text style={[styles.receiptActionText, { color: colors.primary }]}>
                     View Full Size

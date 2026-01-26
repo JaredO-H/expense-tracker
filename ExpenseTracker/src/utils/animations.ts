@@ -44,7 +44,7 @@ export const fadeOut = (
  */
 export const slideUp = (
   animatedValue: Animated.Value,
-  distance: number = 50,
+  _distance: number = 50,
   duration: number = 600,
   delay: number = 0,
 ): Animated.CompositeAnimation => {
@@ -64,7 +64,7 @@ export const slideUp = (
 export const scale = (
   animatedValue: Animated.Value,
   toValue: number = 1,
-  duration: number = 400,
+  _duration: number = 400,
   delay: number = 0,
 ): Animated.CompositeAnimation => {
   return Animated.spring(animatedValue, {
@@ -103,7 +103,7 @@ export const pressAnimation = (animatedValue: Animated.Value): Animated.Composit
  */
 export const bounce = (
   animatedValue: Animated.Value,
-  duration: number = 800,
+  _duration: number = 800,
 ): Animated.CompositeAnimation => {
   return Animated.spring(animatedValue, {
     toValue: 1,

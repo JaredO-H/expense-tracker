@@ -11,7 +11,7 @@ export interface TextRecognitionResult {
   }>;
 }
 
-const recognize = jest.fn((imagePath: string): Promise<TextRecognitionResult> => {
+const recognize = jest.fn((_imagePath: string): Promise<TextRecognitionResult> => {
   // Default mock OCR result
   return Promise.resolve({
     text: 'MOCK RECEIPT\nTOTAL: $50.00\nDATE: 2024-03-15\nTAX: $4.00',

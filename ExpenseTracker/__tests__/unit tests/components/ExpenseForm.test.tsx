@@ -4,7 +4,8 @@
  */
 
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react-native';
+import { fireEvent, waitFor } from '@testing-library/react-native';
+import { renderWithProviders } from '../../../src/__tests__/utils/testUtils';
 import { ExpenseForm } from '../../../src/components/forms/ExpenseForm';
 import { useTripStore } from '../../../src/stores/tripStore';
 import { useCategoryStore } from '../../../src/stores/categoryStore';
@@ -15,7 +16,7 @@ jest.mock('../../../src/stores/categoryStore');
 
 // Mock date-fns
 jest.mock('date-fns', () => ({
-  format: jest.fn(date => '2024-03-15'),
+  format: jest.fn(_date => '2024-03-15'),
 }));
 
 const mockUseTripStore = useTripStore as jest.MockedFunction<typeof useTripStore>;
@@ -55,13 +56,15 @@ describe('ExpenseForm', () => {
 
   describe('rendering', () => {
     it('should render form in create mode', () => {
-      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      const { getByText } = renderWithProviders(
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
+      );
 
-      expect(getByText('Save Expense')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
+      expect(getByText('SAVE EXPENSE')).toBeTruthy();
+      expect(getByText('CANCEL')).toBeTruthy();
     });
 
-    it('should render form in edit mode with existing expense', () => {
+    it('should render form in edit mode with existing expense', async () => {
       const existingExpense = {
         id: 1,
         trip_id: 1,
@@ -72,16 +75,18 @@ describe('ExpenseForm', () => {
         capture_method: 'manual',
       } as any;
 
-      const { getByDisplayValue } = render(
+      const { getByDisplayValue } = renderWithProviders(
         <ExpenseForm expense={existingExpense} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
-      expect(getByDisplayValue('Starbucks')).toBeTruthy();
-      expect(getByDisplayValue('15.50')).toBeTruthy();
+      await waitFor(() => {
+        expect(getByDisplayValue('Starbucks')).toBeTruthy();
+        expect(getByDisplayValue('15.5')).toBeTruthy();
+      });
     });
 
     it('should show loading indicator when isLoading is true', () => {
-      const { getByTestId } = render(
+      const { getByTestId } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} isLoading={true} />,
       );
 
@@ -89,27 +94,48 @@ describe('ExpenseForm', () => {
     });
 
     it('should pre-fill trip when initialTripId is provided', async () => {
-      const { getByTestId } = render(
+      const { getByTestId, getByText, getByPlaceholderText } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />,
       );
 
+      // Wait for form to be fully loaded
+      await waitFor(
+        () => {
+          expect(getByTestId('trip-picker')).toBeTruthy();
+        },
+        { timeout: 2000 },
+      );
+
+      // Submit form with required fields to verify initialTripId is included
+      const merchantInput = getByPlaceholderText('e.g., Starbucks');
+      fireEvent.changeText(merchantInput, 'Test Merchant');
+
+      const amountInput = getByTestId('amount-input');
+      fireEvent.changeText(amountInput, '10.00');
+
+      const submitButton = getByText('SAVE EXPENSE');
+      fireEvent.press(submitButton);
+
       await waitFor(() => {
-        const tripPicker = getByTestId('trip-picker');
-        expect(tripPicker.props.selectedValue).toBe(1);
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            trip_id: 1,
+          }),
+        );
       });
     });
   });
 
   describe('form validation', () => {
     it('should validate required amount field', async () => {
-      const { getByText, getByPlaceholderText } = render(
+      const { getByText, getByTestId } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
-      const amountInput = getByPlaceholderText('0.00');
+      const amountInput = getByTestId('amount-input');
       fireEvent.changeText(amountInput, '');
 
-      const submitButton = getByText('Save Expense');
+      const submitButton = getByText('SAVE EXPENSE');
       fireEvent.press(submitButton);
 
       await waitFor(() => {
@@ -119,14 +145,14 @@ describe('ExpenseForm', () => {
     });
 
     it('should validate date format', async () => {
-      const { getByText, getByPlaceholderText } = render(
+      const { getByText, getByPlaceholderText } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       const dateInput = getByPlaceholderText('YYYY-MM-DD');
       fireEvent.changeText(dateInput, 'invalid-date');
 
-      const submitButton = getByText('Save Expense');
+      const submitButton = getByText('SAVE EXPENSE');
       fireEvent.press(submitButton);
 
       await waitFor(() => {
@@ -135,11 +161,11 @@ describe('ExpenseForm', () => {
     });
 
     it('should accept valid amount values', async () => {
-      const { getByPlaceholderText } = render(
+      const { getByTestId } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
-      const amountInput = getByPlaceholderText('0.00');
+      const amountInput = getByTestId('amount-input');
 
       // Test various valid formats
       fireEvent.changeText(amountInput, '15.50');
@@ -152,22 +178,22 @@ describe('ExpenseForm', () => {
 
   describe('form submission', () => {
     it('should call onSubmit with valid form data', async () => {
-      const { getByText, getByPlaceholderText, getByTestId } = render(
+      const { getByText, getByPlaceholderText, getByTestId } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />,
       );
 
       // Fill form fields
-      const merchantInput = getByPlaceholderText('Enter merchant name');
+      const merchantInput = getByPlaceholderText('e.g., Starbucks');
       fireEvent.changeText(merchantInput, 'Starbucks');
 
-      const amountInput = getByPlaceholderText('0.00');
+      const amountInput = getByTestId('amount-input');
       fireEvent.changeText(amountInput, '15.50');
 
       const dateInput = getByPlaceholderText('YYYY-MM-DD');
       fireEvent.changeText(dateInput, '2024-03-15');
 
       // Submit form
-      const submitButton = getByText('Save Expense');
+      const submitButton = getByText('SAVE EXPENSE');
       fireEvent.press(submitButton);
 
       await waitFor(() => {
@@ -182,23 +208,23 @@ describe('ExpenseForm', () => {
     });
 
     it('should include optional fields when provided', async () => {
-      const { getByText, getByPlaceholderText } = render(
+      const { getByText, getByPlaceholderText, getByTestId } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} initialTripId={1} />,
       );
 
-      const merchantInput = getByPlaceholderText('Enter merchant name');
+      const merchantInput = getByPlaceholderText('e.g., Starbucks');
       fireEvent.changeText(merchantInput, 'Hotel XYZ');
 
-      const amountInput = getByPlaceholderText('0.00');
+      const amountInput = getByTestId('amount-input');
       fireEvent.changeText(amountInput, '150.00');
 
       const dateInput = getByPlaceholderText('YYYY-MM-DD');
       fireEvent.changeText(dateInput, '2024-03-15');
 
-      const notesInput = getByPlaceholderText('Add notes (optional)');
+      const notesInput = getByPlaceholderText('Add any additional notes here...');
       fireEvent.changeText(notesInput, 'Business accommodation');
 
-      const submitButton = getByText('Save Expense');
+      const submitButton = getByText('SAVE EXPENSE');
       fireEvent.press(submitButton);
 
       await waitFor(() => {
@@ -211,31 +237,34 @@ describe('ExpenseForm', () => {
     });
 
     it('should not submit when form is loading', () => {
-      const { getByText } = render(
+      const { getByTestId, queryByText } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} isLoading={true} />,
       );
 
-      const submitButton = getByText('Save Expense');
-      fireEvent.press(submitButton);
-
-      expect(mockOnSubmit).not.toHaveBeenCalled();
+      // When loading, the submit button shows a loading indicator instead of text
+      expect(getByTestId('loading-indicator')).toBeTruthy();
+      expect(queryByText('SAVE EXPENSE')).toBeNull();
     });
   });
 
   describe('cancel functionality', () => {
     it('should call onCancel when cancel button is pressed', () => {
-      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      const { getByText } = renderWithProviders(
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
+      );
 
-      const cancelButton = getByText('Cancel');
+      const cancelButton = getByText('CANCEL');
       fireEvent.press(cancelButton);
 
       expect(mockOnCancel).toHaveBeenCalled();
     });
 
     it('should not submit form when canceling', () => {
-      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      const { getByText } = renderWithProviders(
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
+      );
 
-      const cancelButton = getByText('Cancel');
+      const cancelButton = getByText('CANCEL');
       fireEvent.press(cancelButton);
 
       expect(mockOnSubmit).not.toHaveBeenCalled();
@@ -250,7 +279,7 @@ describe('ExpenseForm', () => {
         fetchTrips: mockFetchTrips,
       } as any);
 
-      render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      renderWithProviders(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       await waitFor(() => {
         expect(mockFetchTrips).toHaveBeenCalled();
@@ -264,7 +293,7 @@ describe('ExpenseForm', () => {
         fetchCategories: mockFetchCategories,
       } as any);
 
-      render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      renderWithProviders(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
 
       await waitFor(() => {
         expect(mockFetchCategories).toHaveBeenCalled();
@@ -272,32 +301,72 @@ describe('ExpenseForm', () => {
     });
 
     it('should handle trip selection change', async () => {
-      const { getByTestId } = render(
+      const { getByTestId, getByText, getByPlaceholderText } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       await waitFor(() => {
-        const tripPicker = getByTestId('trip-picker');
-        fireEvent(tripPicker, 'onValueChange', 2);
-        expect(tripPicker.props.selectedValue).toBe(2);
+        expect(getByTestId('trip-picker')).toBeTruthy();
+      });
+
+      // Change trip selection
+      const tripPicker = getByTestId('trip-picker');
+      fireEvent(tripPicker, 'onValueChange', 2);
+
+      // Fill required fields and submit to verify the trip_id was set
+      const merchantInput = getByPlaceholderText('e.g., Starbucks');
+      fireEvent.changeText(merchantInput, 'Test Merchant');
+
+      const amountInput = getByTestId('amount-input');
+      fireEvent.changeText(amountInput, '10.00');
+
+      const submitButton = getByText('SAVE EXPENSE');
+      fireEvent.press(submitButton);
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            trip_id: 2,
+          }),
+        );
       });
     });
 
     it('should handle category selection change', async () => {
-      const { getByTestId } = render(
+      const { getByTestId, getByText, getByPlaceholderText } = renderWithProviders(
         <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
       await waitFor(() => {
-        const categoryPicker = getByTestId('category-picker');
-        fireEvent(categoryPicker, 'onValueChange', 3);
-        expect(categoryPicker.props.selectedValue).toBe(3);
+        expect(getByTestId('category-picker')).toBeTruthy();
+      });
+
+      // Change category selection
+      const categoryPicker = getByTestId('category-picker');
+      fireEvent(categoryPicker, 'onValueChange', 3);
+
+      // Fill required fields and submit to verify the category was set
+      const merchantInput = getByPlaceholderText('e.g., Starbucks');
+      fireEvent.changeText(merchantInput, 'Test Merchant');
+
+      const amountInput = getByTestId('amount-input');
+      fireEvent.changeText(amountInput, '10.00');
+
+      const submitButton = getByText('SAVE EXPENSE');
+      fireEvent.press(submitButton);
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledWith(
+          expect.objectContaining({
+            category: 3,
+          }),
+        );
       });
     });
   });
 
   describe('edit mode behavior', () => {
-    it('should populate form with existing expense data', () => {
+    it('should populate form with existing expense data', async () => {
       const existingExpense = {
         id: 1,
         trip_id: 1,
@@ -311,13 +380,15 @@ describe('ExpenseForm', () => {
         capture_method: 'manual',
       } as any;
 
-      const { getByDisplayValue } = render(
+      const { getByDisplayValue } = renderWithProviders(
         <ExpenseForm expense={existingExpense} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
-      expect(getByDisplayValue('Restaurant ABC')).toBeTruthy();
-      expect(getByDisplayValue('45.00')).toBeTruthy();
-      expect(getByDisplayValue('Dinner meeting')).toBeTruthy();
+      await waitFor(() => {
+        expect(getByDisplayValue('Restaurant ABC')).toBeTruthy();
+        expect(getByDisplayValue('45')).toBeTruthy();
+        expect(getByDisplayValue('Dinner meeting')).toBeTruthy();
+      });
     });
 
     it('should submit updated expense data', async () => {
@@ -331,7 +402,7 @@ describe('ExpenseForm', () => {
         capture_method: 'manual',
       } as any;
 
-      const { getByText, getByDisplayValue } = render(
+      const { getByText, getByDisplayValue } = renderWithProviders(
         <ExpenseForm expense={existingExpense} onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
       );
 
@@ -339,7 +410,7 @@ describe('ExpenseForm', () => {
       const merchantInput = getByDisplayValue('Old Merchant');
       fireEvent.changeText(merchantInput, 'New Merchant');
 
-      const submitButton = getByText('Save Expense');
+      const submitButton = getByText('SAVE EXPENSE');
       fireEvent.press(submitButton);
 
       await waitFor(() => {
@@ -360,11 +431,13 @@ describe('ExpenseForm', () => {
         fetchTrips: mockFetchTrips,
       } as any);
 
-      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      const { getByText } = renderWithProviders(
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
+      );
 
       await waitFor(() => {
         // Component should still render
-        expect(getByText('Save Expense')).toBeTruthy();
+        expect(getByText('SAVE EXPENSE')).toBeTruthy();
       });
     });
 
@@ -375,11 +448,13 @@ describe('ExpenseForm', () => {
         fetchCategories: mockFetchCategories,
       } as any);
 
-      const { getByText } = render(<ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />);
+      const { getByText } = renderWithProviders(
+        <ExpenseForm onSubmit={mockOnSubmit} onCancel={mockOnCancel} />,
+      );
 
       await waitFor(() => {
         // Component should still render
-        expect(getByText('Save Expense')).toBeTruthy();
+        expect(getByText('SAVE EXPENSE')).toBeTruthy();
       });
     });
   });

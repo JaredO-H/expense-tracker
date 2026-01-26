@@ -45,7 +45,7 @@ const defaultSettings: GeneralSettings = {
 };
 
 export const GeneralSettingsScreen: React.FC = () => {
-  const { colors, themeVersion } = useTheme();
+  const { colors } = useTheme();
   const [settings, setSettings] = useState<GeneralSettings>(defaultSettings);
   const [loading, setLoading] = useState(true);
   const [hasChanges, setHasChanges] = useState(false);
@@ -101,7 +101,7 @@ export const GeneralSettingsScreen: React.FC = () => {
 
               Alert.alert('Success', 'Settings reset to defaults');
               setHasChanges(false);
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Failed to reset settings');
             }
           },

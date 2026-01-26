@@ -27,14 +27,14 @@ import {
   screenStyles,
   getPatternByIndex,
 } from '../styles';
-import { staggeredFadeIn, createAnimatedValues } from '../utils/animations';
+import { staggeredFadeIn } from '../utils/animations';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface CategoriesScreenProps {
   navigation: any;
 }
 
-export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }) => {
+export const CategoriesScreen: React.FC<CategoriesScreenProps> = () => {
   const { categories, fetchCategories } = useCategoryStore();
   const { expenses, fetchExpenses } = useExpenseStore();
   const { colors, themeVersion } = useTheme();
@@ -69,7 +69,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
         // Trigger staggered entrance
         staggeredFadeIn(newAnims, 120, 600).start();
       }
-    }, [isLoading, categories.length]),
+    }, [isLoading, categories, entranceAnims]),
   );
 
   const getCategoryStats = (categoryId: number) => {
@@ -81,7 +81,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
     };
   };
 
-  const handleCategoryPress = (categoryId: number, index: number) => {
+  const handleCategoryPress = (_categoryId: number, index: number) => {
     // Animate press
     Animated.sequence([
       Animated.timing(scaleAnims[index], {
@@ -102,9 +102,9 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
 
   if (isLoading) {
     return (
-      <View style={[screenStyles.loadingStateContainer, { backgroundColor: colors.background }]}>
+      <View style={[screenStyles.loadingContainer, { backgroundColor: colors.background }]}>
         <ActivityIndicator size="large" color={colors.primary} />
-        <Text style={[screenStyles.loadingStateText, { color: colors.textPrimary }]}>
+        <Text style={[screenStyles.loadingText, { color: colors.textPrimary }]}>
           Loading categories...
         </Text>
       </View>
@@ -122,7 +122,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
       <View style={[screenStyles.bgDecorCircleLarge, { backgroundColor: colors.accent1 }]} />
       <View style={[screenStyles.bgDecorSquare, { backgroundColor: colors.accent3 }]} />
       <View
-        style={[screenStyles.bgDecorCircleSmallBottom, { backgroundColor: colors.secondary }]}
+        style={[screenStyles.bgDecorCircleMediumBottom, { backgroundColor: colors.secondary }]}
       />
 
       <ScrollView
@@ -133,7 +133,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({ navigation }
         <View style={screenStyles.headerWithAccent}>
           <View style={[screenStyles.decorativeAccentBar, { backgroundColor: colors.primary }]} />
           <Text style={[screenStyles.headerTitle, { color: colors.textPrimary }]}>Categories</Text>
-          <Text style={[screenStyles.headerSubtitle, { color: colors.textSecondary }]}>
+          <Text style={[textStyles.body, { color: colors.textSecondary }]}>
             Organize your expenses with style
           </Text>
         </View>

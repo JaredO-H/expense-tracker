@@ -3,7 +3,7 @@
  * Configure AI service provider and API keys
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -40,22 +40,20 @@ export const AIServiceSettings: React.FC = () => {
     openai: '',
     anthropic: '',
     gemini: '',
+    mlkit: '',
   });
 
   const [showAPIKey, setShowAPIKey] = useState<Record<AIServiceId, boolean>>({
     openai: false,
     anthropic: false,
     gemini: false,
+    mlkit: false,
   });
 
   const [isTesting, setIsTesting] = useState<AIServiceId | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     setIsLoading(true);
     await initializeSettings();
 
@@ -72,7 +70,11 @@ export const AIServiceSettings: React.FC = () => {
     }
 
     setIsLoading(false);
-  };
+  }, [initializeSettings]);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   const handleServiceSelect = async (serviceId: AIServiceId) => {
     await setSelectedAIService(serviceId);
@@ -122,7 +124,7 @@ export const AIServiceSettings: React.FC = () => {
       }));
 
       Alert.alert('Success', 'API key saved securely');
-    } catch (error) {
+    } catch {
       Alert.alert('Error', 'Failed to save API key. Please try again.');
     } finally {
       setIsLoading(false);
@@ -164,7 +166,7 @@ export const AIServiceSettings: React.FC = () => {
               }));
               setServiceStatus(serviceId, 'not_configured');
               Alert.alert('Success', 'API key deleted');
-            } catch (error) {
+            } catch {
               Alert.alert('Error', 'Failed to delete API key');
             }
           },

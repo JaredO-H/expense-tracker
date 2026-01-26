@@ -6,12 +6,12 @@ const RNFS = {
   ExternalDirectoryPath: '/mock/external',
   TemporaryDirectoryPath: '/mock/temp',
 
-  writeFile: jest.fn((filepath: string, contents: string, encoding?: string) => {
+  writeFile: jest.fn((filepath: string, contents: string, _encoding?: string) => {
     mockFileSystem[filepath] = contents;
     return Promise.resolve();
   }),
 
-  readFile: jest.fn((filepath: string, encoding?: string) => {
+  readFile: jest.fn((filepath: string, _encoding?: string) => {
     const contents = mockFileSystem[filepath];
     if (contents === undefined) {
       return Promise.reject(new Error('File not found'));
@@ -19,7 +19,7 @@ const RNFS = {
     return Promise.resolve(contents);
   }),
 
-  readDir: jest.fn((dirpath: string) => {
+  readDir: jest.fn((_dirpath: string) => {
     return Promise.resolve([]);
   }),
 
@@ -46,7 +46,7 @@ const RNFS = {
     return Promise.resolve();
   }),
 
-  mkdir: jest.fn((filepath: string) => {
+  mkdir: jest.fn((_filepath: string) => {
     return Promise.resolve();
   }),
 

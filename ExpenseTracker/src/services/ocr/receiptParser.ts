@@ -54,11 +54,15 @@ export async function parseReceipt(mlKitResult: MLKitResult): Promise<ReceiptPro
  * Extract merchant name from text blocks
  * Strategy: Look at top 30% of image, find likely business names
  */
-function extractMerchant(blocks: TextBlock[], fullText: string): ExtractionResult<string> {
+function extractMerchant(blocks: TextBlock[], _fullText: string): ExtractionResult<string> {
   console.log('[Parser] Extracting merchant...');
 
   // Sort blocks by vertical position (top to bottom)
-  const sortedBlocks = [...blocks].sort((a, b) => a.frame.y - b.frame.y);
+  const sortedBlocks = [...blocks].sort((a, b) => {
+    const aTop = a.frame?.top ?? 0;
+    const bTop = b.frame?.top ?? 0;
+    return aTop - bTop;
+  });
 
   // Look at top 30% of blocks
   const topBlocks = sortedBlocks.slice(0, Math.ceil(sortedBlocks.length * 0.3));

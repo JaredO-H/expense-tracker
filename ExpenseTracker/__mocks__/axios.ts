@@ -1,5 +1,7 @@
-const axios = {
-  create: jest.fn(() => axios),
+const axios: any = {
+  create: jest.fn(function () {
+    return axios;
+  }),
 
   get: jest.fn(() => Promise.resolve({ data: {} })),
 

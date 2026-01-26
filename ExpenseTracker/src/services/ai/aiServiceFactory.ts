@@ -124,7 +124,7 @@ async function testOpenAIConnection(apiKey: string): Promise<ValidationResult> {
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: 'network_error',
@@ -182,7 +182,7 @@ async function testAnthropicConnection(apiKey: string): Promise<ValidationResult
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: 'network_error',
@@ -231,7 +231,7 @@ async function testGeminiConnection(apiKey: string): Promise<ValidationResult> {
     }
 
     return { success: true };
-  } catch (error) {
+  } catch {
     return {
       success: false,
       error: 'network_error',

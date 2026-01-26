@@ -19,13 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import fileService from '../../services/storage/fileService';
 import { ensureCameraPermission, ensureGalleryPermission } from '../../utils/cameraPermissions';
-import {
-  spacing,
-  borderRadius,
-  textStyles,
-  shadows,
-  screenStyles,
-} from '../../styles';
+import { spacing, borderRadius, textStyles, shadows } from '../../styles';
 import { useTheme } from '../../contexts/ThemeContext';
 
 interface ReceiptImagePickerProps {
@@ -63,7 +57,7 @@ export const ReceiptImagePicker: React.FC<ReceiptImagePickerProps> = ({
     };
 
     verifyImage();
-  }, [value]);
+  }, [value, onChange]);
 
   const handleImageSelection = async (imageUri: string) => {
     setIsProcessing(true);
@@ -76,7 +70,7 @@ export const ReceiptImagePicker: React.FC<ReceiptImagePickerProps> = ({
       Alert.alert(
         'Save Failed',
         error instanceof Error ? error.message : 'Failed to save the image. Please try again.',
-        [{ text: 'OK' }]
+        [{ text: 'OK' }],
       );
     } finally {
       setIsProcessing(false);
@@ -101,7 +95,7 @@ export const ReceiptImagePicker: React.FC<ReceiptImagePickerProps> = ({
           onPress: () => {},
         },
       ],
-      { cancelable: true }
+      { cancelable: true },
     );
   };
 
@@ -182,7 +176,7 @@ export const ReceiptImagePicker: React.FC<ReceiptImagePickerProps> = ({
   const handleViewImage = () => {
     if (value && imageExists) {
       // Navigate to full-screen image viewer
-      navigation.navigate('ReceiptImageViewer' as never, { imagePath: value } as never);
+      (navigation.navigate as any)('ReceiptImageViewer', { imagePath: value });
     }
   };
 
@@ -191,23 +185,19 @@ export const ReceiptImagePicker: React.FC<ReceiptImagePickerProps> = ({
   };
 
   const handleRemoveImage = () => {
-    Alert.alert(
-      'Remove Receipt Image',
-      'Are you sure you want to remove this receipt image?',
-      [
-        {
-          text: 'Remove',
-          style: 'destructive',
-          onPress: () => {
-            onChange(undefined);
-          },
+    Alert.alert('Remove Receipt Image', 'Are you sure you want to remove this receipt image?', [
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => {
+          onChange(undefined);
         },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ]
-    );
+      },
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]);
   };
 
   // Loading State
@@ -300,9 +290,7 @@ export const ReceiptImagePicker: React.FC<ReceiptImagePickerProps> = ({
       disabled={!editable}
       activeOpacity={0.7}>
       <Icon name="camera-outline" size={48} color={themeColors.textTertiary} />
-      <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>
-        Add Receipt Image
-      </Text>
+      <Text style={[styles.emptyTitle, { color: themeColors.textPrimary }]}>Add Receipt Image</Text>
       <Text style={[styles.emptySubtitle, { color: themeColors.textSecondary }]}>
         Tap to take a photo or select from gallery
       </Text>

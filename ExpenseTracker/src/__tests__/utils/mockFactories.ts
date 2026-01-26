@@ -20,32 +20,23 @@ export const createMockExpense = (overrides: Partial<Expense> = {}): Expense => 
   const id = expenseIdCounter++;
   return {
     id,
-    merchant_name: 'Test Merchant',
-    amount_cents: 5000, // $50.00
+    merchant: 'Test Merchant',
+    amount: 5000, // $50.00 in cents
     currency: 'USD',
-    transaction_date: '2024-03-15',
-    transaction_time: '14:30:00',
-    category: 'Food',
-    tax_amount_cents: 400, // $4.00
+    date: '2024-03-15',
+    time: '14:30:00',
+    category: 1, // Food category ID
+    tax_amount: 400, // $4.00 in cents
     tax_type: TaxType.GST,
-    tip_amount_cents: null,
-    subtotal_cents: 4600,
-    receipt_image_path: `/receipts/${id}.jpg`,
-    notes: null,
-    trip_id: null,
-    payment_method: 'Credit Card',
-    is_reimbursable: false,
-    is_verified: true,
+    tax_rate: 8.0,
+    image_path: `/receipts/${id}.jpg`,
+    thumbnail_path: `/receipts/${id}_thumb.jpg`,
+    notes: undefined,
+    trip_id: undefined,
+    processed: true,
     verification_status: 'verified',
-    confidence_score: 0.95,
-    extracted_data: JSON.stringify({
-      merchant: 'Test Merchant',
-      amount: 50.0,
-      date: '2024-03-15',
-    }),
     capture_method: 'ai_service',
     ai_service_used: 'openai',
-    processing_time_ms: 1500,
     created_at: '2024-03-15T14:30:00Z',
     updated_at: '2024-03-15T14:30:00Z',
     ...overrides,
@@ -58,21 +49,20 @@ export const createMockExpense = (overrides: Partial<Expense> = {}): Expense => 
 export const createMockCreateExpense = (
   overrides: Partial<CreateExpenseModel> = {},
 ): CreateExpenseModel => ({
-  merchant_name: 'Test Merchant',
-  amount_cents: 5000,
+  merchant: 'Test Merchant',
+  amount: 5000,
   currency: 'USD',
-  transaction_date: '2024-03-15',
-  transaction_time: '14:30:00',
-  category: 'Food',
-  tax_amount_cents: 400,
+  date: '2024-03-15',
+  time: '14:30:00',
+  category: 1,
+  tax_amount: 400,
   tax_type: TaxType.GST,
-  receipt_image_path: '/receipts/test.jpg',
-  is_verified: true,
+  tax_rate: 8.0,
+  image_path: '/receipts/test.jpg',
+  processed: true,
   verification_status: 'verified',
-  confidence_score: 0.95,
   capture_method: 'ai_service',
   ai_service_used: 'openai',
-  processing_time_ms: 1500,
   ...overrides,
 });
 
@@ -83,11 +73,13 @@ export const createMockTrip = (overrides: Partial<Trip> = {}): Trip => {
   const id = tripIdCounter++;
   return {
     id,
-    trip_name: 'Test Trip',
+    name: 'Test Trip',
     destination: 'San Francisco',
     start_date: '2024-03-01',
     end_date: '2024-03-05',
     purpose: 'Business',
+    default_currency: 'USD',
+    status: 'active',
     notes: 'Test trip notes',
     created_at: '2024-03-01T00:00:00Z',
     updated_at: '2024-03-01T00:00:00Z',
@@ -101,12 +93,12 @@ export const createMockTrip = (overrides: Partial<Trip> = {}): Trip => {
 export const createMockCreateTrip = (
   overrides: Partial<CreateTripModel> = {},
 ): CreateTripModel => ({
-  trip_name: 'Test Trip',
+  name: 'Test Trip',
   destination: 'San Francisco',
   start_date: '2024-03-01',
   end_date: '2024-03-05',
   purpose: 'Business',
-  notes: 'Test trip notes',
+  default_currency: 'USD',
   ...overrides,
 });
 

@@ -20,7 +20,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useTripStore } from '../../stores/tripStore';
 import { Trip } from '../../types/database';
-import { format, isPast, isFuture } from 'date-fns';
+// import { isPast, isFuture } from 'date-fns';
 import {
   colors as staticColors,
   spacing,
@@ -39,9 +39,10 @@ interface TripsScreenProps {
   navigation: any;
 }
 
+/* Unused for now - may be used for future filtering
 type TripStatus = 'upcoming' | 'active' | 'completed';
 
-const getTripStatus = (trip: Trip): TripStatus => {
+const _getTripStatus = (trip: Trip): TripStatus => {
   const startDate = new Date(trip.start_date);
   const endDate = new Date(trip.end_date);
 
@@ -53,6 +54,7 @@ const getTripStatus = (trip: Trip): TripStatus => {
   }
   return 'active';
 };
+*/
 
 export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
   const { trips, fetchTrips, error, clearError } = useTripStore();
@@ -94,6 +96,8 @@ export const TripsScreen: React.FC<TripsScreenProps> = ({ navigation }) => {
       // Close all expanded cards and reset their animations
       setExpandedCards(new Set());
       cardAnimations.forEach(anim => anim.setValue(0));
+      // Animation Maps are stable refs and don't need to be in dependencies
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [loadTrips]),
   );
 

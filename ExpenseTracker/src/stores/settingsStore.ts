@@ -36,6 +36,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     openai: 'not_configured',
     anthropic: 'not_configured',
     gemini: 'not_configured',
+    mlkit: 'configured',
   },
   isLoading: false,
   error: null,
@@ -91,7 +92,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       }
 
       // Check configuration status for all services
-      const services: AIServiceId[] = ['openai', 'anthropic', 'gemini'];
+      const services: AIServiceId[] = ['openai', 'anthropic', 'gemini', 'mlkit'];
       await Promise.all(services.map(serviceId => get().checkServiceConfiguration(serviceId)));
 
       set({ isLoading: false });
