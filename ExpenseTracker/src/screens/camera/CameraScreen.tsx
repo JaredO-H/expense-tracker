@@ -7,14 +7,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { CameraCapture } from '../components/camera/CameraCapture';
-import { ImagePreview } from '../components/camera/ImagePreview';
-import { compressReceiptImage } from '../utils/imageCompression';
+import { CameraCapture } from '../../components/camera/CameraCapture';
+import { ImagePreview } from '../../components/camera/ImagePreview';
+import { compressReceiptImage } from '../../utils/imageCompression';
 import RNFS from 'react-native-fs';
-import { commonStyles } from '../styles';
-import { processingQueue } from '../services/queue/processingQueue';
-import { useSettingsStore } from '../stores/settingsStore';
-import { useTheme } from '../contexts/ThemeContext';
+import { commonStyles } from '../../styles';
+import { processingQueue } from '../../services/queue/processingQueue';
+import { useSettingsStore } from '../../stores/settingsStore';
+import { useTheme } from '../../contexts/ThemeContext';
 
 type CameraMode = 'capture' | 'preview';
 

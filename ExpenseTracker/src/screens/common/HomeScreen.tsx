@@ -15,11 +15,11 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { TripCard } from '../components/cards/TripCard';
-import { useTripStore } from '../stores/tripStore';
-import { spacing, screenStyles } from '../styles';
-import { float } from '../utils/animations';
-import { useTheme } from '../contexts/ThemeContext';
+import { TripCard } from '../../components/cards/TripCard';
+import { useTripStore } from '../../stores/tripStore';
+import { spacing, screenStyles } from '../../styles';
+import { float } from '../../utils/animations';
+import { useTheme } from '../../contexts/ThemeContext';
 
 type NavigationProp = NativeStackNavigationProp<any>;
 

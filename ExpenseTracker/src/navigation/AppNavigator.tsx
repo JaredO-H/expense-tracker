@@ -8,7 +8,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { ExpenseNavigator } from './ExpenseNavigator';
 import { TripNavigator } from './TripNavigator';
-import { HomeScreen } from '../screens/HomeScreen';
+import { HomeScreen } from '../screens/common/HomeScreen';
 import { colors } from '../styles';
 
 export type AppTabParamList = {

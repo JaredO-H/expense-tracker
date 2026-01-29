@@ -73,7 +73,9 @@
       "Bash(powershell -Command \"Set-Location ''C:\\\\Expense Tracker\\\\ExpenseTracker\\\\android''; .\\\\gradlew.bat assembleRelease\")",
       "Bash(xargs ls:*)",
       "Bash(grep:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(test:*)",
+      "Bash(done)"
     ]
   }
 }

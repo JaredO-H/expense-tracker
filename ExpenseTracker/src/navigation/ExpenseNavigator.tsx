@@ -8,7 +8,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { ExpensesScreen } from '../screens/expenses/ExpensesScreen';
 import { ExpenseDetailScreen } from '../screens/expenses/ExpenseDetailScreen';
 import { CreateExpenseScreen } from '../screens/expenses/CreateExpenseScreen';
-import { CameraScreen } from '../screens/CameraScreen';
+import { CameraScreen } from '../screens/camera/CameraScreen';
 import { useTheme } from '../contexts/ThemeContext';
 
 export type ExpenseStackParamList = {

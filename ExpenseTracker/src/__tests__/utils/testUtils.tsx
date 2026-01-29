@@ -1,66 +1,68 @@
+/**
+ * Test Utilities
+ * Helper functions for rendering components with providers in tests
+ */
+
 import React, { ReactElement } from 'react';
 import { render, RenderOptions } from '@testing-library/react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider } from '../../contexts/ThemeContext';
 
-// Custom render function that includes theme provider
-export const renderWithTheme = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ThemeProvider>{children}</ThemeProvider>
-  );
-
-  return render(ui, { wrapper: Wrapper, ...options });
-};
-
-// Custom render function that includes common providers
-export const renderWithNavigation = (
+/**
+ * Custom render function that wraps component with necessary providers
+ */
+export function renderWithProviders(
   ui: ReactElement,
   options?: Omit<RenderOptions, 'wrapper'>,
-) => {
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <NavigationContainer>{children}</NavigationContainer>
-  );
+) {
+  function Wrapper({ children }: { children: React.ReactNode }) {
+    return (
+      <NavigationContainer>
+        <ThemeProvider>
+          {children}
+        </ThemeProvider>
+      </NavigationContainer>
+    );
+  }
 
   return render(ui, { wrapper: Wrapper, ...options });
-};
+}
 
-// Custom render function that includes both navigation and theme
-export const renderWithProviders = (ui: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
-  const Wrapper = ({ children }: { children: React.ReactNode }) => (
-    <ThemeProvider>
-      <NavigationContainer>{children}</NavigationContainer>
-    </ThemeProvider>
-  );
+/**
+ * Create mock navigation object
+ */
+export function createMockNavigation() {
+  return {
+    navigate: jest.fn(),
+    goBack: jest.fn(),
+    setOptions: jest.fn(),
+    dispatch: jest.fn(),
+    reset: jest.fn(),
+    isFocused: jest.fn(() => true),
+    canGoBack: jest.fn(() => true),
+    getId: jest.fn(() => 'mock-id'),
+    getState: jest.fn(),
+    getParent: jest.fn(),
+    setParams: jest.fn(),
+    addListener: jest.fn(() => jest.fn()),
+    removeListener: jest.fn(),
+  };
+}
 
-  return render(ui, { wrapper: Wrapper, ...options });
-};
+/**
+ * Create mock route object
+ */
+export function createMockRoute(params: any = {}) {
+  return {
+    key: 'mock-route-key',
+    name: 'MockScreen',
+    params,
+  };
+}
 
-// Helper to wait for async operations to complete
-export const waitForAsync = () => new Promise(resolve => setTimeout(resolve, 0));
-
-// Helper to create mock navigation prop
-export const createMockNavigation = (overrides = {}) => ({
-  navigate: jest.fn(),
-  goBack: jest.fn(),
-  reset: jest.fn(),
-  setParams: jest.fn(),
-  dispatch: jest.fn(),
-  isFocused: jest.fn(() => true),
-  canGoBack: jest.fn(() => true),
-  addListener: jest.fn(),
-  removeListener: jest.fn(),
-  getParent: jest.fn(),
-  getState: jest.fn(),
-  setOptions: jest.fn(),
-  ...overrides,
-});
-
-// Helper to create mock route prop
-export const createMockRoute = (params = {}, overrides = {}) => ({
-  key: 'test-route',
-  name: 'TestScreen',
-  params,
-  ...overrides,
-});
-
-export { render };
+/**
+ * Wait for async updates in tests
+ */
+export function wait(ms: number = 0) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}

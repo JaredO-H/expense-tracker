@@ -17,13 +17,13 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { processingQueue, QueueItem } from '../services/queue/processingQueue';
-import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles } from '../styles';
-import { AI_SERVICE_CONFIGS } from '../types/aiService';
-import { useTheme } from '../contexts/ThemeContext';
-import { ProcessingTimeoutDialog } from '../components/ocr/ProcessingTimeoutDialog';
-import { ProcessingOptionsDialog } from '../components/ocr/ProcessingOptionsDialog';
-import { RootStackParamList } from '../navigation/RootNavigator';
+import { processingQueue, QueueItem } from '../../services/queue/processingQueue';
+import { colors as staticColors, spacing, borderRadius, textStyles, commonStyles } from '../../styles';
+import { AI_SERVICE_CONFIGS } from '../../types/aiService';
+import { useTheme } from '../../contexts/ThemeContext';
+import { ProcessingTimeoutDialog } from '../../components/ocr/ProcessingTimeoutDialog';
+import { ProcessingOptionsDialog } from '../../components/ocr/ProcessingOptionsDialog';
+import { RootStackParamList } from '../../navigation/RootNavigator';
 
 export const ProcessingStatusScreen: React.FC = () => {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();

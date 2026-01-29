@@ -10,7 +10,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 import { ReceiptImageViewer } from '../../components/verification/ReceiptImageViewer';
 import { SlidingDrawer } from '../../components/verification/SlidingDrawer';
-import { VerificationForm } from '../../components/verification/VerificationForm';
+import { VerificationForm } from '../../components/forms/VerificationForm';
 import { processingQueue } from '../../services/queue/processingQueue';
 import { useExpenseStore } from '../../stores/expenseStore';
 import { mapQueueItemToExpense } from '../../utils/expenseMapper';
