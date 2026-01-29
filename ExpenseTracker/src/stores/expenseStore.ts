@@ -1,6 +1,6 @@
 /**
  * Expense Store
- * Global state management for expenses using Zustand
+ * Global state management for expenses
  */
 
 import { create } from 'zustand';

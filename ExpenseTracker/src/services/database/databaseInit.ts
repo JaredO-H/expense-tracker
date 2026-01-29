@@ -157,7 +157,6 @@ export const closeDatabase = async (): Promise<void> => {
 
 /**
  * Delete the database (useful for testing or complete reset)
- * WARNING: This will delete all data
  */
 export const deleteDatabase = async (): Promise<void> => {
   try {

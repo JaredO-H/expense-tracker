@@ -1,6 +1,5 @@
 /**
  * Theme Store - Manages light/dark mode state
- * Uses Zustand for state management with persistence
  */
 
 import { create } from 'zustand';
@@ -11,6 +10,7 @@ export type ThemeMode = 'light' | 'dark';
 interface ThemeState {
   mode: ThemeMode;
   isLoading: boolean;
+
   setTheme: (mode: ThemeMode) => Promise<void>;
   toggleTheme: () => Promise<void>;
   loadTheme: () => Promise<void>;

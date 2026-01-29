@@ -1,6 +1,6 @@
 /**
  * Category Store
- * Global state management for expense categories using Zustand
+ * Global state management for expense categories
  */
 
 import { create } from 'zustand';

@@ -1,7 +1,6 @@
 /**
  * Create Expense Screen
  * Screen for creating new expenses
- * Refactored to use centralized screenStyles
  */
 
 import React from 'react';

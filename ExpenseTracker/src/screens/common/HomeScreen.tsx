@@ -1,7 +1,5 @@
 /**
- * Home Screen - Neo-Memphis Edition
- * Bold, playful dashboard with geometric decorations
- * Refactored to use centralized screenStyles
+ * Home Screen - Neo-Memphis Version
  */
 
 import React, { useEffect, useState } from 'react';
@@ -320,7 +318,6 @@ export const HomeScreen: React.FC = () => {
   );
 };
 
-// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
   scrollView: {
     flex: 1,

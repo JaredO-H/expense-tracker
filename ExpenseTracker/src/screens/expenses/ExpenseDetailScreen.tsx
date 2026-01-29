@@ -1,7 +1,6 @@
 /**
  * Expense Detail Screen
  * Displays expense details with edit and delete capabilities
- * Refactored to use centralized screenStyles
  */
 
 import React, { useEffect, useState } from 'react';

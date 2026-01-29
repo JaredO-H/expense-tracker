@@ -1,7 +1,5 @@
 /**
- * Expenses Screen - Neo-Memphis Edition
- * Bold, geometric expense list that makes finances exciting
- * Refactored to use centralized screenStyles
+ * Expenses Screen - Neo-Memphis version
  */
 
 import React, { useEffect, useState, useCallback } from 'react';

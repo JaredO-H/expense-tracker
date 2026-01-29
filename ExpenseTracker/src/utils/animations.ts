@@ -1,8 +1,3 @@
-/**
- * Animation Utilities - Neo-Memphis Edition
- * Reusable animation functions for delightful micro-interactions
- */
-
 import { Animated, Easing } from 'react-native';
 
 /**

@@ -102,7 +102,7 @@ export const compressImage = async (
  */
 const getFileSize = async (_uri: string): Promise<number> => {
   try {
-    // For now, return estimated size based on compression
+    // Return estimated size based on compression
     // This can be enhanced with actual file size reading using react-native-fs
     return 0;
   } catch (error) {

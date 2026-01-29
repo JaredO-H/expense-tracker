@@ -1,6 +1,6 @@
 /**
  * Trip Store
- * Global state management for trips using Zustand
+ * Global state management for trips
  */
 
 import { create } from 'zustand';

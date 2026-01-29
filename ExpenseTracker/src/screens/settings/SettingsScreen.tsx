@@ -1,9 +1,3 @@
-/**
- * Settings Screen - Neo-Memphis Edition
- * Bold settings menu with geometric flair
- * Refactored to use centralized screenStyles
- */
-
 import React, { useState } from 'react';
 import {
   View,

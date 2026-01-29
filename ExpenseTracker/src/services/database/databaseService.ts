@@ -238,7 +238,7 @@ class DatabaseService {
 
   /**
    * Delete a trip by ID
-   * Note: Will fail if there are expenses associated with this trip due to ON DELETE RESTRICT constraint
+   * Will fail if there are expenses associated with this trip due to ON DELETE RESTRICT constraint
    * To delete a trip with expenses, either delete the expenses first or reassign them to another trip
    */
   async deleteTrip(id: number): Promise<void> {
@@ -420,7 +420,6 @@ class DatabaseService {
 
   /**
    * Get all expenses with joined trip and category details
-   * Uses JOIN to avoid N+1 query problem
    */
   async getAllExpensesWithDetails(trip_id?: number): Promise<ExpenseWithDetails[]> {
     try {
@@ -529,11 +528,7 @@ class DatabaseService {
         )
       `;
 
-      const params: string[] = [
-        `%${searchTerm}%`,
-        `%${searchTerm}%`,
-        `%${searchTerm}%`,
-      ];
+      const params: string[] = [`%${searchTerm}%`, `%${searchTerm}%`, `%${searchTerm}%`];
 
       if (tripId) {
         query += ' AND e.trip_id = ?';

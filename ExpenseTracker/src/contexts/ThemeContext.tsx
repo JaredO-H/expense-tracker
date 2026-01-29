@@ -1,7 +1,6 @@
 /**
  * Theme Context
  * Manages dark mode state throughout the app
- * Integrates with color system for theme-aware styling
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';

@@ -1,9 +1,3 @@
-/**
- * Expense Form Component - Neo-Memphis Edition
- * Making expense forms actually exciting!
- * Refactored to use centralized screenStyles
- */
-
 import React, { useEffect, useState } from 'react';
 import {
   View,

@@ -1,8 +1,3 @@
-/**
- * TripCard Component - Neo-Memphis Edition
- * Bold, geometric trip card for the home screen
- */
-
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';

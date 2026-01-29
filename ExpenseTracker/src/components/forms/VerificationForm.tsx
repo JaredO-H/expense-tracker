@@ -1,7 +1,6 @@
 /**
  * VerificationForm Component
  * Form for verifying and editing AI-extracted expense data
- * Optimized for use within the sliding drawer interface
  */
 
 import React, { useEffect, useState } from 'react';

@@ -1,7 +1,7 @@
 /**
  * Camera Screen
  * Main screen for camera-based receipt capture
- * Orchestrates camera capture, preview, and image compression
+ * Controls camera capture, preview, and image compression
  */
 
 import React, { useState } from 'react';
