@@ -1,6 +1,5 @@
 /**
  * ReceiptImagePicker Component
- * Reusable component for managing receipt images in forms
  * Allows users to add, view, change, and remove receipt images
  */
 

@@ -66,9 +66,6 @@ export const getExportDirectory = async (): Promise<string> => {
   let exportDir: string;
 
   if (Platform.OS === 'android') {
-    // For Android, use public Documents folder for easy user access
-    // On Android 10+ (API 29+), we use the Downloads folder as it's more accessible
-    // with scoped storage
     if (Platform.Version >= 29) {
       // Android 10+ - Use Downloads folder which is accessible with scoped storage
       const downloadDir = RNFS.DownloadDirectoryPath;

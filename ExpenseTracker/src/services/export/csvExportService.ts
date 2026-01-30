@@ -122,15 +122,6 @@ export class CSVExportService implements ExportService {
   }
 
   /**
-   * Format amount from cents to currency string
-   */
-  /* Unused helper - may be used for future enhancements
-  private _formatCurrency(cents: number): string {
-    return `$${(cents / 100).toFixed(2)}`;
-  }
-  */
-
-  /**
    * Estimate file size based on expense count
    */
   getEstimatedSize(expenses: Expense[], _includeReceipts: boolean): number {

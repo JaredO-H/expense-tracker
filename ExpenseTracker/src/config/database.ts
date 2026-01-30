@@ -80,7 +80,6 @@ export const CREATE_EXPENSE_CATEGORY_INDEX = `
 /**
  * Expenses table schema
  * Stores individual expense records linked to trips
- * Amounts stored as integers (cents) to avoid floating poINTEGER precision issues
  */
 export const CREATE_EXPENSE_TABLE = `
   CREATE TABLE IF NOT EXISTS expense (

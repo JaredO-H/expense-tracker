@@ -811,7 +811,6 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({
   );
 };
 
-// Minimal local styles - most styles now use centralized screenStyles
 const styles = StyleSheet.create({
   // ScrollView basic style
   scrollView: {
